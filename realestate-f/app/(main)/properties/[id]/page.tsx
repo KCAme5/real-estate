@@ -71,7 +71,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
     const agentId = property?.agent_profile_id || property?.agent;
     const { data: agent } = useQuery({
         queryKey: ["agent", agentId],
-        queryFn: () => agentsAPI.getById(agentId),
+        queryFn: () => agentsAPI.getBySlugOrId(agentId),
         enabled: !!agentId
     });
 

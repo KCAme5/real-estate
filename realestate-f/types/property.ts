@@ -36,6 +36,7 @@ export interface Property {
     latitude?: string;
     longitude?: string;
     video_url?: string;
+    listing_type: 'rent' | 'sale';
     agent_profile_id?: number;
     gallery?: Array<{
         id: number;

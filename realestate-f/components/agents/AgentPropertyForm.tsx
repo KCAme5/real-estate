@@ -36,7 +36,7 @@ export default function AgentPropertyForm({
         setImages([]);
     }, [initial]);
 
-useEffect(() => {
+    useEffect(() => {
         // load available locations for select
         let mounted = true;
         (async () => {
@@ -57,13 +57,13 @@ useEffect(() => {
         }
     }, [locations.length, locationsLoading]);
 
-const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
             let result;
-            const formData: PropertyData = { title, price, location };
-            
+            const formData: PropertyData = { title, price, location: location as any };
+
             // Add files to form data if we have them
             if (images.length > 0) {
                 const fd = new FormData();
@@ -85,7 +85,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     result = await propertyAPI.createProperty(formData);
                 }
             }
-            
+
             if (initial && initial.id) {
                 if (onUpdated) onUpdated(result);
             } else {
@@ -106,7 +106,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         }
     };
 
-return (
+    return (
         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
             <div className="space-y-6">
                 {/* Header */}
@@ -115,8 +115,8 @@ return (
                         {initial ? 'Edit Property' : 'Property Details'}
                     </h2>
                     {initial && onCancel && (
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={onCancel}
                             className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
                         >
@@ -138,7 +138,7 @@ return (
                             required
                         />
                     </div>
-                    
+
                     <div className="space-y-2">
                         <label className="block text-sm font-bold text-foreground uppercase tracking-wider">Location *</label>
                         <input
@@ -173,7 +173,7 @@ return (
                     <Upload size={20} />
                     Property Images
                 </h3>
-                
+
                 <div className="space-y-4">
                     {/* Main Image */}
                     <div className="space-y-2">

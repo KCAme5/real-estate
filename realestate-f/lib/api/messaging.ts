@@ -96,43 +96,43 @@ export interface CreateMessageData {
 
 export const messagingAPI = {
   // Messages
-  getMessages: (params?: { user_id?: number }) => 
+  getMessages: (params?: { user_id?: number }) =>
     apiClient.get('/messaging/messages/', { params }),
-  
-  getMessage: (id: number) => 
+
+  getMessage: (id: number) =>
     apiClient.get(`/messaging/messages/${id}/`),
-  
-  createMessage: (data: CreateMessageData) => 
+
+  createMessage: (data: CreateMessageData) =>
     apiClient.post('/messaging/messages/', data),
-  
-  getConversationMessages: (userId: number) => 
+
+  getConversationMessages: (userId: number) =>
     apiClient.get(`/messaging/messages/conversation/?user_id=${userId}`),
-  
-  markMessageAsRead: (id: number) => 
-    apiClient.post(`/messaging/messages/${id}/mark_read/`),
-  
-  reactToMessage: (id: number, reaction: string) => 
+
+  markMessageAsRead: (id: number) =>
+    apiClient.post(`/messaging/messages/${id}/mark_read/`, {}),
+
+  reactToMessage: (id: number, reaction: string) =>
     apiClient.post(`/messaging/messages/${id}/react/`, { reaction }),
-  
-  deleteMessage: (id: number) => 
-    apiClient.post(`/messaging/messages/${id}/delete_message/`),
-  
-  getUnreadCount: () => 
+
+  deleteMessage: (id: number) =>
+    apiClient.post(`/messaging/messages/${id}/delete_message/`, {}),
+
+  getUnreadCount: () =>
     apiClient.get('/messaging/messages/unread_count/'),
 
   // Conversations
-  getConversations: () => 
+  getConversations: () =>
     apiClient.get('/messaging/conversations/'),
-  
-  getConversation: (id: number) => 
+
+  getConversation: (id: number) =>
     apiClient.get(`/messaging/conversations/${id}/`),
-  
-  getConversationsList: () => 
+
+  getConversationsList: () =>
     apiClient.get('/messaging/conversations/list_conversations/'),
-  
-  markAllConversationAsRead: (id: number) => 
-    apiClient.post(`/messaging/conversations/${id}/mark_all_read/`),
-  
-  deleteConversation: (id: number) => 
-    apiClient.post(`/messaging/conversations/${id}/delete_conversation/`),
+
+  markAllConversationAsRead: (id: number) =>
+    apiClient.post(`/messaging/conversations/${id}/mark_all_read/`, {}),
+
+  deleteConversation: (id: number) =>
+    apiClient.post(`/messaging/conversations/${id}/delete_conversation/`, {}),
 };

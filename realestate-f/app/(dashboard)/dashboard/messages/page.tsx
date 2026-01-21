@@ -9,7 +9,7 @@ import { Send, User as UserIcon, Home, CheckCircle2, Search, ArrowLeft, MoreVert
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function MessagesPage() {
+function MessagesContent() {
     const { user } = useAuth();
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
@@ -440,6 +440,20 @@ export default function MessagesPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+import { Suspense } from 'react';
+
+export default function MessagesPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex h-[80vh] items-center justify-center">
+                <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            </div>
+        }>
+            <MessagesContent />
+        </Suspense>
     );
 }
 

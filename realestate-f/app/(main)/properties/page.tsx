@@ -7,7 +7,7 @@ import PropertyCard from '@/components/property/PropertyCard';
 import SearchFilters from '@/components/property/SearchFilters';
 import { apiClient } from '@/lib/api/client';
 
-export default function PropertiesPage() {
+function PropertiesContent() {
     const searchParams = useSearchParams();
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState(true);
@@ -186,5 +186,27 @@ export default function PropertiesPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+import { Suspense } from 'react';
+
+export default function PropertiesPage() {
+    return (
+        <Suspense fallback={
+            <div className="pt-20 min-h-screen bg-background">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[...Array(6)].map((_, i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="bg-muted h-64 rounded-2xl mb-4"></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        }>
+            <PropertiesContent />
+        </Suspense>
     );
 }

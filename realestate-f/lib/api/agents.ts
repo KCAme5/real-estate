@@ -10,6 +10,10 @@ export const agentsAPI = {
         return apiClient.get(`/agents/${identifier}/`);
     },
 
+    getById: (id: number) => {
+        return apiClient.get(`/agents/${id}`);
+    },
+
     // Potential future methods
     // getReviews: (id: string) => apiClient.get(`/agents/${id}/reviews/`),
 
