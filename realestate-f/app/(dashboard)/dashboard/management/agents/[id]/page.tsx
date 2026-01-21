@@ -121,7 +121,7 @@ export default function AgentDetailsPage() {
                     <div className="bg-card border border-border rounded-2xl p-4 md:p-6 shadow-sm">
                         <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 text-center md:text-left">
                             <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                                <Home size={20} md:size={24} />
+                                <Home className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div>
                                 <p className="text-xl md:text-2xl font-bold">{properties.length}</p>
@@ -132,7 +132,7 @@ export default function AgentDetailsPage() {
                     <div className="bg-card border border-border rounded-2xl p-4 md:p-6 shadow-sm">
                         <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 text-center md:text-left">
                             <div className="w-10 h-10 md:w-12 md:h-12 bg-success/10 text-success rounded-xl flex items-center justify-center">
-                                <CheckCircle size={20} md:size={24} />
+                                <CheckCircle className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <div>
                                 <p className="text-xl md:text-2xl font-bold">{properties.filter(p => p.status === 'sold').length}</p>
