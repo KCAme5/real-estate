@@ -12,6 +12,9 @@ class PropertyFilter(django_filters.FilterSet):
         field_name="location__name", lookup_expr="icontains"
     )
 
+    listing_type = django_filters.CharFilter(field_name="listing_type")
+    is_development = django_filters.BooleanFilter(field_name="is_development")
+
     class Meta:
         model = Property
-        fields = ["property_type", "status", "location", "bedrooms", "bathrooms"]
+        fields = ["property_type", "status", "location", "bedrooms", "bathrooms", "listing_type", "is_development"]

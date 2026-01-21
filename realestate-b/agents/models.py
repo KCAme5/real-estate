@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils.text import slugify
 
 User = get_user_model()
 
@@ -8,6 +9,7 @@ class AgentProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="agent_profile"
     )
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
     bio = models.TextField()
     license_number = models.CharField(max_length=50)
     years_of_experience = models.IntegerField(default=0)
@@ -35,8 +37,20 @@ class AgentProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.slug and self.user:
+            full_name = self.user.get_full_name() or self.user.username
+            base_slug = slugify(full_name)
+            slug = base_slug
+            counter = 1
+            while AgentProfile.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Agent Profile - {self.user.get_full_name()}"
+        return f"Agent Profile - {self.user.get_full_name() or self.user.username}"
 
 
 class AgentReview(models.Model):

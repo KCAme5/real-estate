@@ -45,11 +45,11 @@ class MessageSerializer(serializers.ModelSerializer):
             "is_read",
             "created_at",
         ]
-        read_only_fields = ["sender", "created_at"]
+        read_only_fields = ["sender", "conversation", "created_at"]
 
 
 class ConversationSerializer(serializers.ModelSerializer):
-    property_title = serializers.CharField(source="property.title", read_only=True)
+    property_title = serializers.CharField(source="property.title", read_only=True, allow_null=True)
     property_image = serializers.SerializerMethodField()
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
@@ -69,9 +69,10 @@ class ConversationSerializer(serializers.ModelSerializer):
             "other_user",
             "updated_at",
         ]
+        read_only_fields = ["client", "updated_at"]
 
     def get_property_image(self, obj):
-        if obj.property.main_image:
+        if obj.property and obj.property.main_image:
             return obj.property.main_image.url
         return None
 

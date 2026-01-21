@@ -62,6 +62,18 @@ class Property(models.Model):
         max_length=20, choices=STATUS_CHOICES, default="available"
     )
 
+    LISTING_TYPES = (
+        ("sale", "For Sale"),
+        ("rent", "For Rent"),
+    )
+    listing_type = models.CharField(
+        max_length=10, choices=LISTING_TYPES, default="sale"
+    )
+    
+    is_development = models.BooleanField(
+        default=False, help_text="Is this a development project?"
+    )
+
     # Pricing
     price = models.DecimalField(max_digits=12, decimal_places=2)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default="KES")

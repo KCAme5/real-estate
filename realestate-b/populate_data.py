@@ -28,12 +28,16 @@ def populate():
                 "last_name": data["last_name"],
                 "email": data["email"],
                 "phone_number": data["phone"],
-                "user_type": "agent"
+                "user_type": "agent",
+                "is_verified": True
             }
         )
         if created:
             user.set_password("password123")
-            user.save()
+        
+        # Ensure is_verified is consistent even for existing users
+        user.is_verified = True
+        user.save()
         
         profile, p_created = AgentProfile.objects.get_or_create(
             user=user,
@@ -45,6 +49,10 @@ def populate():
                 "whatsapp_number": data["phone"]
             }
         )
+        if not p_created:
+            profile.is_verified = True
+            profile.save()
+        
         agents.append(user)
 
     # 2. Assign agents to existing properties that don't have one

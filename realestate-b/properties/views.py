@@ -1,5 +1,6 @@
 # realestate_backend/properties/views.py
 from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -205,3 +206,69 @@ class PropertyImageDeleteView(generics.DestroyAPIView):
 
             raise PermissionDenied("You do not have permission to delete this image.")
         instance.delete()
+
+
+class ManagementPropertyListView(generics.ListAPIView):
+    serializer_class = PropertyListSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PropertyFilter
+
+    def get_queryset(self):
+        if self.request.user.user_type != 'management':
+            return Property.objects.none()
+        
+        # Return ALL properties for management, ordered by verification status (unverified first) then date
+        return Property.objects.all().order_by('is_verified', '-created_at')
+
+
+class ManagementPropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = PropertyDetailSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.user_type != "management":
+            return Property.objects.none()
+        return Property.objects.all()
+
+class ApprovePropertyView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        if request.user.user_type != 'management':
+            return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            prop = Property.objects.get(pk=pk)
+            prop.is_verified = True
+            prop.save()
+            return Response({"status": "property approved"})
+        except Property.DoesNotExist:
+            return Response({"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class RejectPropertyView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        if request.user.user_type != 'management':
+            return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            prop = Property.objects.get(pk=pk)
+            prop.is_verified = False
+            prop.save()
+            return Response({"status": "property rejected"})
+        except Property.DoesNotExist:
+            return Response({"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class ToggleFeaturedPropertyView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        if request.user.user_type != 'management':
+            return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            prop = Property.objects.get(pk=pk)
+            prop.is_featured = not prop.is_featured
+            prop.save()
+            return Response({"status": "featured toggled", "is_featured": prop.is_featured})
+        except Property.DoesNotExist:
+            return Response({"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND)

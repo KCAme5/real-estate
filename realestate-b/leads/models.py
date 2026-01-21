@@ -106,7 +106,7 @@ class WhatsAppMessage(models.Model):
 
 class Conversation(models.Model):
     property = models.ForeignKey(
-        Property, on_delete=models.CASCADE, related_name="conversations"
+        Property, on_delete=models.CASCADE, related_name="conversations", null=True, blank=True
     )
     client = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="client_conversations"
@@ -119,7 +119,6 @@ class Conversation(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ["property", "client"]
         ordering = ["-updated_at"]
 
     def __str__(self):

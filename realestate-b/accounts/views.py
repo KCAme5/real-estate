@@ -636,3 +636,26 @@ class UserPreferencesView(generics.RetrieveUpdateAPIView):
             user=self.request.user
         )
         return preferences
+        return preferences
+
+
+class ManagementAgentListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.user_type != "management":
+            return CustomUser.objects.none()
+        return CustomUser.objects.filter(user_type="agent").order_by(
+            "is_verified", "-date_joined"
+        )
+
+
+class ManagementAgentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.user_type != "management":
+            return CustomUser.objects.none()
+        return CustomUser.objects.filter(user_type="agent")

@@ -69,10 +69,15 @@ class ConversationListView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         property_id = request.data.get("property")
+        agent_id = request.data.get("agent")
         client = request.user
         
         # Check if conversation already exists
-        existing = Conversation.objects.filter(property_id=property_id, client=client).first()
+        if property_id:
+            existing = Conversation.objects.filter(property_id=property_id, client=client).first()
+        else:
+            existing = Conversation.objects.filter(property__isnull=True, client=client, agent_id=agent_id).first()
+            
         if existing:
             serializer = self.get_serializer(existing)
             return Response(serializer.data)

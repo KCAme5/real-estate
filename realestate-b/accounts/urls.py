@@ -26,4 +26,14 @@ urlpatterns = [
         name="debug-create-test-user",
     ),
     path("debug/validate-cors/", views.debug_validate_cors, name="debug-validate-cors"),
+    path(
+        "management-agents/",
+        views.ManagementAgentListView.as_view(),
+        name="management-agents",
+    ),
+    path(
+        "management-agents/<int:pk>/",
+        views.ManagementAgentDetailView.as_view(),
+        name="management-agent-detail",
+    ),
 ]

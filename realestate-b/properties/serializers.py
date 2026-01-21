@@ -24,6 +24,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
     location = LocationSerializer(read_only=True)
     agent_name = serializers.CharField(source="agent.get_full_name", read_only=True)
     main_image_url = serializers.URLField(source="main_image", read_only=True)
+    verification_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
@@ -42,23 +43,38 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "main_image",
             "main_image_url",
             "is_featured",
+            "listing_type",
+            "is_development",
             "agent_name",
+            "verification_status",
         )
+
+    def get_verification_status(self, obj):
+        # We don't have a specific 'rejected' status in model yet, but 
+        # let's assume is_verified=False is pending for now.
+        # If we need 'rejected', we might need a Status field in the model.
+        # For now let's map is_verified to 'verified'/'pending'
+        return "verified" if obj.is_verified else "pending"
+
+
+from agents.serializers import AgentCompactSerializer
 
 
 class PropertyDetailSerializer(serializers.ModelSerializer):
     location = LocationSerializer(read_only=True)
-    agent_name = serializers.CharField(source="agent.get_full_name", read_only=True)
-    agent_phone = serializers.CharField(source="agent.phone_number", read_only=True)
-    agent_profile_id = serializers.IntegerField(source="agent.agent_profile.id", read_only=True)
+    agent = AgentCompactSerializer(read_only=True)
     gallery = PropertyImageSerializer(
         many=True, read_only=True, source="property_images"
     )
     main_image_url = serializers.URLField(source="main_image", read_only=True)
+    verification_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
         fields = "__all__"
+
+    def get_verification_status(self, obj):
+        return "verified" if obj.is_verified else "pending"
         extra_kwargs = {"main_image": {"required": False, "allow_null": True}}
 
 

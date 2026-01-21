@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
     USER_TYPE_CHOICES = (
         ("client", "Client"),
         ("agent", "Agent"),
-        ("admin", "Admin"),
+        ("management", "Management"),
     )
     username_validator = RegexValidator(
         r"^[a-zA-Z0-9 _.-]+$",

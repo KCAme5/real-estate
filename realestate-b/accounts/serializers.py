@@ -73,9 +73,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("password2")
+        user_type = validated_data.get("user_type", "client")
         user = CustomUser.objects.create_user(**validated_data)
-        # Create empty profile
+        
+        # Create user profile
         UserProfile.objects.create(user=user)
+        
+        # Create agent profile if user is an agent
+        if user_type == "agent":
+            from agents.models import AgentProfile
+            AgentProfile.objects.create(
+                user=user,
+                bio=f"Professional agent {user.get_full_name() or user.username}",
+                license_number=f"PENDING-{user.id}"
+            )
+            
         return user
 
 
