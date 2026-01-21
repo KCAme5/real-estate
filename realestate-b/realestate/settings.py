@@ -16,11 +16,13 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "kenyaprimeback.onrender.com"
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://kenyaprime.vercel.app"
 ]
 
 # Allow credentials so the frontend can send/receive cookies during development
