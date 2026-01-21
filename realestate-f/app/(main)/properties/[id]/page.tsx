@@ -161,11 +161,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
         try {
             setIsSubmittingViewing(true);
+
+            const bookingTimeMap: Record<string, string> = {
+                'Morning (9AM - 12PM)': '09:00:00',
+                'Afternoon (12PM - 4PM)': '14:00:00',
+                'Evening (4PM - 7PM)': '17:00:00'
+            };
+            const dateTimeStr = `${viewingForm.date}T${bookingTimeMap[viewingForm.time] || '09:00:00'}`;
+
             await bookingsAPI.create({
                 property: property.id,
-                booking_date: viewingForm.date,
-                booking_time: viewingForm.time === 'Morning (9AM - 12PM)' ? '09:00' : viewingForm.time === 'Afternoon (12PM - 4PM)' ? '14:00' : '17:00',
-                notes: `Phone: ${viewingForm.phone}\n${viewingForm.notes}`
+                date: dateTimeStr,
+                duration: 30,
+                client_notes: `Phone: ${viewingForm.phone}\n${viewingForm.notes}`
             });
             setIsViewingModalOpen(false);
             alert("Viewing request sent! Our agent will contact you shortly.");
@@ -918,16 +926,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                         className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
                         onClick={() => setIsViewingModalOpen(false)}
                     />
-                    <div className="relative bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-300 overflow-hidden border border-slate-100">
+                    <div className="relative bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-300 overflow-hidden border border-slate-100 dark:border-white/10">
                         <div className="p-10">
                             <div className="flex items-center justify-between mb-8">
                                 <div>
-                                    <h3 className="text-2xl font-black text-blue-950 uppercase tracking-tight">Schedule Tour</h3>
-                                    <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Select your preferred slot</p>
+                                    <h3 className="text-2xl font-black text-blue-950 dark:text-white uppercase tracking-tight">Schedule Tour</h3>
+                                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-widest">Select your preferred slot</p>
                                 </div>
                                 <button
                                     onClick={() => setIsViewingModalOpen(false)}
-                                    className="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all"
+                                    className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 hover:text-blue-600 transition-all border border-transparent dark:border-white/5"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
@@ -936,46 +944,51 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                             <form onSubmit={handleScheduleViewing} className="space-y-6">
                                 <div className="space-y-4">
                                     <div className="group">
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 pl-1">Preferred Date</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2 pl-1">Preferred Date</label>
                                         <input
                                             type="date"
                                             value={viewingForm.date}
                                             onChange={(e) => setViewingForm({ ...viewingForm, date: e.target.value })}
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50"
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 dark:text-white focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50 dark:group-hover:bg-slate-800/80"
                                             required
                                             min={new Date().toISOString().split('T')[0]}
                                         />
                                     </div>
                                     <div className="group">
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 pl-1">Preferred Time</label>
-                                        <select
-                                            value={viewingForm.time}
-                                            onChange={(e) => setViewingForm({ ...viewingForm, time: e.target.value })}
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50 appearance-none"
-                                        >
-                                            <option>Morning (9AM - 12PM)</option>
-                                            <option>Afternoon (12PM - 4PM)</option>
-                                            <option>Evening (4PM - 7PM)</option>
-                                        </select>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2 pl-1">Preferred Time</label>
+                                        <div className="relative">
+                                            <select
+                                                value={viewingForm.time}
+                                                onChange={(e) => setViewingForm({ ...viewingForm, time: e.target.value })}
+                                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 dark:text-white focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50 dark:group-hover:bg-slate-800/80 appearance-none"
+                                            >
+                                                <option>Morning (9AM - 12PM)</option>
+                                                <option>Afternoon (12PM - 4PM)</option>
+                                                <option>Evening (4PM - 7PM)</option>
+                                            </select>
+                                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                <Clock className="w-4 h-4" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="group">
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 pl-1">Phone Number</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2 pl-1">Phone Number</label>
                                         <input
                                             type="tel"
                                             value={viewingForm.phone}
                                             onChange={(e) => setViewingForm({ ...viewingForm, phone: e.target.value })}
                                             placeholder="+254 7XX XXX XXX"
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50"
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 dark:text-white focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50 dark:group-hover:bg-slate-800/80"
                                             required
                                         />
                                     </div>
                                     <div className="group">
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 pl-1">Additional Notes</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-2 pl-1">Additional Notes</label>
                                         <textarea
                                             value={viewingForm.notes}
                                             onChange={(e) => setViewingForm({ ...viewingForm, notes: e.target.value })}
                                             placeholder="Any specific questions?"
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50 resize-none h-24"
+                                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-blue-950 dark:text-white focus:ring-2 focus:ring-blue-500/20 outline-none transition-all group-hover:bg-slate-100/50 dark:group-hover:bg-slate-800/80 resize-none h-24"
                                         />
                                     </div>
                                 </div>

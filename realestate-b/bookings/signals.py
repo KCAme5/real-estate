@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Booking
+from leads.models import Lead
 
 
 @receiver(post_save, sender=Booking)
@@ -49,3 +50,22 @@ def send_booking_notification(sender, instance, created, **kwargs):
             [instance.client.email],
             fail_silently=True,
         )
+
+        # Create a Lead for the agent
+        try:
+            Lead.objects.get_or_create(
+                property=instance.property,
+                agent=instance.agent,
+                email=instance.client.email,
+                defaults={
+                    'first_name': instance.client.first_name or instance.client.username,
+                    'last_name': instance.client.last_name or "",
+                    'phone': getattr(instance.client, 'phone_number', "") or "",
+                    'source': 'website',
+                    'status': 'new',
+                    'notes': f"Automated lead from booking request. Client Notes: {instance.client_notes}"
+                }
+            )
+        except Exception as e:
+            # We don't want to crash the booking if lead creation fails
+            print(f"Error creating lead from booking: {e}")

@@ -18,6 +18,8 @@ class BookingSerializer(serializers.ModelSerializer):
     agent_name = serializers.CharField(source="agent.get_full_name", read_only=True)
     agent_email = serializers.EmailField(source="agent.email", read_only=True)
     agent_phone = serializers.CharField(source="agent.phone_number", read_only=True)
+    booking_date = serializers.SerializerMethodField()
+    booking_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -37,6 +39,8 @@ class BookingSerializer(serializers.ModelSerializer):
             "agent_email",
             "agent_phone",
             "date",
+            "booking_date",
+            "booking_time",
             "duration",
             "status",
             "client_notes",
@@ -44,6 +48,12 @@ class BookingSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+    def get_booking_date(self, obj):
+        return obj.date.date().isoformat() if obj.date else None
+
+    def get_booking_time(self, obj):
+        return obj.date.time().strftime("%H:%M") if obj.date else None
 
     def get_property_image(self, obj):
         # FIX: Handle both string URLs and ImageField objects
@@ -84,9 +94,19 @@ class BookingCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Get the current user
         user = self.context["request"].user
-
-        # For now, assign the current user as both client and agent
-        validated_data["agent"] = user
+        
+        # Assign the current user as the client
         validated_data["client"] = user
+        
+        # Assign the property owner as the agent
+        property_obj = validated_data["property"]
+        if property_obj.agent:
+            validated_data["agent"] = property_obj.agent
+        else:
+            # Fallback if property has no agent (should not happen in a healthy system)
+            # We could look for a superuser or leave it as is, but setting it to some default agent is better.
+            # For now, let's keep it as property.agent even if null, or handle it.
+            # The model allows agent to be null.
+            pass
 
         return super().create(validated_data)
