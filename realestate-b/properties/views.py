@@ -78,7 +78,7 @@ class PropertyDetailModifyView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieve/Update/Delete by PK for agents to manage their properties."""
 
     serializer_class = PropertyDetailSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = "pk"
 
     def get_queryset(self):
