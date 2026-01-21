@@ -70,11 +70,11 @@ export default function ManagementAgentsPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <Breadcrumb />
-                        <h1 className="text-3xl font-black text-foreground tracking-tight flex items-center gap-3 mt-4">
+                        <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight flex items-center gap-3 mt-4">
                             <Users className="text-primary" size={32} />
                             Manage <span className="text-primary">Agents</span>
                         </h1>
-                        <p className="text-muted-foreground mt-2">Verify and manage real estate agents</p>
+                        <p className="text-sm text-muted-foreground mt-2">Verify and manage real estate agents</p>
                     </div>
                 </div>
 
@@ -102,75 +102,76 @@ export default function ManagementAgentsPage() {
                         No agents found
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-4 md:space-y-6">
                         {filteredAgents.map((agent) => (
-                            <div key={agent.id} className="bg-card border border-border rounded-3xl p-6 shadow-sm hover:shadow-lg transition-all relative overflow-hidden group">
-                                {agent.is_verified && (
-                                    <div className="absolute top-4 right-4 text-success" title="Verified Agent">
-                                        <ShieldCheck size={24} />
+                            <div key={agent.id} className="bg-card border border-border rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+                                <div className="flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-8">
+                                    <div className="flex flex-col items-center text-center md:text-left md:items-start min-w-[120px]">
+                                        <div className="avatar placeholder mb-3 md:mb-0">
+                                            <div className="bg-neutral text-neutral-content rounded-full w-16 md:w-20 ring ring-primary ring-offset-base-100 ring-offset-2">
+                                                {agent.profile_picture ? (
+                                                    <img src={agent.profile_picture} alt={agent.username} className="object-cover" />
+                                                ) : (
+                                                    <span className="text-2xl">{agent.username.charAt(0).toUpperCase()}</span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                )}
-                                <div className="flex flex-col items-center text-center mb-6">
-                                    <div className="avatar placeholder mb-4">
-                                        <div className="bg-neutral text-neutral-content rounded-full w-24 ring ring-primary ring-offset-base-100 ring-offset-2">
-                                            {agent.profile_picture ? (
-                                                <img src={agent.profile_picture} alt={agent.username} />
-                                            ) : (
-                                                <span className="text-3xl">{agent.username.charAt(0).toUpperCase()}</span>
+
+                                    <div className="flex-1 min-w-0 text-center md:text-left">
+                                        <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+                                            <h3 className="text-lg md:text-xl font-bold text-foreground truncate">{agent.username}</h3>
+                                            {agent.is_verified && (
+                                                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-success/10 text-success text-[10px] md:text-xs font-bold rounded-full">
+                                                    <ShieldCheck size={12} /> Verified
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-primary font-semibold text-sm mb-3">{agent.agency_name || 'Independent Agent'}</p>
+
+                                        <div className="flex flex-wrap justify-center md:justify-start gap-3 md:gap-4 text-xs md:text-sm text-muted-foreground font-medium">
+                                            <span className="flex items-center gap-1.5 min-w-0">
+                                                <Mail size={14} className="text-primary/70 shrink-0" />
+                                                <span className="truncate">{agent.email}</span>
+                                            </span>
+                                            {agent.phone_number && (
+                                                <span className="flex items-center gap-1.5 shrink-0">
+                                                    <Phone size={14} className="text-primary/70" />
+                                                    {agent.phone_number}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
-                                    <h3 className="text-xl font-bold text-foreground">{agent.username}</h3>
-                                    <p className="text-primary font-medium">{agent.agency_name || 'Independent Agent'}</p>
 
-                                    <div className="flex gap-2 mt-4 text-sm text-muted-foreground">
-                                        <span className="flex items-center gap-1">
-                                            <Mail size={14} />
-                                            {agent.email}
-                                        </span>
-                                    </div>
-                                    {agent.phone_number && (
-                                        <div className="flex gap-2 mt-1 text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-1">
-                                                <Phone size={14} />
-                                                {agent.phone_number}
-                                            </span>
+                                    <div className="hidden lg:grid grid-cols-2 gap-4 border-l border-border px-8 min-w-[200px]">
+                                        <div className="text-center">
+                                            <p className="text-lg font-bold text-foreground">{agent.properties_count || 0}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Properties</p>
                                         </div>
-                                    )}
-                                </div>
+                                        <div className="text-center border-l border-border pl-4">
+                                            <p className="text-lg font-bold text-foreground">{agent.sales_count || 0}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Sold</p>
+                                        </div>
+                                    </div>
 
-                                <div className="grid grid-cols-3 gap-2 border-t border-border pt-6 mb-6">
-                                    <div className="text-center">
-                                        <p className="text-xl font-black text-foreground">{agent.properties_count || 0}</p>
-                                        <p className="text-xs text-muted-foreground uppercase">Properties</p>
-                                    </div>
-                                    <div className="text-center border-l border-r border-border">
-                                        <p className="text-xl font-black text-foreground">{agent.sales_count || 0}</p>
-                                        <p className="text-xs text-muted-foreground uppercase">Sold</p>
-                                    </div>
-                                    <div className="text-center">
-                                        <p className="text-xl font-black text-foreground">{(agent.rating || 0).toFixed(1)}</p>
-                                        <p className="text-xs text-muted-foreground uppercase">Rating</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-3">
-                                    <Link
-                                        href={`/dashboard/management/agents/${agent.id}`}
-                                        className="btn btn-outline flex-1 rounded-xl"
-                                    >
-                                        <Eye size={18} />
-                                        View Details
-                                    </Link>
-                                    {!agent.is_verified && (
-                                        <button
-                                            className="btn btn-success text-white flex-1 rounded-xl"
-                                            onClick={() => handleVerify(agent.id)}
+                                    <div className="flex flex-row md:flex-col gap-2 w-full md:w-auto shrink-0 md:min-w-[140px]">
+                                        <Link
+                                            href={`/dashboard/management/agents/${agent.id}`}
+                                            className="btn btn-outline btn-sm md:btn-md flex-1 rounded-xl font-bold border-2"
                                         >
-                                            <CheckCircle size={18} />
-                                            Verify
-                                        </button>
-                                    )}
+                                            <Eye size={16} />
+                                            Details
+                                        </Link>
+                                        {!agent.is_verified && (
+                                            <button
+                                                className="btn btn-success btn-sm md:btn-md text-white flex-1 rounded-xl font-bold"
+                                                onClick={() => handleVerify(agent.id)}
+                                            >
+                                                <CheckCircle size={16} />
+                                                Verify
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}

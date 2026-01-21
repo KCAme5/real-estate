@@ -23,6 +23,10 @@ export const agentsAPI = {
         return apiClient.get('/auth/management-agents/');
     },
 
+    getManagementAgentById: async (id: string | number) => {
+        return apiClient.get(`/auth/management-agents/${id}/`);
+    },
+
     updateManagementAgent: async (id: number, data: any) => {
         return apiClient.patch(`/auth/management-agents/${id}/`, data);
     },

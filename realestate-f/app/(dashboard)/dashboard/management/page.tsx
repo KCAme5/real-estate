@@ -80,115 +80,104 @@ export default function ManagementDashboard() {
                     <Breadcrumb />
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
-                            <h1 className="text-4xl font-black text-foreground tracking-tight flex items-center gap-3">
-                                <BarChart3 className="text-primary" size={36} />
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground tracking-tight flex items-center gap-2 md:gap-3">
+                                <BarChart3 className="text-primary w-6 h-6 md:w-8 md:h-8 lg:w-9 lg:h-9" />
                                 Management <span className="text-primary">Dashboard</span>
                             </h1>
-                            <p className="text-muted-foreground font-medium mt-1">Complete overview of the real estate platform</p>
+                            <p className="text-sm text-muted-foreground font-medium mt-1">Complete overview of the real estate platform</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Overview Cards */}
-                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 lg:gap-6">
                     {[
                         {
                             label: 'Total Revenue',
                             value: `KES ${analytics.overview.total_revenue.toLocaleString()}`,
                             icon: DollarSign,
                             color: 'success',
-                            change: '+25%'
                         },
                         {
                             label: 'Total Properties',
                             value: analytics.overview.total_properties,
                             icon: Home,
                             color: 'primary',
-                            change: '+12%'
                         },
                         {
                             label: 'Verified Properties',
                             value: analytics.overview.verified_properties,
                             icon: CheckCircle,
                             color: 'success',
-                            change: '+8%'
                         },
                         {
                             label: 'Total Agents',
                             value: analytics.overview.total_agents,
                             icon: UserCheck,
                             color: 'accent',
-                            change: '+15%'
                         },
                         {
                             label: 'Total Clients',
                             value: analytics.overview.total_clients,
                             icon: Users,
                             color: 'secondary',
-                            change: '+22%'
                         },
                         {
                             label: 'Total Leads',
                             value: analytics.overview.total_leads,
                             icon: TrendingUp,
                             color: 'warning',
-                            change: '+18%'
                         }
                     ].map((stat, index) => (
-                        <div key={index} className="bg-card border border-border rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all border-b-4 border-b-transparent hover:border-b-primary/50 group">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className={`w-12 h-12 bg-${stat.color}/10 text-${stat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                                    <stat.icon size={20} />
+                        <div key={index} className="bg-card border border-border rounded-2xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all group">
+                            <div className="flex items-center justify-between mb-2 md:mb-3">
+                                <div className={`w-8 h-8 md:w-10 md:h-10 bg-${stat.color}/10 text-${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
+                                    <stat.icon className="w-4 h-4 md:w-5 md:h-5" />
                                 </div>
-                                <span className="text-xs font-black text-success">{stat.change}</span>
                             </div>
-                            <h3 className="text-2xl font-black text-foreground mb-1">{stat.value}</h3>
-                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{stat.label}</p>
+                            <h3 className="text-sm md:text-lg lg:text-xl font-bold text-foreground mb-0.5 md:mb-1 truncate">{stat.value}</h3>
+                            <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest truncate">{stat.label}</p>
                         </div>
                     ))}
                 </section>
 
                 {/* Today's Activity */}
-                <section className="bg-card border border-border rounded-3xl p-8 shadow-sm">
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
-                            <Activity className="text-primary" size={28} />
+                <section className="bg-card border border-border rounded-3xl p-6 md:p-8 shadow-sm">
+                    <div className="mb-6 md:mb-8">
+                        <h2 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-3">
+                            <Activity className="text-primary w-6 h-6 md:w-7 md:h-7" />
                             Today's Activity
                         </h2>
                         <p className="text-sm text-muted-foreground font-medium mt-1">Real-time platform activity</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/20">
+                        <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl p-5 md:p-6 border border-primary/20">
                             <div className="flex items-center justify-between">
-                                <Home className="text-primary" size={24} />
-                                <span className="text-xs font-black text-success">+5%</span>
+                                <Home className="text-primary w-5 h-5 md:w-6 md:h-6" />
                             </div>
-                            <p className="text-3xl font-black text-primary mt-4">{analytics.today.new_properties}</p>
-                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-2">New Properties</p>
+                            <p className="text-2xl md:text-3xl font-bold text-primary mt-3 md:mt-4">{analytics.today.new_properties}</p>
+                            <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">New Properties</p>
                         </div>
-                        <div className="bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-2xl p-6 border border-secondary/20">
+                        <div className="bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-2xl p-5 md:p-6 border border-secondary/20">
                             <div className="flex items-center justify-between">
-                                <TrendingUp className="text-secondary" size={24} />
-                                <span className="text-xs font-black text-success">+12%</span>
+                                <TrendingUp className="text-secondary w-5 h-5 md:w-6 md:h-6" />
                             </div>
-                            <p className="text-3xl font-black text-secondary mt-4">{analytics.today.new_leads}</p>
-                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-2">New Leads</p>
+                            <p className="text-2xl md:text-3xl font-bold text-secondary mt-3 md:mt-4">{analytics.today.new_leads}</p>
+                            <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">New Leads</p>
                         </div>
-                        <div className="bg-gradient-to-r from-accent/10 to-accent/5 rounded-2xl p-6 border border-accent/20">
+                        <div className="bg-gradient-to-r from-accent/10 to-accent/5 rounded-2xl p-5 md:p-6 border border-accent/20">
                             <div className="flex items-center justify-between">
-                                <Eye className="text-accent" size={24} />
-                                <span className="text-xs font-black text-success">+8%</span>
+                                <Eye className="text-accent w-5 h-5 md:w-6 md:h-6" />
                             </div>
-                            <p className="text-3xl font-black text-accent mt-4">{analytics.today.property_views}</p>
-                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-2">Property Views</p>
+                            <p className="text-2xl md:text-3xl font-bold text-accent mt-3 md:mt-4">{analytics.today.property_views}</p>
+                            <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">Property Views</p>
                         </div>
-                        <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-2xl p-6 border border-success/20">
+                        <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-2xl p-5 md:p-6 border border-success/20">
                             <div className="flex items-center justify-between">
-                                <Activity className="text-success" size={24} />
-                                <span className="text-xs font-black text-success">+15%</span>
+                                <Activity className="text-success w-5 h-5 md:w-6 md:h-6" />
                             </div>
-                            <p className="text-3xl font-black text-success mt-4">{analytics.today.searches}</p>
-                            <p className="text-xs font-black text-muted-foreground uppercase tracking-widest mt-2">Searches</p>
+                            <p className="text-2xl md:text-3xl font-bold text-success mt-3 md:mt-4">{analytics.today.searches}</p>
+                            <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">Searches</p>
                         </div>
                     </div>
                 </section>

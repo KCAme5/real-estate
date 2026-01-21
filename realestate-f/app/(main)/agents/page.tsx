@@ -366,12 +366,12 @@ export default function AgentsPage() {
                                     href={`/agents/${agent.slug}`}
                                     className="block group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-blue-500/50 dark:hover:border-blue-400/50"
                                 >
-                                    <div className="p-6 md:p-8">
-                                        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                                    <div className="p-4 md:p-6">
+                                        <div className="flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6">
                                             {/* Agent Avatar & Basic Info */}
                                             <div className="flex-shrink-0">
                                                 <div className="relative">
-                                                    <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 p-1">
+                                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 p-1">
                                                         {agent.user_avatar ? (
                                                             <div className="w-full h-full rounded-xl overflow-hidden">
                                                                 <Image
@@ -424,15 +424,9 @@ export default function AgentsPage() {
                                                                 <Calendar className="w-3 h-3" />
                                                                 {getExperienceText(agent.years_of_experience)}
                                                             </span>
-                                                            {agent.average_rating && (
-                                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm font-medium rounded-full">
-                                                                    <Star className="w-3 h-3" />
-                                                                    {typeof agent.average_rating === 'number' ? agent.average_rating.toFixed(1) : parseFloat(agent.average_rating as string).toFixed(1)}/5.0
-                                                                </span>
-                                                            )}
                                                         </div>
 
-                                                        <p className="text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
+                                                        <p className="text-gray-600 dark:text-gray-400 line-clamp-1 md:line-clamp-2 text-sm mb-3">
                                                             {agent.bio}
                                                         </p>
                                                     </div>
@@ -441,7 +435,7 @@ export default function AgentsPage() {
                                                 </div>
 
                                                 {/* Contact Info & Specialties */}
-                                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-gray-100 dark:border-gray-700">
                                                     <div className="flex flex-wrap items-center gap-4">
                                                         {agent.user_email && (
                                                             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
