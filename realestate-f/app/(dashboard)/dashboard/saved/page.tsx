@@ -48,11 +48,11 @@ export default function SavedPropertiesPage() {
                     <Breadcrumb />
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div>
-                            <h1 className="text-4xl font-black text-foreground tracking-tight flex items-center gap-3">
-                                <Heart className="text-secondary" fill="currentColor" size={36} />
-                                Saved <span className="text-primary">Properties</span>
+                            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight flex items-center gap-3">
+                                <Heart className="text-secondary" fill="currentColor" size={24} />
+                                Saved <span className="text-primary font-bold">Properties</span>
                             </h1>
-                            <p className="text-muted-foreground font-medium mt-1">
+                            <p className="text-sm text-muted-foreground font-medium mt-1">
                                 You have {savedProperties.length} properties in your wishlist
                             </p>
                         </div>
@@ -67,23 +67,25 @@ export default function SavedPropertiesPage() {
                             <input
                                 type="text"
                                 placeholder="Search your wishlist..."
-                                className="w-full pl-12 pr-4 py-3 bg-muted/20 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-medium"
+                                className="w-full pl-12 pr-4 py-3 bg-muted/20 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <select className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-medium appearance-none">
-                            <option>All Locations</option>
-                            <option>Westlands</option>
-                            <option>Kilimani</option>
-                            <option>Karen</option>
-                        </select>
-                        <select className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-medium appearance-none">
-                            <option>All Prices</option>
-                            <option>Under Kes 10M</option>
-                            <option>Kes 10M - 50M</option>
-                            <option>Over Kes 50M</option>
-                        </select>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Filter by Location..."
+                                className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                            />
+                        </div>
+                        <div className="relative">
+                            <input
+                                type="number"
+                                placeholder="Max Price..."
+                                className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                            />
+                        </div>
                     </div>
                 </div>
 

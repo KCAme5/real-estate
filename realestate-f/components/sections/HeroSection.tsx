@@ -117,16 +117,16 @@ export default function HeroSection() {
                 </div>
 
                 {/* Main Heading */}
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight">
                     Discover Your
-                    <span className="block text-primary">
+                    <span className="block text-primary font-bold">
                         Dream Property
                     </span>
                     in Kenya
                 </h1>
 
                 {/* Subtitle */}
-                <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
                     Premium real estate solutions connecting Kenyans and the diaspora with
                     exceptional properties and investment opportunities across the country.
                 </p>
@@ -242,8 +242,8 @@ export default function HeroSection() {
 
             {/* Search Modal */}
             {showSearch && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-background rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                    <div className="bg-white dark:bg-gray-950 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-800">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-foreground">Find Your Perfect Property</h3>

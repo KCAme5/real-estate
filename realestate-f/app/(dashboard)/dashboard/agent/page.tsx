@@ -88,12 +88,14 @@ export default function AgentDashboard() {
                 {/* Breadcrumb & Welcome */}
                 <div className="space-y-4">
                     <Breadcrumb />
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                        <div>
-                            <h1 className="text-4xl font-bold text-foreground tracking-tight">
-                                Good morning, <span className="text-primary font-black">{user.first_name || 'Sarah'}</span>!
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+                                Good morning, <span className="text-primary">{user.first_name || 'Sarah'}</span>
                             </h1>
-                            <p className="text-muted-foreground font-medium mt-1">Performance overview this month</p>
+                            <p className="text-sm text-muted-foreground font-medium">
+                                {formattedDate} — Performance overview this month
+                            </p>
                         </div>
                         <div className="flex items-center gap-4">
                             {conversations.some(c => c.unread_count > 0) && (

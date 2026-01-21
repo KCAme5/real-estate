@@ -58,11 +58,11 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
     };
 
     return (
-        <div className="group relative bg-card rounded-[2.5rem] border border-border/50 overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
+        <div className="group relative bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 aspect-[4/5] sm:aspect-[3/4]">
             <Link href={`/properties/${property.id}`} className="absolute inset-0 z-10" />
 
-            {/* Image Section */}
-            <div className="relative aspect-[4/3] overflow-hidden">
+            {/* Main Image - Now covers the whole card */}
+            <div className="absolute inset-0">
                 {!imageLoaded && !imageError && (
                     <div className="absolute inset-0 bg-muted animate-pulse" />
                 )}
@@ -74,90 +74,67 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
                     className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 />
 
-                {/* Badges */}
-                <div className="absolute top-5 left-5 z-20 flex flex-col gap-2">
-                    {property.is_featured && (
-                        <span className="bg-primary text-primary-foreground text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-[0.2em] shadow-lg flex items-center gap-1.5">
-                            <Star size={12} fill="currentColor" />
-                            Premium
-                        </span>
-                    )}
-                    <span className="bg-background/80 backdrop-blur-md text-foreground text-[10px] font-black px-4 py-2 rounded-full uppercase tracking-[0.2em] shadow-lg">
-                        {property.property_type || 'For Sale'}
-                    </span>
-                </div>
-
-                {/* Save Button */}
-                <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className={`absolute top-5 right-5 z-20 p-3 rounded-2xl backdrop-blur-md transition-all duration-300 shadow-lg ${isSaved
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-background/80 text-muted-foreground hover:text-primary hover:bg-background'
-                        }`}
-                >
-                    <Heart size={20} fill={isSaved ? 'currentColor' : 'none'} className={saving ? 'animate-pulse' : ''} />
-                </button>
-
-                {/* Price Tag Overlay */}
-                <div className="absolute bottom-5 left-5 z-20">
-                    <div className="bg-background/90 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-xl border border-white/10">
-                        <span className="text-primary font-black text-lg md:text-xl">
-                            {formatPrice(property.price)}
-                        </span>
-                    </div>
-                </div>
+                {/* Gradient Overlay for better text readability on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            {/* Content Section */}
-            <div className="p-6 md:p-8 flex flex-col flex-1 space-y-5">
-                <div className="space-y-2">
-                    <h3 className="font-black text-xl md:text-2xl text-foreground line-clamp-1 group-hover:text-primary transition-colors tracking-tight">
+            {/* Status Badges - Top Left (Keep these minimal) */}
+            <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                {property.is_featured && (
+                    <span className="bg-blue-600 text-white text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Star size={10} fill="currentColor" />
+                        Featured
+                    </span>
+                )}
+                <span className="bg-black/40 backdrop-blur-md text-white text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                    {property.property_type || 'For Sale'}
+                </span>
+            </div>
+
+            {/* Save Button - Top Right */}
+            <button
+                onClick={handleSave}
+                disabled={saving}
+                className={`absolute top-4 right-4 z-20 p-2.5 rounded-xl backdrop-blur-md transition-all duration-300 shadow-lg ${isSaved
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-black/20 text-white/80 hover:text-white hover:bg-black/40'
+                    }`}
+            >
+                <Heart size={18} fill={isSaved ? 'currentColor' : 'none'} className={saving ? 'animate-pulse' : ''} />
+            </button>
+
+            {/* Hover Content Section - Appears from bottom */}
+            <div className="absolute inset-x-0 bottom-0 z-20 p-6 flex flex-col space-y-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+                <div className="space-y-1">
+                    <h3 className="text-xl font-semibold text-white leading-tight">
                         {property.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin size={16} className="text-secondary" />
-                        <span className="text-sm font-bold truncate">
-                            {property.location?.name}, {property.location?.county}
+                    <div className="flex items-center gap-1.5 text-white/80">
+                        <MapPin size={14} className="text-blue-400" />
+                        <span className="text-sm truncate">
+                            {property.location?.name || 'Location N/A'}
                         </span>
                     </div>
                 </div>
 
-                {/* Divider */}
-                <div className="h-px bg-linear-to-r from-transparent via-border to-transparent" />
+                <div className="text-2xl font-bold text-white">
+                    {formatPrice(property.price)}
+                </div>
 
-                {/* Stats */}
-                <div className="flex items-center justify-between pt-2">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 group/icon">
-                            <div className="p-2.5 bg-muted/50 rounded-xl group-hover/icon:bg-primary/10 transition-colors">
-                                <Bed size={18} className="text-muted-foreground group-hover/icon:text-primary transition-colors" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-black text-foreground">{property.bedrooms}</span>
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Beds</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2 group/icon">
-                            <div className="p-2.5 bg-muted/50 rounded-xl group-hover/icon:bg-secondary/10 transition-colors">
-                                <Bath size={18} className="text-muted-foreground group-hover/icon:text-secondary transition-colors" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-black text-foreground">{property.bathrooms}</span>
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Baths</span>
-                            </div>
-                        </div>
+                {/* Property Features */}
+                <div className="flex items-center gap-4 pt-2 border-t border-white/10">
+                    <div className="flex items-center gap-2">
+                        <Bed size={16} className="text-white/60" />
+                        <span className="text-sm font-semibold text-white">{property.bedrooms}</span>
                     </div>
-
+                    <div className="flex items-center gap-2">
+                        <Bath size={16} className="text-white/60" />
+                        <span className="text-sm font-semibold text-white">{property.bathrooms}</span>
+                    </div>
                     {property.square_feet && (
-                        <div className="flex items-center gap-2 group/icon">
-                            <div className="p-2.5 bg-muted/50 rounded-xl group-hover/icon:bg-accent/10 transition-colors">
-                                <Maximize size={18} className="text-muted-foreground group-hover/icon:text-accent transition-colors" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-black text-foreground">{property.square_feet}</span>
-                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Sqft</span>
-                            </div>
+                        <div className="flex items-center gap-2">
+                            <Maximize size={16} className="text-white/60" />
+                            <span className="text-sm font-semibold text-white">{property.square_feet}</span>
                         </div>
                     )}
                 </div>

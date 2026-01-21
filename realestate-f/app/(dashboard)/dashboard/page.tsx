@@ -75,29 +75,23 @@ export default function ClientDashboard() {
     return (
         <div className="p-4 md:p-8 lg:p-12 bg-background/50">
             <div className="max-w-7xl mx-auto space-y-12">
-                {/* Header Section */}
-                <div className="relative overflow-hidden bg-primary/5 rounded-[3rem] p-8 md:p-12 border border-primary/10">
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                        <div className="space-y-4">
-                            <Breadcrumb />
-                            <div className="space-y-1">
-                                <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight leading-none">
-                                    Welcome back, <span className="text-primary font-extrabold">{user.first_name}</span>!
-                                </h1>
-                                <p className="text-muted-foreground font-bold tracking-wide uppercase text-xs flex items-center gap-2">
-                                    <Calendar size={14} className="text-primary" />
-                                    {formattedDate}
-                                </p>
-                            </div>
+                {/* Simple Header Section */}
+                <div className="space-y-4">
+                    <Breadcrumb />
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <h1 className="text-3xl md:text-4xl font-semibold text-foreground tracking-tight">
+                                Welcome back, <span className="text-primary">{user.first_name}</span>
+                            </h1>
+                            <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                                <Calendar size={14} className="text-primary" />
+                                {formattedDate} — Discover elegant properties in Kenya
+                            </p>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="hidden lg:flex items-center gap-2 px-6 py-3 bg-background/80 backdrop-blur-xl text-foreground rounded-full text-sm font-black border border-border shadow-sm">
-                                <Sparkles size={16} className="text-primary" />
-                                Market is Active
-                            </div>
                             <button
                                 onClick={() => router.push('/properties')}
-                                className="px-6 py-3 bg-primary text-primary-foreground rounded-full text-sm font-black shadow-lg shadow-primary/25 hover:scale-105 transition-transform flex items-center gap-2"
+                                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold shadow-md hover:bg-blue-700 transition-all flex items-center gap-2"
                             >
                                 <Search size={16} />
                                 Find My Dream Home

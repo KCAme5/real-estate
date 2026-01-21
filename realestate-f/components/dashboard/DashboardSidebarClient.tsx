@@ -53,10 +53,10 @@ export default function DashboardSidebarClient() {
     };
 
     return (
-        <aside className="hidden lg:flex w-72 bg-card border-r border-border flex-col shadow-sm">
+        <aside className="flex flex-col h-full bg-card border-r border-border shadow-sm w-72">
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
                 <nav className="space-y-1.5 pt-4">
-                    <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">Main Menu</p>
+                    <p className="px-4 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">Main Menu</p>
                     {navigation.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.href);
@@ -66,8 +66,8 @@ export default function DashboardSidebarClient() {
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-300 group ${active
-                                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 font-bold'
-                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground font-semibold'
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 font-semibold'
+                                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground font-medium'
                                     }`}
                             >
                                 <div className="flex items-center gap-3.5">
@@ -112,7 +112,7 @@ export default function DashboardSidebarClient() {
                         {user?.first_name?.charAt(0) || 'U'}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-foreground truncate">{user?.first_name} {user?.last_name}</p>
+                        <p className="text-xs font-semibold text-foreground truncate">{user?.first_name} {user?.last_name}</p>
                         <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
                     </div>
                 </div>

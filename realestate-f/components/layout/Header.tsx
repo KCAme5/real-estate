@@ -88,7 +88,7 @@ export default function Header() {
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="relative w-40 h-40 lg:w-12 lg:h-12 transition-transform duration-300 group-hover:scale-105">
+                        <div className="relative w-10 h-10 lg:w-12 lg:h-12 transition-transform duration-300 group-hover:scale-105">
                             <Image
                                 src="/KenyaPrime.png"
                                 alt="KenyaPrime Logo"
@@ -234,22 +234,6 @@ export default function Header() {
                                             Dashboard
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className="px-3 py-2.5 rounded-lg cursor-pointer">
-                                        <Link
-                                            href="/dashboard/profile"
-                                            className="w-full text-sm text-gray-700 dark:text-gray-300"
-                                        >
-                                            Profile
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className="px-3 py-2.5 rounded-lg cursor-pointer">
-                                        <Link
-                                            href="/dashboard/saved"
-                                            className="w-full text-sm text-gray-700 dark:text-gray-300"
-                                        >
-                                            Saved Properties
-                                        </Link>
-                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         onClick={handleLogout}
@@ -349,18 +333,6 @@ export default function Header() {
                                             className="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                                         >
                                             Dashboard
-                                        </Link>
-                                        <Link
-                                            href="/dashboard/profile"
-                                            className="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                        >
-                                            Profile
-                                        </Link>
-                                        <Link
-                                            href="/dashboard/saved"
-                                            className="block px-4 py-3 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-                                        >
-                                            Saved Properties
                                         </Link>
                                         <button
                                             onClick={handleLogout}
