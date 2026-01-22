@@ -50,7 +50,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
         )
 
     def get_verification_status(self, obj):
-        # We don't have a specific 'rejected' status in model yet, but 
+        # We don't have a specific 'rejected' status in model yet, but
         # let's assume is_verified=False is pending for now.
         # If we need 'rejected', we might need a Status field in the model.
         # For now let's map is_verified to 'verified'/'pending'
@@ -84,7 +84,11 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True,
         write_only=True,
-        help_text="List of image URLs from external sources"
+        help_text="List of image URLs from external sources",
+    )
+
+    features = serializers.JSONField(
+        required=False, allow_null=True, help_text="List of property features"
     )
 
     class Meta:
@@ -99,7 +103,6 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
             "bedrooms": {"required": False, "allow_null": True},
             "bathrooms": {"required": False, "allow_null": True},
             "square_feet": {"required": False, "allow_null": True},
-            "features": {"required": False, "allow_null": True},
             "address": {"required": False, "allow_blank": True},
             "latitude": {"required": False, "allow_null": True},
             "longitude": {"required": False, "allow_null": True},
@@ -110,24 +113,38 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
             "owner_phone": {"required": False, "allow_blank": True},
         }
 
+    def to_internal_value(self, data):
+        # Handle features field that comes as JSON string from FormData
+        if "features" in data and isinstance(data["features"], str):
+            try:
+                import json
+
+                data["features"] = json.loads(data["features"])
+            except (json.JSONDecodeError, ValueError):
+                data["features"] = []
+
+        return super().to_internal_value(data)
+
     def validate(self, attrs):
         # Ensure at least title and price are provided
-        if not attrs.get('title'):
+        if not attrs.get("title"):
             raise serializers.ValidationError("Title is required")
-        if not attrs.get('price'):
+        if not attrs.get("price"):
             raise serializers.ValidationError("Price is required")
-        
+
         # Location can be string (name) or Location object
-        location = attrs.get('location')
+        location = attrs.get("location")
         if location and not isinstance(location, (str, int, Location)):
-            raise serializers.ValidationError("Location must be a valid location name or ID")
-        
+            raise serializers.ValidationError(
+                "Location must be a valid location name or ID"
+            )
+
         return attrs
 
     def create(self, validated_data):
         request = self.context.get("request")
         image_urls = validated_data.pop("image_urls", [])
-        
+
         # Handle location - create if it doesn't exist
         location_data = validated_data.pop("location", None)
         if location_data:
@@ -136,9 +153,11 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
                 location, created = Location.objects.get_or_create(
                     name=location_data.strip(),
                     defaults={
-                        "county": "Unknown", 
-                        "slug": location_data.lower().replace(" ", "-").replace("/", "-")[:50]
-                    }
+                        "county": "Unknown",
+                        "slug": location_data.lower()
+                        .replace(" ", "-")
+                        .replace("/", "-")[:50],
+                    },
                 )
                 validated_data["location"] = location
             elif isinstance(location_data, int):
@@ -147,8 +166,10 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
                     location = Location.objects.get(id=location_data)
                     validated_data["location"] = location
                 except Location.DoesNotExist:
-                    raise serializers.ValidationError(f"Location with ID {location_data} not found")
-        
+                    raise serializers.ValidationError(
+                        f"Location with ID {location_data} not found"
+                    )
+
         # Handle main_image file upload
         if request and request.FILES.get("main_image"):
             f = request.FILES["main_image"]
@@ -185,9 +206,9 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         if image_urls:
             for i, url in enumerate(image_urls):
                 PropertyImage.objects.create(
-                    property=prop, 
-                    image=url, 
-                    is_primary=(i == 0 and not validated_data.get("main_image"))
+                    property=prop,
+                    image=url,
+                    is_primary=(i == 0 and not validated_data.get("main_image")),
                 )
 
         return prop
@@ -195,7 +216,7 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         request = self.context.get("request")
         image_urls = validated_data.pop("image_urls", [])
-        
+
         # Handle location updates
         location_data = validated_data.pop("location", None)
         if location_data:
@@ -204,9 +225,11 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
                 location, created = Location.objects.get_or_create(
                     name=location_data.strip(),
                     defaults={
-                        "county": "Unknown", 
-                        "slug": location_data.lower().replace(" ", "-").replace("/", "-")[:50]
-                    }
+                        "county": "Unknown",
+                        "slug": location_data.lower()
+                        .replace(" ", "-")
+                        .replace("/", "-")[:50],
+                    },
                 )
                 validated_data["location"] = location
             elif isinstance(location_data, int):
@@ -215,8 +238,10 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
                     location = Location.objects.get(id=location_data)
                     validated_data["location"] = location
                 except Location.DoesNotExist:
-                    raise serializers.ValidationError(f"Location with ID {location_data} not found")
-        
+                    raise serializers.ValidationError(
+                        f"Location with ID {location_data} not found"
+                    )
+
         # Handle main_image file upload
         if request and request.FILES.get("main_image"):
             f = request.FILES["main_image"]
@@ -247,9 +272,9 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         if image_urls:
             for i, url in enumerate(image_urls):
                 PropertyImage.objects.create(
-                    property=prop, 
-                    image=url, 
-                    is_primary=(i == 0 and not validated_data.get("main_image"))
+                    property=prop,
+                    image=url,
+                    is_primary=(i == 0 and not validated_data.get("main_image")),
                 )
 
         return prop

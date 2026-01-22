@@ -265,7 +265,41 @@ export default function AgentPropertyForm({
             }
         } catch (err: any) {
             console.error('Property operation failed', err);
-            const errorMessage = err?.message || 'Failed to save property. Please try again.';
+
+            // Extract detailed error message from API response
+            let errorMessage = 'Failed to save property. Please try again.';
+
+            if (err?.response?.data) {
+                const errorData = err.response.data;
+
+                // Handle field-specific errors
+                if (typeof errorData === 'object' && errorData !== null) {
+                    const errorMessages = [];
+
+                    // Check for non-field errors
+                    if (errorData.non_field_errors) {
+                        errorMessages.push(errorData.non_field_errors.join(', '));
+                    }
+
+                    // Check for field-specific errors
+                    Object.keys(errorData).forEach(field => {
+                        if (field !== 'non_field_errors' && Array.isArray(errorData[field])) {
+                            errorMessages.push(`${field}: ${errorData[field].join(', ')}`);
+                        }
+                    });
+
+                    if (errorMessages.length > 0) {
+                        errorMessage = errorMessages.join('; ');
+                    }
+                } else if (typeof errorData === 'string') {
+                    errorMessage = errorData;
+                } else if (errorData.detail) {
+                    errorMessage = errorData.detail;
+                }
+            } else if (err?.message) {
+                errorMessage = err.message;
+            }
+
             alert(errorMessage);
         } finally {
             setLoading(false);
