@@ -119,7 +119,7 @@ export default function Header() {
                 <div className="flex items-center justify-between h-20 lg:h-24">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative w-16 h-16 lg:w-20 lg:h-20 transition-transform duration-300 group-hover:scale-105">
+                        <div className="relative w-24 h-24 lg:w-20 lg:h-20 transition-transform duration-300 group-hover:scale-105">
                             <Image
                                 src="/KenyaPrime.png"
                                 alt="KenyaPrime Logo"

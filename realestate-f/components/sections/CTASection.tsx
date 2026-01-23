@@ -1,7 +1,7 @@
 // realestate_frontend/components/sections/CTASection.tsx
 export default function CTASection() {
     return (
-        <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white">
+        <section className="py-20 bg-linear-to-br from-blue-600 via-blue-700 to-cyan-600 text-white">
             <div className="container mx-auto px-4">
                 <div className="max-w-4xl mx-auto text-center">
                     {/* Section Header */}

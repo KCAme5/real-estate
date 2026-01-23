@@ -1,5 +1,5 @@
 # realestate_backend/properties/views.py
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, exceptions
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -57,6 +57,9 @@ class PropertyCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
+        # Check if user is an agent
+        if self.request.user.user_type != "agent":
+            raise exceptions.PermissionDenied("Only agents can create properties")
         serializer.save(agent=self.request.user)
 
 
@@ -215,11 +218,11 @@ class ManagementPropertyListView(generics.ListAPIView):
     filterset_class = PropertyFilter
 
     def get_queryset(self):
-        if self.request.user.user_type != 'management':
+        if self.request.user.user_type != "management":
             return Property.objects.none()
-        
+
         # Return ALL properties for management, ordered by verification status (unverified first) then date
-        return Property.objects.all().order_by('is_verified', '-created_at')
+        return Property.objects.all().order_by("is_verified", "-created_at")
 
 
 class ManagementPropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -231,44 +234,61 @@ class ManagementPropertyDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Property.objects.none()
         return Property.objects.all()
 
+
 class ApprovePropertyView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        if request.user.user_type != 'management':
-            return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+        if request.user.user_type != "management":
+            return Response(
+                {"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            )
         try:
             prop = Property.objects.get(pk=pk)
             prop.is_verified = True
             prop.save()
             return Response({"status": "property approved"})
         except Property.DoesNotExist:
-            return Response({"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class RejectPropertyView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        if request.user.user_type != 'management':
-            return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+        if request.user.user_type != "management":
+            return Response(
+                {"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            )
         try:
             prop = Property.objects.get(pk=pk)
             prop.is_verified = False
             prop.save()
             return Response({"status": "property rejected"})
         except Property.DoesNotExist:
-            return Response({"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
 
 class ToggleFeaturedPropertyView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, pk):
-        if request.user.user_type != 'management':
-            return Response({"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN)
+        if request.user.user_type != "management":
+            return Response(
+                {"detail": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            )
         try:
             prop = Property.objects.get(pk=pk)
             prop.is_featured = not prop.is_featured
             prop.save()
-            return Response({"status": "featured toggled", "is_featured": prop.is_featured})
+            return Response(
+                {"status": "featured toggled", "is_featured": prop.is_featured}
+            )
         except Property.DoesNotExist:
-            return Response({"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND
+            )

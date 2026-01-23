@@ -284,11 +284,11 @@ export default function AgentPropertyForm({
 
             // Always send image URLs as the main image source
             if (imageUrls.length > 0) {
-                fd.append('main_image', imageUrls[0]); // First URL as main image
-                imageUrls.slice(1).forEach((url) => fd.append('image_urls', url));
+                // Send all URLs to image_urls array - backend will set first as main image
+                imageUrls.forEach((url) => fd.append('image_urls', url));
             } else if (previewUrls.length > 0) {
                 // Fallback to preview URLs if available
-                fd.append('main_image', previewUrls[0]);
+                previewUrls.forEach((url) => fd.append('image_urls', url));
             }
 
             // Owner Info
@@ -475,7 +475,7 @@ export default function AgentPropertyForm({
                                     <select
                                         value={propertyType}
                                         onChange={(e) => setPropertyType(e.target.value)}
-                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background text-foreground"
                                     >
                                         <option value="apartment">Apartment/Flat</option>
                                         <option value="townhouse">Townhouse</option>
@@ -513,7 +513,7 @@ export default function AgentPropertyForm({
                                     <select
                                         value={currency}
                                         onChange={(e) => setCurrency(e.target.value)}
-                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background text-foreground"
                                     >
                                         <option value="KES">Kenyan Shilling (KES)</option>
                                         <option value="USD">US Dollar (USD)</option>
@@ -582,7 +582,7 @@ export default function AgentPropertyForm({
                                         setLocation(val);
                                         if (val !== 'custom') setCustomLocation('');
                                     }}
-                                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background ${errors.location ? 'border-destructive' : 'border-border'
+                                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background text-foreground ${errors.location ? 'border-destructive' : 'border-border'
                                         }`}
                                 >
                                     <option value="">Select a location</option>
