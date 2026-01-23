@@ -477,15 +477,15 @@ export default function AgentPropertyForm({
                                         onChange={(e) => setPropertyType(e.target.value)}
                                         className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background text-foreground"
                                     >
-                                        <option value="apartment">Apartment/Flat</option>
-                                        <option value="townhouse">Townhouse</option>
-                                        <option value="maisonette">Maisonette</option>
-                                        <option value="land">Land/Plot</option>
-                                        <option value="commercial">Commercial Property</option>
-                                        <option value="office">Office</option>
-                                        <option value="duplex">Duplex</option>
-                                        <option value="bungalow">Bungalow</option>
-                                        <option value="villa">Villa</option>
+                                        <option value="apartment" className="bg-background text-foreground">Apartment/Flat</option>
+                                        <option value="townhouse" className="bg-background text-foreground">Townhouse</option>
+                                        <option value="maisonette" className="bg-background text-foreground">Maisonette</option>
+                                        <option value="land" className="bg-background text-foreground">Land/Plot</option>
+                                        <option value="commercial" className="bg-background text-foreground">Commercial Property</option>
+                                        <option value="office" className="bg-background text-foreground">Office</option>
+                                        <option value="duplex" className="bg-background text-foreground">Duplex</option>
+                                        <option value="bungalow" className="bg-background text-foreground">Bungalow</option>
+                                        <option value="villa" className="bg-background text-foreground">Villa</option>
                                     </select>
                                 </div>
 
@@ -515,8 +515,8 @@ export default function AgentPropertyForm({
                                         onChange={(e) => setCurrency(e.target.value)}
                                         className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background text-foreground"
                                     >
-                                        <option value="KES">Kenyan Shilling (KES)</option>
-                                        <option value="USD">US Dollar (USD)</option>
+                                        <option value="KES" className="bg-background text-foreground">Kenyan Shilling (KES)</option>
+                                        <option value="USD" className="bg-background text-foreground">US Dollar (USD)</option>
                                     </select>
                                 </div>
                             </div>
@@ -580,16 +580,18 @@ export default function AgentPropertyForm({
                                     onChange={(e) => {
                                         const val = e.target.value;
                                         setLocation(val);
-                                        if (val !== 'custom') setCustomLocation('');
+                                        if (val === 'custom') {
+                                            setCustomLocation('');
+                                        }
                                     }}
                                     className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background text-foreground ${errors.location ? 'border-destructive' : 'border-border'
                                         }`}
                                 >
-                                    <option value="">Select a location</option>
+                                    <option value="" className="bg-background text-foreground">Select a location</option>
                                     {locations.map((loc) => (
-                                        <option key={loc.id} value={loc.id}>{loc.name}, {loc.county}</option>
+                                        <option key={loc.id} value={loc.id} className="bg-background text-foreground">{loc.name}, {loc.county}</option>
                                     ))}
-                                    <option value="custom">+ Add New Location</option>
+                                    <option value="custom" className="bg-background text-foreground">+ Add New Location</option>
                                 </select>
 
                                 {location === 'custom' && (

@@ -171,3 +171,20 @@ html {
   display: none;
   /* Chrome, Safari, Opera */
 }
+
+/* Dark mode support for select dropdowns */
+.dark select {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+
+.dark select option {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark select:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
