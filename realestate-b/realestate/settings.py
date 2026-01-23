@@ -13,16 +13,12 @@ SECRET_KEY = config(
 )
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "kenyaprimeback.onrender.com"
-]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "kenyaprimeback.onrender.com"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://kenyaprime.vercel.app"
+    "https://kenyaprime.vercel.app",
 ]
 
 # Allow credentials so the frontend can send/receive cookies during development
@@ -165,30 +161,30 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Add to settings.py
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
         },
     },
-    'formatters': {
-        'verbose': {
-            'format': '{asctime} {levelname} {name} {message}',
-            'style': '{',
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
         },
     },
-    'loggers': {
-        'auth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
+    "loggers": {
+        "auth": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
         },
-        'accounts': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        "accounts": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
         },
     },
 }
