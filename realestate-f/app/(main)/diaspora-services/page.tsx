@@ -140,34 +140,34 @@ export default function DiasporaServicesPage() {
     return (
         <main className="min-h-screen">
             {/* Hero Section */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-emerald-900">
+            <section className="relative overflow-hidden bg-linear-to-br from-primary via-primary/90 to-secondary">
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="max-w-5xl mx-auto text-center py-16 lg:py-24">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
-                            <Globe className="w-4 h-4 text-white" />
-                            <span className="text-sm font-medium text-white">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 backdrop-blur-sm rounded-full mb-6">
+                            <Globe className="w-4 h-4 text-primary-foreground" />
+                            <span className="text-sm font-medium text-primary-foreground">
                                 Diaspora Real Estate Services
                             </span>
                         </div>
-                        <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                            <span className="text-emerald-300">Kenyan Diaspora</span>{' '}
+                        <h1 className="text-4xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight">
+                            <span className="text-secondary">Kenyan Diaspora</span>{' '}
                             Real Estate Solutions
                         </h1>
-                        <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+                        <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
                             Invest in your homeland with confidence. We make Kenyan real estate accessible,
                             secure, and profitable for Kenyans living abroad.
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <Link
                                 href="/contact"
-                                className="px-8 py-3 bg-white text-blue-600 hover:bg-blue-50 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+                                className="px-8 py-3 bg-background text-primary hover:bg-muted font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
                             >
                                 Start Your Journey <ArrowRight className="w-4 h-4" />
                             </Link>
                             <button
                                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="px-8 py-3 bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold rounded-xl transition-colors"
+                                className="px-8 py-3 bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 font-semibold rounded-xl transition-colors"
                             >
                                 Explore Services
                             </button>
@@ -217,13 +217,13 @@ export default function DiasporaServicesPage() {
             </section>*/}
 
             {/* Why Choose Us */}
-            <section className="py-16 bg-gray-50 dark:bg-gray-900">
+            <section className="py-16 bg-muted">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
                             Why Choose KenyaPrime for Diaspora Services
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                        <p className="text-lg text-muted-foreground">
                             We bridge the distance between you and your Kenyan real estate dreams
                         </p>
                     </div>
@@ -231,14 +231,14 @@ export default function DiasporaServicesPage() {
                         {whyChooseUs.map((item, index) => {
                             const Icon = item.icon;
                             return (
-                                <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
-                                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 mb-6">
-                                        <Icon className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                                <div key={index} className="bg-card p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-linear-to-br from-primary/5 to-secondary/5 mb-6">
+                                        <Icon className="w-7 h-7 text-primary" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                                    <h3 className="text-xl font-bold text-foreground mb-3">
                                         {item.title}
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400">
+                                    <p className="text-muted-foreground">
                                         {item.description}
                                     </p>
                                 </div>
@@ -249,13 +249,13 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* Services */}
-            <section id="services" className="py-16 bg-white dark:bg-gray-900">
+            <section id="services" className="py-16 bg-card">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
                             Our Diaspora Services
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                        <p className="text-lg text-muted-foreground">
                             Comprehensive solutions tailored for Kenyans living abroad
                         </p>
                     </div>
@@ -263,18 +263,18 @@ export default function DiasporaServicesPage() {
                         {services.map((service, index) => {
                             const Icon = service.icon;
                             return (
-                                <div key={index} className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                                <div key={index} className="bg-linear-to-b from-muted to-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
                                     <div className="flex items-start gap-4 mb-6">
                                         <div className="flex-shrink-0">
-                                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-100 to-emerald-100 dark:from-blue-900/20 dark:to-emerald-900/20 flex items-center justify-center">
-                                                <Icon className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                                            <div className="w-14 h-14 rounded-xl bg-linear-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
+                                                <Icon className="w-7 h-7 text-primary" />
                                             </div>
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                                            <h3 className="text-xl font-bold text-foreground mb-2">
                                                 {service.title}
                                             </h3>
-                                            <p className="text-gray-600 dark:text-gray-400">
+                                            <p className="text-muted-foreground">
                                                 {service.description}
                                             </p>
                                         </div>
@@ -283,7 +283,7 @@ export default function DiasporaServicesPage() {
                                         {service.features.map((feature, idx) => (
                                             <div key={idx} className="flex items-center gap-3">
                                                 <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                                                <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                                                <span className="text-muted-foreground">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -295,13 +295,13 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* Process */}
-            <section className="py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+            <section className="py-16 bg-linear-to-b from-muted to-card">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
                             Our 5-Step Process
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                        <p className="text-lg text-muted-foreground">
                             A streamlined approach designed for remote property acquisition
                         </p>
                     </div>
@@ -316,17 +316,17 @@ export default function DiasporaServicesPage() {
                                             key={index}
                                             onClick={() => setActiveProcess(index)}
                                             className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 ${activeProcess === index
-                                                ? 'bg-white dark:bg-gray-800 shadow-xl border-2 border-blue-500'
-                                                : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-800'
+                                                ? 'bg-card shadow-xl border-2 border-primary'
+                                                : 'bg-muted hover:bg-card'
                                                 }`}
                                         >
                                             <div className="flex items-start gap-4">
                                                 <div className="flex-shrink-0">
                                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${activeProcess === index
-                                                        ? 'bg-gradient-to-br from-blue-500 to-emerald-500'
-                                                        : 'bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800'
+                                                        ? 'bg-linear-to-br from-primary to-secondary'
+                                                        : 'bg-muted'
                                                         }`}>
-                                                        <span className={`text-lg font-bold ${activeProcess === index ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+                                                        <span className={`text-lg font-bold ${activeProcess === index ? 'text-primary-foreground' : 'text-muted-foreground'
                                                             }`}>
                                                             {step.step}
                                                         </span>
@@ -334,14 +334,14 @@ export default function DiasporaServicesPage() {
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                                        <h3 className="text-lg font-bold text-foreground">
                                                             {step.title}
                                                         </h3>
-                                                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                                                        <span className="text-sm text-muted-foreground">
                                                             {step.duration}
                                                         </span>
                                                     </div>
-                                                    <p className="text-gray-600 dark:text-gray-400">
+                                                    <p className="text-muted-foreground">
                                                         {step.description}
                                                     </p>
                                                 </div>
@@ -353,35 +353,35 @@ export default function DiasporaServicesPage() {
 
                             {/* Process Visualization */}
                             <div className="lg:w-80 flex-shrink-0">
-                                <div className="sticky top-24 bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
+                                <div className="sticky top-24 bg-card rounded-2xl p-8 shadow-xl">
                                     <div className="text-center mb-8">
-                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-emerald-100 dark:from-blue-900/20 dark:to-emerald-900/20 mb-4">
-                                            <Clock className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-linear-to-br from-primary/5 to-secondary/5 mb-4">
+                                            <Clock className="w-10 h-10 text-primary" />
                                         </div>
-                                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                                        <h3 className="text-xl font-bold text-foreground mb-2">
                                             {processSteps[activeProcess].title}
                                         </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <p className="text-sm text-muted-foreground">
                                             Estimated: {processSteps[activeProcess].duration}
                                         </p>
                                     </div>
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">Progress</span>
-                                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                            <span className="text-sm text-muted-foreground">Progress</span>
+                                            <span className="text-sm font-medium text-foreground">
                                                 Step {activeProcess + 1} of {processSteps.length}
                                             </span>
                                         </div>
-                                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div className="w-full bg-muted rounded-full h-2">
                                             <div
-                                                className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
+                                                className="bg-linear-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500"
                                                 style={{ width: `${((activeProcess + 1) / processSteps.length) * 100}%` }}
                                             ></div>
                                         </div>
                                     </div>
                                     <Link
                                         href="/contact"
-                                        className="mt-8 w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg text-center block"
+                                        className="mt-8 w-full px-6 py-3 bg-linear-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium rounded-xl transition-all duration-300 shadow-md hover:shadow-lg text-center block"
                                     >
                                         Start This Step
                                     </Link>
@@ -393,39 +393,39 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* Success Stories */}
-            <section className="py-16 bg-white dark:bg-gray-900">
+            <section className="py-16 bg-card">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
                             Success Stories
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
+                        <p className="text-lg text-muted-foreground">
                             Hear from Kenyans abroad who trusted us with their real estate dreams
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {successStories.map((story, index) => (
-                            <div key={index} className="bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div key={index} className="bg-linear-to-b from-muted to-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
                                 <div className="flex items-center gap-4 mb-6">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-emerald-100 dark:from-blue-900/20 dark:to-emerald-900/20 flex items-center justify-center">
-                                        <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                                    <div className="w-16 h-16 rounded-full bg-linear-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
+                                        <Users className="w-8 h-8 text-primary" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                                        <h3 className="text-lg font-bold text-foreground">
                                             {story.name}
                                         </h3>
-                                        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                             <MapPin className="w-4 h-4" />
                                             {story.location}
                                         </div>
                                     </div>
                                 </div>
-                                <p className="text-gray-700 dark:text-gray-300 mb-6 italic">
+                                <p className="text-muted-foreground mb-6 italic">
                                     "{story.story}"
                                 </p>
-                                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                                    <div className="text-sm text-gray-600 dark:text-gray-400">Property Acquired</div>
-                                    <div className="font-medium text-gray-900 dark:text-white">{story.property}</div>
+                                <div className="pt-4 border-t border-border">
+                                    <div className="text-sm text-muted-foreground">Property Acquired</div>
+                                    <div className="font-medium text-foreground">{story.property}</div>
                                 </div>
                             </div>
                         ))}
@@ -434,36 +434,36 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-blue-900 to-emerald-900">
+            <section className="py-16 bg-linear-to-r from-primary to-secondary">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-4xl mx-auto text-center text-white">
                         <h2 className="text-3xl lg:text-4xl font-bold mb-6">
                             Ready to Invest in Kenya?
                         </h2>
-                        <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                        <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
                             Join hundreds of successful diaspora investors who trust KenyaPrime Properties
                             with their Kenyan real estate journey.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/contact"
-                                className="px-8 py-3 bg-white text-blue-900 hover:bg-blue-50 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                                className="px-8 py-3 bg-background text-primary hover:bg-muted font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                             >
                                 <Phone className="w-5 h-5" />
                                 Schedule Free Consultation
                             </Link>
                             <Link
                                 href="/properties"
-                                className="px-8 py-3 bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                                className="px-8 py-3 bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                             >
                                 <Home className="w-5 h-5" />
                                 Browse Investment Properties
                             </Link>
                         </div>
                         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl">
-                                <div className="text-2xl font-bold mb-2">24/7</div>
-                                <div className="text-sm text-blue-100">Support Available</div>
+                            <div className="p-6 bg-primary/10 backdrop-blur-sm rounded-2xl">
+                                <div className="text-2xl font-bold mb-2 text-primary-foreground">24/7</div>
+                                <div className="text-sm text-primary-foreground/90">Support Available</div>
                             </div>
                             <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl">
                                 <div className="text-2xl font-bold mb-2">Free</div>
