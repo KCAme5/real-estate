@@ -379,7 +379,7 @@ export default function AgentPropertyForm({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
+            <div className="bg-card rounded-3xl shadow-xl border border-border p-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl font-bold text-foreground">
@@ -389,7 +389,7 @@ export default function AgentPropertyForm({
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             Cancel
                         </button>
@@ -408,7 +408,7 @@ export default function AgentPropertyForm({
                                 <div
                                     className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${index <= currentStep
                                         ? 'bg-primary text-primary-foreground'
-                                        : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                                        : 'bg-muted text-muted-foreground'
                                         }`}
                                 >
                                     {step.icon}
@@ -417,7 +417,7 @@ export default function AgentPropertyForm({
                                     <div
                                         className={`w-16 h-1 mx-2 transition-colors ${index < currentStep
                                             ? 'bg-primary'
-                                            : 'bg-slate-200 dark:bg-slate-700'
+                                            : 'bg-muted'
                                             }`}
                                     />
                                 )}
@@ -431,8 +431,8 @@ export default function AgentPropertyForm({
                                 className={`text-xs font-medium text-center cursor-pointer ${index === currentStep
                                     ? 'text-primary'
                                     : index < currentStep
-                                        ? 'text-slate-600 dark:text-slate-400'
-                                        : 'text-slate-400 dark:text-slate-500'
+                                        ? 'text-muted-foreground'
+                                        : 'text-muted-foreground'
                                     }`}
                                 onClick={() => goToStep(index)}
                             >
@@ -453,7 +453,7 @@ export default function AgentPropertyForm({
                             </h3>
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div className={`space-y-2 ${errors.title ? 'text-error' : ''}`}>
+                                <div className={`space-y-2 ${errors.title ? 'text-destructive' : ''}`}>
                                     <label className="block text-sm font-bold uppercase tracking-wider">
                                         Property Title *
                                     </label>
@@ -461,11 +461,11 @@ export default function AgentPropertyForm({
                                         type="text"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700 ${errors.title ? 'border-error' : 'border-slate-300 dark:border-slate-600'
+                                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background ${errors.title ? 'border-destructive' : 'border-border'
                                             }`}
                                         placeholder="Enter a descriptive title"
                                     />
-                                    {errors.title && <p className="text-xs text-error">{errors.title}</p>}
+                                    {errors.title && <p className="text-xs text-destructive">{errors.title}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -475,7 +475,7 @@ export default function AgentPropertyForm({
                                     <select
                                         value={propertyType}
                                         onChange={(e) => setPropertyType(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                     >
                                         <option value="apartment">Apartment/Flat</option>
                                         <option value="townhouse">Townhouse</option>
@@ -489,7 +489,7 @@ export default function AgentPropertyForm({
                                     </select>
                                 </div>
 
-                                <div className={`space-y-2 ${errors.price ? 'text-error' : ''}`}>
+                                <div className={`space-y-2 ${errors.price ? 'text-destructive' : ''}`}>
                                     <label className="block text-sm font-bold uppercase tracking-wider">
                                         Price *
                                     </label>
@@ -497,13 +497,13 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700 ${errors.price ? 'border-error' : 'border-slate-300 dark:border-slate-600'
+                                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background ${errors.price ? 'border-destructive' : 'border-border'
                                             }`}
                                         placeholder="0.00"
                                         min="0"
                                         step="0.01"
                                     />
-                                    {errors.price && <p className="text-xs text-error">{errors.price}</p>}
+                                    {errors.price && <p className="text-xs text-destructive">{errors.price}</p>}
                                 </div>
 
                                 <div className="space-y-2">
@@ -513,7 +513,7 @@ export default function AgentPropertyForm({
                                     <select
                                         value={currency}
                                         onChange={(e) => setCurrency(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                     >
                                         <option value="KES">Kenyan Shilling (KES)</option>
                                         <option value="USD">US Dollar (USD)</option>
@@ -529,7 +529,7 @@ export default function AgentPropertyForm({
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     rows={4}
-                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                     placeholder="Describe property..."
                                 />
                             </div>
@@ -571,7 +571,7 @@ export default function AgentPropertyForm({
                                 Location Details
                             </h3>
 
-                            <div className={`space-y-2 ${errors.location ? 'text-error' : ''}`}>
+                            <div className={`space-y-2 ${errors.location ? 'text-destructive' : ''}`}>
                                 <label className="block text-sm font-bold uppercase tracking-wider">
                                     Area Name *
                                 </label>
@@ -582,7 +582,7 @@ export default function AgentPropertyForm({
                                         setLocation(val);
                                         if (val !== 'custom') setCustomLocation('');
                                     }}
-                                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700 ${errors.location ? 'border-error' : 'border-slate-300 dark:border-slate-600'
+                                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background ${errors.location ? 'border-destructive' : 'border-border'
                                         }`}
                                 >
                                     <option value="">Select a location</option>
@@ -597,11 +597,11 @@ export default function AgentPropertyForm({
                                         type="text"
                                         value={customLocation}
                                         onChange={(e) => setCustomLocation(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700 mt-2"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background mt-2"
                                         placeholder="Enter new location name"
                                     />
                                 )}
-                                {errors.location && <p className="text-xs text-error">{errors.location}</p>}
+                                {errors.location && <p className="text-xs text-destructive">{errors.location}</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -612,7 +612,7 @@ export default function AgentPropertyForm({
                                     value={address}
                                     onChange={(e) => setAddress(e.target.value)}
                                     rows={3}
-                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                    className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                     placeholder="Enter full address..."
                                 />
                             </div>
@@ -626,7 +626,7 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={latitude}
                                         onChange={(e) => setLatitude(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="-1.2921"
                                         step="0.000001"
                                     />
@@ -640,7 +640,7 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={longitude}
                                         onChange={(e) => setLongitude(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="36.8219"
                                         step="0.000001"
                                     />
@@ -666,7 +666,7 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={bedrooms}
                                         onChange={(e) => setBedrooms(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="0"
                                         min="0"
                                     />
@@ -681,7 +681,7 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={bathrooms}
                                         onChange={(e) => setBathrooms(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="0"
                                         min="0"
                                     />
@@ -696,7 +696,7 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={squareFeet}
                                         onChange={(e) => setSquareFeet(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="0"
                                         min="0"
                                     />
@@ -710,7 +710,7 @@ export default function AgentPropertyForm({
                                         type="text"
                                         value={plotSize}
                                         onChange={(e) => setPlotSize(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="e.g., 0.25 acres"
                                     />
                                 </div>
@@ -724,7 +724,7 @@ export default function AgentPropertyForm({
                                         type="number"
                                         value={yearBuilt}
                                         onChange={(e) => setYearBuilt(e.target.value)}
-                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                        className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                         placeholder="2024"
                                         min="1900"
                                         max={new Date().getFullYear()}
@@ -758,7 +758,7 @@ export default function AgentPropertyForm({
                                             />
                                             <label
                                                 htmlFor="main-image-upload"
-                                                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer hover:border-primary/50 transition-colors bg-slate-50 dark:bg-slate-700"
+                                                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 transition-colors bg-background"
                                             >
                                                 {previewUrls.length > 0 && images.length > 0 ? (
                                                     <div className="relative">
@@ -775,7 +775,7 @@ export default function AgentPropertyForm({
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <div className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                                                    <div className="flex flex-col items-center justify-center text-muted-foreground">
                                                         <Upload size={24} />
                                                         <p className="text-xs mt-1">Main Image</p>
                                                     </div>
@@ -795,9 +795,9 @@ export default function AgentPropertyForm({
                                             />
                                             <label
                                                 htmlFor="additional-images-upload"
-                                                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer hover:border-primary/50 transition-colors bg-slate-50 dark:bg-slate-700"
+                                                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 transition-colors bg-background"
                                             >
-                                                <div className="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+                                                <div className="flex flex-col items-center justify-center text-muted-foreground">
                                                     <Upload size={24} />
                                                     <p className="text-xs mt-1">Multiple Images</p>
                                                 </div>
@@ -809,7 +809,7 @@ export default function AgentPropertyForm({
                                         <div className="grid grid-cols-4 lg:grid-cols-6 gap-2 mt-4">
                                             {previewUrls.slice(1).map((url, index) => (
                                                 <div key={index} className="relative">
-                                                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-20 object-cover rounded-lg border border-slate-200 dark:border-slate-700" />
+                                                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-20 object-cover rounded-lg border border-border" />
                                                     <button
                                                         type="button"
                                                         onClick={() => removeImage(index + 1)}
@@ -833,7 +833,7 @@ export default function AgentPropertyForm({
                                             value={imageUrlInput}
                                             onChange={(e) => setImageUrlInput(e.target.value)}
                                             onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addImageUrl())}
-                                            className="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                            className="flex-1 px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                             placeholder="https://example.com/image.jpg"
                                         />
                                         <button
@@ -851,16 +851,16 @@ export default function AgentPropertyForm({
                                         Video URL (Optional)
                                     </label>
                                     <div className="flex gap-2">
-                                        <Link size={16} className="text-slate-400" />
+                                        <Link size={16} className="text-muted-foreground" />
                                         <input
                                             type="url"
                                             value={videoUrl}
                                             onChange={(e) => setVideoUrl(e.target.value)}
-                                            className="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all bg-slate-50 dark:bg-slate-700"
+                                            className="flex-1 px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
                                             placeholder="https://youtube.com/watch?v=..."
                                         />
                                     </div>
-                                    {errors.videoUrl && <p className="text-xs text-error">{errors.videoUrl}</p>}
+                                    {errors.videoUrl && <p className="text-xs text-destructive">{errors.videoUrl}</p>}
                                 </div>
                             </div>
                         </div>
@@ -873,28 +873,28 @@ export default function AgentPropertyForm({
                                 Review & Submit
                             </h3>
 
-                            <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-6 space-y-4">
+                            <div className="bg-muted rounded-xl p-6 space-y-4">
                                 <h4 className="font-semibold text-foreground">Property Summary</h4>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Title:</span>
+                                        <span className="font-medium text-muted-foreground">Title:</span>
                                         <p className="text-foreground">{title || 'Not provided'}</p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Price:</span>
+                                        <span className="font-medium text-muted-foreground">Price:</span>
                                         <p className="text-foreground">{price ? `${currency} ${price}` : 'Not provided'}</p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Type:</span>
+                                        <span className="font-medium text-muted-foreground">Type:</span>
                                         <p className="text-foreground">{propertyType}</p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Listing:</span>
+                                        <span className="font-medium text-muted-foreground">Listing:</span>
                                         <p className="text-foreground">{listingType}</p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Location:</span>
+                                        <span className="font-medium text-muted-foreground">Location:</span>
                                         <p className="text-foreground">
                                             {location && typeof location === 'number'
                                                 ? locations.find(l => l.id === location)?.name || 'Unknown location'
@@ -903,36 +903,36 @@ export default function AgentPropertyForm({
                                         </p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Bedrooms:</span>
+                                        <span className="font-medium text-muted-foreground">Bedrooms:</span>
                                         <p className="text-foreground">{bedrooms || 'Not specified'}</p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Bathrooms:</span>
+                                        <span className="font-medium text-muted-foreground">Bathrooms:</span>
                                         <p className="text-foreground">{bathrooms || 'Not specified'}</p>
                                     </div>
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Square Feet:</span>
+                                        <span className="font-medium text-muted-foreground">Square Feet:</span>
                                         <p className="text-foreground">{squareFeet || 'Not specified'}</p>
                                     </div>
                                 </div>
 
                                 {description && (
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Description:</span>
+                                        <span className="font-medium text-muted-foreground">Description:</span>
                                         <p className="text-foreground text-sm mt-1">{description}</p>
                                     </div>
                                 )}
 
                                 {previewUrls.length > 0 && (
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Images:</span>
+                                        <span className="font-medium text-muted-foreground">Images:</span>
                                         <p className="text-foreground text-sm mt-1">{previewUrls.length} image(s) uploaded</p>
                                     </div>
                                 )}
 
                                 {videoUrl && (
                                     <div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400">Video:</span>
+                                        <span className="font-medium text-muted-foreground">Video:</span>
                                         <p className="text-foreground text-sm mt-1">Video URL provided</p>
                                     </div>
                                 )}
@@ -948,20 +948,20 @@ export default function AgentPropertyForm({
                 </div>
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between items-center pt-6 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex justify-between items-center pt-6 border-t border-border">
                     <button
                         type="button"
                         onClick={prevStep}
                         disabled={currentStep === 0}
                         className={`px-6 py-3 rounded-xl font-medium transition-colors ${currentStep === 0
-                            ? 'bg-slate-100 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
-                            : 'bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-500'
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed'
+                            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                             }`}
                     >
                         Previous
                     </button>
 
-                    <div className="text-sm text-slate-500 dark:text-slate-400">
+                    <div className="text-sm text-muted-foreground">
                         Step {currentStep + 1} of {formSteps.length}
                     </div>
 
