@@ -81,7 +81,11 @@ class Property(models.Model):
 
     # Location
     location = models.ForeignKey(
-        Location, on_delete=models.CASCADE, related_name="properties"
+        Location,
+        on_delete=models.CASCADE,
+        related_name="properties",
+        null=True,
+        blank=True,
     )
     address = models.TextField(blank=True, null=True)
     latitude = models.DecimalField(
