@@ -26,6 +26,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
     main_image_url = serializers.URLField(source="main_image", read_only=True)
     verification_status = serializers.SerializerMethodField()
     location_name = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Property
@@ -49,6 +50,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "is_development",
             "agent_name",
             "verification_status",
+            "created_at",
         )
 
     def get_verification_status(self, obj):
@@ -71,6 +73,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     main_image_url = serializers.URLField(source="main_image", read_only=True)
     verification_status = serializers.SerializerMethodField()
     location_name = serializers.CharField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Property

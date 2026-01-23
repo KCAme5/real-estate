@@ -39,8 +39,8 @@ export default function AgentPropertyForm({
     const [currency, setCurrency] = useState(initial?.currency || 'KES');
 
     // Location
-    const [location, setLocation] = useState<number | string>(initial?.location?.id || '');
-    const [customLocation, setCustomLocation] = useState('');
+    const [location, setLocation] = useState<number | string>(initial?.location?.id || (initial?.location_name ? 'custom' : ''));
+    const [customLocation, setCustomLocation] = useState(initial?.location_name || '');
     const [address, setAddress] = useState(initial?.address || '');
     const [latitude, setLatitude] = useState(initial?.latitude || '');
     const [longitude, setLongitude] = useState(initial?.longitude || '');

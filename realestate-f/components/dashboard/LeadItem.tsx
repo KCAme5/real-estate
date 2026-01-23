@@ -63,32 +63,23 @@ interface RecentLeadsProps {
 }
 
 export function RecentLeads({ leads: leadData }: { leads?: any[] }) {
-    const defaultLeads = [
-        {
-            id: 1,
-            name: 'John M.',
-            location: 'Kilimani',
-            budget: 'Kes 40M',
-            bedrooms: '3BD apartment',
-            contact: '0712 XXX XXX',
-            type: 'phone',
-        } as const,
-        {
-            id: 2,
-            name: 'Mary W.',
-            location: 'Westlands',
-            budget: 'Kes 60M',
-            bedrooms: '4BD family home',
-            contact: 'mary@email.com',
-            type: 'email',
-        } as const,
-    ];
-
-    const displayLeads = leadData && leadData.length > 0 ? leadData : defaultLeads;
+    if (!leadData || leadData.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 px-4">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                    <MessageSquare size={24} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-black text-foreground mb-2">No leads yet</h3>
+                <p className="text-muted-foreground font-medium text-center max-w-xs">
+                    Your recent leads will appear here once clients start showing interest in your properties.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {displayLeads.map((lead: any) => (
+            {leadData.map((lead: any) => (
                 <LeadItem
                     key={lead.id}
                     id={lead.id}
