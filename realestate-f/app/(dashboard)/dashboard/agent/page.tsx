@@ -126,151 +126,154 @@ export default function AgentDashboard() {
                             href="/dashboard/agent/analytics"
                             className="text-sm font-bold text-primary hover:underline"
                         >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <PropertyPerformanceChart properties={properties} />
-                                <SimpleChart data={[0, 0, 0, 0, 0]} label="Monthly Leads" />
-                            </div>
-                        </section>
+                            View Full Analytics
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <PropertyPerformanceChart properties={properties} />
+                        <SimpleChart data={[0, 0, 0, 0, 0]} label="Monthly Leads" />
+                    </div>
+                </section>
 
-                        {/* Main Content Grid - Recent Leads & Quick Actions */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* Recent Leads */}
-                            <div className="lg:col-span-2 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-2xl font-bold text-foreground tracking-tight">🎯 Recent Leads</h2>
-                                    <Link
-                                        href="/dashboard/agent/leads"
-                                        className="text-sm font-bold text-primary hover:underline"
+                {/* Main Content Grid - Recent Leads & Quick Actions */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Recent Leads */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-bold text-foreground tracking-tight">🎯 Recent Leads</h2>
+                            <Link
+                                href="/dashboard/agent/leads"
+                                className="text-sm font-bold text-primary hover:underline"
+                            >
+                                Manage All Leads
+                            </Link>
+                        </div>
+                        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm overflow-hidden">
+                            <RecentLeads leads={leads.slice(0, 5)} />
+                        </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="lg:col-span-1 space-y-6">
+                        <h2 className="text-2xl font-bold text-foreground tracking-tight">⚡ Quick Actions</h2>
+                        <div className="bg-card border border-border rounded-2xl p-8 sticky top-24 shadow-sm">
+                            <div className="space-y-3">
+                                {[
+                                    { icon: Plus, label: 'Add New Property', action: () => router.push('/dashboard/agent/properties/new') },
+                                    { icon: Users, label: 'Create New Lead', action: () => { } },
+                                    { icon: Calendar, label: 'Schedule Viewing', action: () => { } },
+                                    { icon: FileText, label: 'Generate Report', action: () => { } },
+                                    { icon: Send, label: 'Send Bulk Message', action: () => { } },
+                                    { icon: Clock, label: 'Update Availability', action: () => { } },
+                                ].map((btn, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={btn.action}
+                                        className="w-full flex items-center justify-between p-4 bg-muted/10 hover:bg-primary hover:text-primary-foreground group rounded-xl transition-all duration-300 border border-border/50 text-left"
                                     >
-                                        Manage All Leads
-                                    </Link>
-                                </div>
-                                <div className="bg-card border border-border rounded-2xl p-6 shadow-sm overflow-hidden">
-                                    <RecentLeads leads={leads.slice(0, 5)} />
-                                </div>
-                            </div>
-
-                            {/* Quick Actions */}
-                            <div className="lg:col-span-1 space-y-6">
-                                <h2 className="text-2xl font-bold text-foreground tracking-tight">⚡ Quick Actions</h2>
-                                <div className="bg-card border border-border rounded-2xl p-8 sticky top-24 shadow-sm">
-                                    <div className="space-y-3">
-                                        {[
-                                            { icon: Plus, label: 'Add New Property', action: () => router.push('/dashboard/agent/properties/new') },
-                                            { icon: Users, label: 'Create New Lead', action: () => { } },
-                                            { icon: Calendar, label: 'Schedule Viewing', action: () => { } },
-                                            { icon: FileText, label: 'Generate Report', action: () => { } },
-                                            { icon: Send, label: 'Send Bulk Message', action: () => { } },
-                                            { icon: Clock, label: 'Update Availability', action: () => { } },
-                                        ].map((btn, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={btn.action}
-                                                className="w-full flex items-center justify-between p-4 bg-muted/10 hover:bg-primary hover:text-primary-foreground group rounded-xl transition-all duration-300 border border-border/50 text-left"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <btn.icon size={18} className="group-hover:scale-110 transition-transform" />
-                                                    <span className="font-semibold">{btn.label}</span>
-                                                </div>
-                                                <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                        <div className="flex items-center gap-3">
+                                            <btn.icon size={18} className="group-hover:scale-110 transition-transform" />
+                                            <span className="font-semibold">{btn.label}</span>
+                                        </div>
+                                        <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                                    </button>
+                                ))}
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        {/* Today's Schedule */}
-                        <section className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <h2 className="text-2xl font-bold text-foreground tracking-tight">📅 Today's Schedule</h2>
-                                    <p className="text-sm text-muted-foreground font-medium">Your upcoming appointments</p>
-                                </div>
-                                <Link
-                                    href="/dashboard/agent/bookings"
-                                    className="group flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
-                                >
-                                    Full Schedule
-                                    <ArrowRight size={16} />
-                                </Link>
-                            </div>
+                {/* Today's Schedule */}
+                <section className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                            <h2 className="text-2xl font-bold text-foreground tracking-tight">📅 Today's Schedule</h2>
+                            <p className="text-sm text-muted-foreground font-medium">Your upcoming appointments</p>
+                        </div>
+                        <Link
+                            href="/dashboard/agent/bookings"
+                            className="group flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
+                        >
+                            Full Schedule
+                            <ArrowRight size={16} />
+                        </Link>
+                    </div>
 
-                            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left border-collapse">
-                                        <thead>
-                                            <tr className="bg-muted/30 border-b border-border">
-                                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Time</th>
-                                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Client</th>
-                                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Property</th>
-                                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Location</th>
-                                                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-border">
-                                            {!loading && conversations.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
-                                                        No appointments scheduled
+                    <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-muted/30 border-b border-border">
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Time</th>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Client</th>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Property</th>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Location</th>
+                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-border">
+                                    {!loading && conversations.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                                                No appointments scheduled
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        conversations.slice(0, 5).map((booking: any, i) => {
+                                            const statusColors: Record<string, string> = {
+                                                'PENDING': 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
+                                                'CONFIRMED': 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
+                                                'CANCELLED': 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
+                                            };
+                                            const booking_time = booking.updated_at ? new Date(booking.updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'TBD';
+                                            const status = booking.status || 'PENDING';
+
+                                            return (
+                                                <tr key={i} className="hover:bg-muted/20 transition-colors group">
+                                                    <td className="px-6 py-5 font-bold text-foreground">{booking_time}</td>
+                                                    <td className="px-6 py-5 text-muted-foreground font-medium">
+                                                        {booking.other_user?.name || 'Unknown Client'}
+                                                    </td>
+                                                    <td className="px-6 py-5 font-bold text-foreground group-hover:text-primary transition-colors">
+                                                        {booking.property_title || 'Property Inquiry'}
+                                                    </td>
+                                                    <td className="px-6 py-5 text-muted-foreground font-medium">
+                                                        {booking.property_location || 'Nairobi'}
+                                                    </td>
+                                                    <td className="px-6 py-5">
+                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[status] || statusColors['PENDING']}`}>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                                            {status}
+                                                        </span>
                                                     </td>
                                                 </tr>
-                                            ) : (
-                                                conversations.slice(0, 5).map((booking: any, i) => {
-                                                    const statusColors: Record<string, string> = {
-                                                        'PENDING': 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
-                                                        'CONFIRMED': 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
-                                                        'CANCELLED': 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
-                                                    };
-                                                    const booking_time = booking.updated_at ? new Date(booking.updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'TBD';
-                                                    const status = booking.status || 'PENDING';
-
-                                                    return (
-                                                        <tr key={i} className="hover:bg-muted/20 transition-colors group">
-                                                            <td className="px-6 py-5 font-bold text-foreground">{booking_time}</td>
-                                                            <td className="px-6 py-5 text-muted-foreground font-medium">
-                                                                {booking.other_user?.name || 'Unknown Client'}
-                                                            </td>
-                                                            <td className="px-6 py-5 font-bold text-foreground group-hover:text-primary transition-colors">
-                                                                {booking.property_title || 'Property Inquiry'}
-                                                            </td>
-                                                            <td className="px-6 py-5 text-muted-foreground font-medium">
-                                                                {booking.property_location || 'Nairobi'}
-                                                            </td>
-                                                            <td className="px-6 py-5">
-                                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[status] || statusColors['PENDING']}`}>
-                                                                    <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                                                    {status}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Active Listings */}
-                        <section className="space-y-6 pb-20">
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <h2 className="text-2xl font-bold text-foreground tracking-tight">🏠 Active Listings</h2>
-                                    <p className="text-sm text-muted-foreground font-medium">Managing {properties.length} total properties</p>
-                                </div>
-                                <Link
-                                    href="/dashboard/agent/properties"
-                                    className="group flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
-                                >
-                                    Manage Listings
-                                    <ArrowRight size={16} />
-                                </Link>
-                            </div>
-                            <PropertyCardsContainer properties={properties} />
-                        </section>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                </section>
+
+                {/* Active Listings */}
+                <section className="space-y-6 pb-20">
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                            <h2 className="text-2xl font-bold text-foreground tracking-tight">🏠 Active Listings</h2>
+                            <p className="text-sm text-muted-foreground font-medium">Managing {properties.length} total properties</p>
+                        </div>
+                        <Link
+                            href="/dashboard/agent/properties"
+                            className="group flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
+                        >
+                            Manage Listings
+                            <ArrowRight size={16} />
+                        </Link>
+                    </div>
+                    <PropertyCardsContainer properties={properties} />
+                </section>
             </div>
-            );
+        </div>
+    );
 }
