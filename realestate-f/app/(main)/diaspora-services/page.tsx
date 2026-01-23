@@ -465,13 +465,13 @@ export default function DiasporaServicesPage() {
                                 <div className="text-2xl font-bold mb-2 text-primary-foreground">24/7</div>
                                 <div className="text-sm text-primary-foreground/90">Support Available</div>
                             </div>
-                            <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl">
-                                <div className="text-2xl font-bold mb-2">Free</div>
-                                <div className="text-sm text-blue-100">Initial Consultation</div>
+                            <div className="p-6 bg-secondary/10 backdrop-blur-sm rounded-2xl">
+                                <div className="text-2xl font-bold mb-2 text-secondary-foreground">Free</div>
+                                <div className="text-sm text-secondary-foreground/90">Initial Consultation</div>
                             </div>
-                            <div className="p-6 bg-white/10 backdrop-blur-sm rounded-2xl">
-                                <div className="text-2xl font-bold mb-2">Secure</div>
-                                <div className="text-sm text-blue-100">Document Handling</div>
+                            <div className="p-6 bg-accent/10 backdrop-blur-sm rounded-2xl">
+                                <div className="text-2xl font-bold mb-2 text-accent-foreground">Secure</div>
+                                <div className="text-sm text-accent-foreground/90">Document Handling</div>
                             </div>
                         </div>
                     </div>

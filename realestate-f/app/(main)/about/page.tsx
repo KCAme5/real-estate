@@ -102,7 +102,7 @@ export default function AboutPage() {
             </section>
 
             {/* Story & Mission Section */}
-            <section className="py-16 bg-gray-50 dark:bg-gray-900">
+            <section className="py-16 bg-muted">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex flex-wrap border-b border-border mb-8">
@@ -243,7 +243,7 @@ export default function AboutPage() {
                 </div>
             </section>
             {/* Values Section */}
-            <section className="py-16 bg-white dark:bg-gray-900">
+            <section className="py-16 bg-card">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-3xl mx-auto mb-12">
                         <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
@@ -278,7 +278,7 @@ export default function AboutPage() {
             </section>
 
             {/* Services Section */}
-            <section className="py-16 bg-gray-50 dark:bg-gray-900">
+            <section className="py-16 bg-muted">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>

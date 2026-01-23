@@ -31,28 +31,30 @@ export function SimpleChart({ data, label }: { data: number[]; label: string }) 
     );
 }
 
-export function PropertyPerformanceChart() {
-    const properties = [
-        { name: 'Kilimani Penthouse', percentage: 80 },
-        { name: 'Riverside Apt', percentage: 60 },
-        { name: 'Westlands Villa', percentage: 40 },
-        { name: 'Karen House', percentage: 20 },
-    ];
+export function PropertyPerformanceChart({ properties }: { properties?: any[] }) {
+    if (!properties || properties.length === 0) {
+        return (
+            <div className="bg-base-100 p-6 rounded-lg border border-base-300">
+                <h3 className="font-semibold mb-4">Property Performance</h3>
+                <p className="text-muted-foreground text-center py-8">No properties to display</p>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-base-100 p-6 rounded-lg border border-base-300">
             <h3 className="font-semibold mb-4">Property Performance</h3>
             <div className="space-y-4">
-                {properties.map((prop, index) => (
+                {properties.slice(0, 4).map((prop, index) => (
                     <div key={index}>
                         <div className="flex justify-between text-sm mb-1">
-                            <span className="font-medium">{prop.name}</span>
-                            <span className="text-primary font-semibold">{prop.percentage}%</span>
+                            <span className="font-medium truncate">{prop.title || `Property ${index + 1}`}</span>
+                            <span className="text-primary font-semibold">{prop.views || 0} views</span>
                         </div>
                         <div className="w-full bg-base-200 rounded-full h-2 overflow-hidden">
                             <div
                                 className="bg-linear-to-r from-primary to-success h-full transition-all"
-                                style={{ width: `${prop.percentage}%` }}
+                                style={{ width: `${Math.min((prop.views || 0) / 10, 100)}%` }}
                             />
                         </div>
                     </div>
@@ -92,7 +94,6 @@ export function AgentStatsCards({ stats }: { stats?: any }) {
                     </div>
                     <div className="flex items-end gap-2">
                         <p className="text-4xl font-black text-foreground tracking-tight tabular-nums">{stat.value}</p>
-                        <p className="text-xs font-bold text-muted-foreground mb-1.5">+12.5%</p>
                     </div>
                 </div>
             ))}
