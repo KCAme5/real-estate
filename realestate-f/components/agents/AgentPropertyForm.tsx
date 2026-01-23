@@ -255,8 +255,8 @@ export default function AgentPropertyForm({
                 // For custom location, send as string and let backend handle it
                 fd.append('custom_location', customLocation.trim());
             } else if (location && typeof location === 'number') {
-                // For existing locations, send the PK as number
-                fd.append('location', location);
+                // For existing locations, send the PK as string
+                fd.append('location', location.toString());
             }
             if (address) fd.append('address', address);
             if (latitude) fd.append('latitude', latitude);
