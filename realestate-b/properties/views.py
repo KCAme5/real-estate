@@ -60,6 +60,13 @@ class PropertyCreateView(generics.CreateAPIView):
         # Check if user is an agent
         if self.request.user.user_type != "agent":
             raise exceptions.PermissionDenied("Only agents can create properties")
+
+        # Debug: Print user info
+        print(
+            f"User: {self.request.user.username}, Type: {self.request.user.user_type}"
+        )
+        print(f"Validated data: {serializer.validated_data}")
+
         serializer.save(agent=self.request.user)
 
 

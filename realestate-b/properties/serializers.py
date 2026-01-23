@@ -145,73 +145,79 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         image_urls = validated_data.pop("image_urls", [])
 
-        # Handle location - create if it doesn't exist
-        location_data = validated_data.pop("location", None)
-        if location_data:
-            if isinstance(location_data, str):
-                # Create new location from string
-                location, created = Location.objects.get_or_create(
-                    name=location_data.strip(),
-                    defaults={
-                        "county": "Unknown",
-                        "slug": location_data.lower()
-                        .replace(" ", "-")
-                        .replace("/", "-")[:50],
-                    },
-                )
-                validated_data["location"] = location
-            elif isinstance(location_data, int):
-                # Get existing location by ID
-                try:
-                    location = Location.objects.get(id=location_data)
-                    validated_data["location"] = location
-                except Location.DoesNotExist:
-                    raise serializers.ValidationError(
-                        f"Location with ID {location_data} not found"
+        try:
+            # Handle location - create if it doesn't exist
+            location_data = validated_data.pop("location", None)
+            if location_data:
+                if isinstance(location_data, str):
+                    # Create new location from string
+                    location, created = Location.objects.get_or_create(
+                        name=location_data.strip(),
+                        defaults={
+                            "county": "Unknown",
+                            "slug": location_data.lower()
+                            .replace(" ", "-")
+                            .replace("/", "-")[:50],
+                        },
                     )
+                    validated_data["location"] = location
+                elif isinstance(location_data, int):
+                    # Get existing location by ID
+                    try:
+                        location = Location.objects.get(id=location_data)
+                        validated_data["location"] = location
+                    except Location.DoesNotExist:
+                        raise serializers.ValidationError(
+                            f"Location with ID {location_data} not found"
+                        )
 
-        # Handle main_image file upload
-        if request and request.FILES.get("main_image"):
-            f = request.FILES["main_image"]
-            filename = default_storage.save(f"properties/{f.name}", f)
-            try:
-                url = default_storage.url(filename)
-            except Exception:
-                url = settings.MEDIA_URL + filename
-            validated_data["main_image"] = url
-        elif image_urls:
-            # Use first URL as main image if no file uploaded
-            validated_data["main_image"] = image_urls[0]
-
-        # Set default values for missing required fields
-        validated_data.setdefault("property_type", "apartment")
-        validated_data.setdefault("description", validated_data.get("title", ""))
-        validated_data.setdefault("listing_type", "sale")
-        validated_data.setdefault("currency", "KES")
-
-        prop = Property.objects.create(**validated_data)
-
-        # Handle multiple images from files
-        if request:
-            files = request.FILES.getlist("images")
-            for f in files:
+            # Handle main_image file upload
+            if request and request.FILES.get("main_image"):
+                f = request.FILES["main_image"]
                 filename = default_storage.save(f"properties/{f.name}", f)
                 try:
                     url = default_storage.url(filename)
                 except Exception:
                     url = settings.MEDIA_URL + filename
-                PropertyImage.objects.create(property=prop, image=url, is_primary=False)
+                validated_data["main_image"] = url
+            elif image_urls:
+                # Use first URL as main image if no file uploaded
+                validated_data["main_image"] = image_urls[0]
 
-        # Handle image URLs
-        if image_urls:
-            for i, url in enumerate(image_urls):
-                PropertyImage.objects.create(
-                    property=prop,
-                    image=url,
-                    is_primary=(i == 0 and not validated_data.get("main_image")),
-                )
+            # Set default values for missing required fields
+            validated_data.setdefault("property_type", "apartment")
+            validated_data.setdefault("description", validated_data.get("title", ""))
+            validated_data.setdefault("listing_type", "sale")
+            validated_data.setdefault("currency", "KES")
 
-        return prop
+            prop = Property.objects.create(**validated_data)
+
+            # Handle multiple images from files
+            if request:
+                files = request.FILES.getlist("images")
+                for f in files:
+                    filename = default_storage.save(f"properties/{f.name}", f)
+                    try:
+                        url = default_storage.url(filename)
+                    except Exception:
+                        url = settings.MEDIA_URL + filename
+                    PropertyImage.objects.create(
+                        property=prop, image=url, is_primary=False
+                    )
+
+            # Handle image URLs
+            if image_urls:
+                for i, url in enumerate(image_urls):
+                    PropertyImage.objects.create(
+                        property=prop,
+                        image=url,
+                        is_primary=(i == 0 and not validated_data.get("main_image")),
+                    )
+
+            return prop
+        except Exception as e:
+            print(f"Error creating property: {str(e)}")
+            raise serializers.ValidationError(f"Failed to create property: {str(e)}")
 
     def update(self, instance, validated_data):
         request = self.context.get("request")
