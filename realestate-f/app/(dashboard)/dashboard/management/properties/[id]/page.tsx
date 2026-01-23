@@ -62,7 +62,7 @@ export default function ManagementPropertyDetailPage() {
     const handleApprove = async () => {
         if (!confirm('Are you sure you want to approve this property?')) return;
         try {
-            await apiClient.post(`/properties/approve-property/${property.id}/`);
+            await apiClient.post(`/properties/approve-property/${property.id}/`, {});
             fetchProperty(); // Refresh
         } catch (error) {
             console.error('Failed to approve property:', error);
@@ -73,7 +73,7 @@ export default function ManagementPropertyDetailPage() {
     const handleReject = async () => {
         if (!confirm('Are you sure you want to reject this property?')) return;
         try {
-            await apiClient.post(`/properties/reject-property/${property.id}/`);
+            await apiClient.post(`/properties/reject-property/${property.id}/`, {});
             fetchProperty(); // Refresh
         } catch (error) {
             console.error('Failed to reject property:', error);
@@ -83,7 +83,7 @@ export default function ManagementPropertyDetailPage() {
 
     const handleToggleFeatured = async () => {
         try {
-            await apiClient.post(`/properties/toggle-featured/${property.id}/`);
+            await apiClient.post(`/properties/toggle-featured/${property.id}/`, {});
             fetchProperty();
         } catch (error) {
             console.error('Failed to toggle featured:', error);
