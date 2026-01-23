@@ -22,6 +22,7 @@ class PropertyImageSerializer(serializers.ModelSerializer):
 
 class PropertyListSerializer(serializers.ModelSerializer):
     location = LocationSerializer(read_only=True)
+    agent = AgentCompactSerializer(read_only=True)
     agent_name = serializers.CharField(source="agent.get_full_name", read_only=True)
     main_image_url = serializers.URLField(source="main_image", read_only=True)
     verification_status = serializers.SerializerMethodField()
@@ -48,6 +49,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "is_featured",
             "listing_type",
             "is_development",
+            "agent",
             "agent_name",
             "verification_status",
             "created_at",

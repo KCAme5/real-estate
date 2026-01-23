@@ -12,6 +12,7 @@ interface Property {
     price: number;
     price_display?: string;
     status: string;
+    verification_status?: string;
     main_image?: string;
     main_image_url?: string;
     created_at: string;
@@ -166,9 +167,10 @@ export default function AgentProperties() {
                                                     <td className="px-8 py-6">
                                                         <div className="flex items-center justify-end gap-2">
                                                             <Link
-                                                                href={`/properties/${property.id}`}
-                                                                target="_blank"
+                                                                href={property.verification_status === 'verified' ? `/properties/${property.id}` : `/dashboard/management/properties/${property.id}`}
+                                                                target={property.verification_status === 'verified' ? '_blank' : '_self'}
                                                                 className="p-3 bg-muted/10 text-foreground hover:bg-primary hover:text-white rounded-xl transition-all"
+                                                                title={property.verification_status === 'verified' ? 'View Public Listing' : 'View Property Details (Management View)'}
                                                             >
                                                                 <ExternalLink size={18} />
                                                             </Link>

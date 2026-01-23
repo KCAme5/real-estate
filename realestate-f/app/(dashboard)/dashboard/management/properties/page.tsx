@@ -103,7 +103,10 @@ export default function ManagementPropertiesPage() {
 
     const filteredProperties = properties.filter(p => {
         const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
-            p.location?.name?.toLowerCase().includes(search.toLowerCase());
+            p.location?.name?.toLowerCase().includes(search.toLowerCase()) ||
+            p.location_name?.toLowerCase().includes(search.toLowerCase()) ||
+            p.agent?.username?.toLowerCase().includes(search.toLowerCase()) ||
+            p.agent_name?.toLowerCase().includes(search.toLowerCase());
         const matchesFilter = filter === 'all' ? true :
             filter === 'pending' ? p.verification_status === 'pending' :
                 filter === 'verified' ? p.verification_status === 'verified' :
@@ -140,7 +143,7 @@ export default function ManagementPropertiesPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                         <input
                             type="text"
-                            placeholder="Search properties..."
+                            placeholder="Search properties, locations, or agents..."
                             className="input input-bordered w-full pl-10 rounded-xl"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -232,10 +235,10 @@ export default function ManagementPropertiesPage() {
                                                 <div className="flex items-center gap-2">
                                                     <div className="avatar placeholder">
                                                         <div className="bg-neutral text-neutral-content rounded-full w-8">
-                                                            <span>{property.agent?.username?.charAt(0).toUpperCase()}</span>
+                                                            <span>{property.agent?.username?.charAt(0).toUpperCase() || property.agent_name?.charAt(0).toUpperCase() || 'U'}</span>
                                                         </div>
                                                     </div>
-                                                    <span>{property.agent?.username || 'Unknown'}</span>
+                                                    <span>{property.agent?.username || property.agent_name || 'Unknown'}</span>
                                                 </div>
                                             </td>
                                             <td className="font-medium">
@@ -257,7 +260,7 @@ export default function ManagementPropertiesPage() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-48 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
                                                         <DropdownMenuItem asChild>
-                                                            <Link href={`/properties/${property.slug}`} className="w-full cursor-pointer">
+                                                            <Link href={`/dashboard/management/properties/${property.id}`} className="w-full cursor-pointer">
                                                                 View Details
                                                             </Link>
                                                         </DropdownMenuItem>

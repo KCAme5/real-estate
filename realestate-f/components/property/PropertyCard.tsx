@@ -112,7 +112,7 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
                     <div className="flex items-center gap-1.5 text-white/80">
                         <MapPin size={14} className="text-blue-400" />
                         <span className="text-sm truncate">
-                            {property.location?.name || 'Location N/A'}
+                            {property.location?.name || property.location_name || 'Location N/A'}
                         </span>
                     </div>
                 </div>
