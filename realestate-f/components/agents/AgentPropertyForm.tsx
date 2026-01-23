@@ -251,8 +251,8 @@ export default function AgentPropertyForm({
             fd.append('currency', currency);
 
             // Location
-            const locationValue = customLocation.trim() || location;
-            fd.append('location', locationValue.toString());
+            const locationValue = customLocation.trim() || String(location);
+            fd.append('location', locationValue);
             if (address) fd.append('address', address);
             if (latitude) fd.append('latitude', latitude);
             if (longitude) fd.append('longitude', longitude);
