@@ -5,7 +5,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("properties", "0001_initial"),
+        ("properties", "0006_property_is_development_property_listing_type"),
     ]
 
     operations = [
