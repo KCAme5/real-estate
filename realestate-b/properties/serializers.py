@@ -25,6 +25,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
     agent_name = serializers.CharField(source="agent.get_full_name", read_only=True)
     main_image_url = serializers.URLField(source="main_image", read_only=True)
     verification_status = serializers.SerializerMethodField()
+    location_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = Property
@@ -37,6 +38,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "currency",
             "price_display",
             "location",
+            "location_name",
             "bedrooms",
             "bathrooms",
             "square_feet",
@@ -68,6 +70,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     )
     main_image_url = serializers.URLField(source="main_image", read_only=True)
     verification_status = serializers.SerializerMethodField()
+    location_name = serializers.CharField(read_only=True)
 
     class Meta:
         model = Property
@@ -89,6 +92,14 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
 
     features = serializers.JSONField(
         required=False, allow_null=True, help_text="List of property features"
+    )
+
+    location_name = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        allow_null=True,
+        max_length=200,
+        help_text="Free-form location name",
     )
 
     class Meta:
@@ -132,13 +143,6 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         if not attrs.get("price"):
             raise serializers.ValidationError("Price is required")
 
-        # Location can be string (name) or Location object
-        location = attrs.get("location")
-        if location and not isinstance(location, (str, int, Location)):
-            raise serializers.ValidationError(
-                "Location must be a valid location name or ID"
-            )
-
         return attrs
 
     def create(self, validated_data):
@@ -146,31 +150,6 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
         image_urls = validated_data.pop("image_urls", [])
 
         try:
-            # Handle location - create if it doesn't exist
-            location_data = validated_data.pop("location", None)
-            if location_data:
-                if isinstance(location_data, str):
-                    # Create new location from string
-                    location, created = Location.objects.get_or_create(
-                        name=location_data.strip(),
-                        defaults={
-                            "county": "Unknown",
-                            "slug": location_data.lower()
-                            .replace(" ", "-")
-                            .replace("/", "-")[:50],
-                        },
-                    )
-                    validated_data["location"] = location
-                elif isinstance(location_data, int):
-                    # Get existing location by ID
-                    try:
-                        location = Location.objects.get(id=location_data)
-                        validated_data["location"] = location
-                    except Location.DoesNotExist:
-                        raise serializers.ValidationError(
-                            f"Location with ID {location_data} not found"
-                        )
-
             # Handle main_image file upload
             if request and request.FILES.get("main_image"):
                 f = request.FILES["main_image"]
@@ -184,12 +163,12 @@ class PropertyCreateSerializer(serializers.ModelSerializer):
                 # Use first URL as main image if no file uploaded
                 validated_data["main_image"] = image_urls[0]
 
-            # Set default values for missing required fields
             validated_data.setdefault("property_type", "apartment")
             validated_data.setdefault("description", validated_data.get("title", ""))
             validated_data.setdefault("listing_type", "sale")
             validated_data.setdefault("currency", "KES")
 
+            # Create property
             prop = Property.objects.create(**validated_data)
 
             # Handle multiple images from files

@@ -69,7 +69,7 @@ class Property(models.Model):
     listing_type = models.CharField(
         max_length=10, choices=LISTING_TYPES, default="sale"
     )
-    
+
     is_development = models.BooleanField(
         default=False, help_text="Is this a development project?"
     )
@@ -110,7 +110,9 @@ class Property(models.Model):
     # Media
     main_image = models.URLField(blank=True, null=True)
     images = models.JSONField(default=list, blank=True)
-    video_url = models.URLField(blank=True, null=True, help_text="Link to property tour video (YouTube/Vimeo)")
+    video_url = models.URLField(
+        blank=True, null=True, help_text="Link to property tour video (YouTube/Vimeo)"
+    )
 
     # Agent and Ownership
     agent = models.ForeignKey(
@@ -123,6 +125,9 @@ class Property(models.Model):
     )
     owner_name = models.CharField(max_length=100, blank=True, null=True)
     owner_phone = models.CharField(max_length=15, blank=True, null=True)
+
+    # Location as text (for free-form location input)
+    location_name = models.CharField(max_length=200, blank=True, null=True)
 
     # Metadata
     is_featured = models.BooleanField(default=False)

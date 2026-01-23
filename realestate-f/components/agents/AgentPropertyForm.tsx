@@ -252,10 +252,10 @@ export default function AgentPropertyForm({
 
             // Location - handle both PK and custom location
             if (customLocation.trim()) {
-                // For custom location, send as string and let backend handle it
-                fd.append('location', customLocation.trim());
+                // For custom location, send as location_name
+                fd.append('location_name', customLocation.trim());
             } else if (location && typeof location === 'number') {
-                // For existing locations, send the PK as string
+                // For existing locations, send the PK as location
                 fd.append('location', location.toString());
             }
             if (address) fd.append('address', address);
