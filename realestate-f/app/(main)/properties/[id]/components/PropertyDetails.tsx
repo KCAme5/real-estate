@@ -208,7 +208,7 @@ export default function PropertyDetails({ property, onContact }: PropertyDetails
                     <div className="space-y-6">
                         {[
                             { label: 'Current Status', value: property.status, color: 'text-primary' },
-                            { label: 'Listing Date', value: new Date(property.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) },
+                            { label: 'Listing Date', value: property.created_at ? new Date(property.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'N/A' },
                             { label: 'Price Neg.', value: property.is_negotiable ? 'Flexible' : 'Fixed Price' },
                             { label: 'Ownership', value: property.ownership_type || 'Freehold' },
                         ].map((fact, i) => (

@@ -134,7 +134,7 @@ export default function AgentProperties() {
                                                                 <div className="font-bold text-foreground group-hover:text-primary transition-colors text-lg line-clamp-1">{property.title}</div>
                                                                 <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-widest">
                                                                     <Calendar size={12} />
-                                                                    Listed: {new Date(property.created_at).toLocaleDateString()}
+                                                                    Listed: {property.created_at ? new Date(property.created_at).toLocaleDateString() : 'N/A'}
                                                                 </div>
                                                             </div>
                                                         </div>
