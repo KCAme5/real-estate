@@ -207,8 +207,27 @@ def management_analytics(request):
 
     # Fallback if no performance records
     if not top_agents:
-        # simple fallback query
-        pass
+        # simple fallback query - calculate from actual Property data
+        top_agents_qs = (
+            Property.objects.filter(agent__isnull=False)
+            .values("agent__username")
+            .annotate(
+                properties_count=Count("id"),
+                sold_properties=Count("id", filter=Q(status="sold")),
+                leads_count=Count("leads", filter=Q(leads__isnull=False)),
+            )
+            .order_by("-properties_count")[:5]
+        )
+
+        for agent_data in top_agents_qs:
+            top_agents.append(
+                {
+                    "username": agent_data["agent__username"],
+                    "properties_count": agent_data["properties_count"],
+                    "leads_count": agent_data["leads_count"],
+                    "sold_properties": agent_data["sold_properties"],
+                }
+            )
 
     # Agent Performance List (Full)
     agent_perf_list = []

@@ -69,12 +69,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         }
     }, [savedProperties, property]);
 
-    const agentId = property?.agent_profile_id || property?.agent;
-    const { data: agent } = useQuery({
-        queryKey: ["agent", agentId],
-        queryFn: () => agentsAPI.getBySlugOrId(agentId),
-        enabled: !!agentId
-    });
+    const agent = property?.agent;
 
     const { data: similarProperties } = useQuery({
         queryKey: ["similar-properties", property?.property_type, property?.location?.id],
@@ -98,21 +93,21 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
         try {
             setIsStartingChat(true);
-            const res = await leadsAPI.createConversation(property.id, agent.user);
+            const res = await leadsAPI.createConversation(property.id, agent.id);
             const conversationId = res.id || res.data?.id;
 
             const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
             if (conversationId) {
                 router.push(`${baseMessagesPath}?id=${conversationId}`);
             } else {
-                router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent.user}`);
+                router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent.id}`);
             }
         } catch (error: any) {
             if (error?.status !== 400 && error?.response?.status !== 400) {
                 console.error('Inquiry creation note:', error);
             }
             const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
-            router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent.user}`);
+            router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent.id}`);
         } finally {
             setIsStartingChat(false);
         }
@@ -711,8 +706,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                             <div className="relative">
                                                 <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-2xl ring-4 ring-white">
                                                     <img
-                                                        src={agent?.user_avatar || `https://ui-avatars.com/api/?name=${agent?.user_name}&background=6D28D9&color=fff&size=200`}
-                                                        alt={agent?.user_name}
+                                                        src={agent?.profile_picture || `https://ui-avatars.com/api/?name=${agent?.username}&background=6D28D9&color=fff&size=200`}
+                                                        alt={agent?.username}
                                                         className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500"
                                                     />
                                                 </div>
@@ -721,9 +716,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                                 </div>
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-black text-blue-950 dark:text-white leading-tight mb-1">{agent?.user_name || 'Loading agent...'}</h3>
+                                                <h3 className="text-xl font-black text-blue-950 dark:text-white leading-tight mb-1">{agent?.username || 'Loading agent...'}</h3>
                                                 <div className="flex flex-col">
-                                                    <span className="text-xs font-bold uppercase tracking-widest text-blue-500/70">{agent?.role || 'Senior Real Estate Agent'}</span>
+                                                    <span className="text-xs font-bold uppercase tracking-widest text-blue-500/70">{'Senior Real Estate Agent'}</span>
                                                     <div className="flex items-center gap-1 mt-1 opacity-60">
                                                         <Shield className="w-3.5 h-3.5 text-blue-500" />
                                                         <span className="text-[10px] font-bold uppercase tracking-widest dark:text-slate-400">Verified Expert</span>
@@ -750,14 +745,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
                                             <div className="grid grid-cols-2 gap-3">
                                                 <a
-                                                    href={`tel:${agent?.user_phone}`}
+                                                    href={`tel:${agent?.phone_number}`}
                                                     className="py-4 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-blue-950 dark:text-white rounded-2xl font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-white/5"
                                                 >
                                                     <Phone className="w-4 h-4 text-blue-500" />
                                                     Call
                                                 </a>
                                                 <a
-                                                    href={`https://wa.me/${agent?.whatsapp_number || agent?.user_phone}?text=Hi, I'm interested in ${property.title}`}
+                                                    href={`https://wa.me/${agent?.phone_number}?text=Hi, I'm interested in ${property.title}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="py-4 bg-emerald-50 dark:bg-emerald-900/10 hover:bg-emerald-100 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-emerald-200 dark:border-emerald-900/30"

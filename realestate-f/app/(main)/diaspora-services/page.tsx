@@ -434,27 +434,27 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-linear-to-r from-primary to-secondary">
+            <section className="py-16 bg-gradient-to-r from-primary to-secondary">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-4xl mx-auto text-center text-white">
-                        <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-white">
                             Ready to Invest in Kenya?
                         </h2>
-                        <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
+                        <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                             Join hundreds of successful diaspora investors who trust KenyaPrime Properties
                             with their Kenyan real estate journey.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/contact"
-                                className="px-8 py-3 bg-background text-primary hover:bg-muted font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                                className="px-8 py-3 bg-white text-primary hover:bg-gray-100 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                             >
                                 <Phone className="w-5 h-5" />
                                 Schedule Free Consultation
                             </Link>
                             <Link
                                 href="/properties"
-                                className="px-8 py-3 bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                                className="px-8 py-3 bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
                             >
                                 <Home className="w-5 h-5" />
                                 Browse Investment Properties
