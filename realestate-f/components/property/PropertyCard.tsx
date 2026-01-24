@@ -58,7 +58,7 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
     };
 
     return (
-        <div className="group relative bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 aspect-4/5 sm:aspect-3/4">
+        <div className="group relative bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 aspect-3/4 sm:aspect-2/3">
             <Link href={`/properties/${property.slug}`} className="absolute inset-0 z-10" />
 
             {/* Main Image - Now covers the whole card */}

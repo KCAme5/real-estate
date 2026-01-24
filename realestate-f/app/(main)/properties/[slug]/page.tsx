@@ -501,10 +501,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                 <h3 className="text-lg font-bold text-foreground mb-4">Property Agent</h3>
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="w-16 h-16 bg-muted rounded-full overflow-hidden">
-                                        {agent?.profile_picture ? (
+                                        {agent?.user_avatar ? (
                                             <Image
-                                                src={agent.profile_picture}
-                                                alt={agent?.username || 'Agent'}
+                                                src={agent.user_avatar}
+                                                alt={agent?.user_name || 'Agent'}
                                                 width={64}
                                                 height={64}
                                                 className="object-cover"
@@ -512,7 +512,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-primary/10">
                                                 <span className="text-primary font-bold text-xl">
-                                                    {agent?.username?.charAt(0)?.toUpperCase() || 'A'}
+                                                    {agent?.user_name?.charAt(0)?.toUpperCase() ||
+                                                        agent?.user_email?.charAt(0)?.toUpperCase() ||
+                                                        "U"}
                                                 </span>
                                             </div>
                                         )}
@@ -535,9 +537,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         )}
                                         {isStartingChat ? 'Starting Chat...' : 'Contact Agent'}
                                     </button>
-                                    {agent?.phone_number && (
+                                    {agent?.user_phone && (
                                         <a
-                                            href={`tel:${agent.phone_number}`}
+                                            href={`tel:${agent.user_phone}`}
                                             className="w-full py-3 bg-muted text-foreground rounded-xl hover:bg-muted/80 transition-colors flex items-center justify-center gap-2"
                                         >
                                             <Phone className="w-4 h-4" />

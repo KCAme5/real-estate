@@ -34,10 +34,14 @@ export interface Property {
     main_image: string;
     agent: {
         id: number;
-        username: string;
-        email: string;
-        phone_number?: string;
-        profile_picture?: string;
+        slug: string;
+        user_name: string;
+        user_email: string;
+        user_phone?: string;
+        user_avatar?: string;
+        average_rating?: number;
+        years_of_experience?: number;
+        is_verified?: boolean;
     };
     created_at: string;
     views?: number;
