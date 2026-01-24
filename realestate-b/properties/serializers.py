@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.core.files.storage import default_storage
 from django.conf import settings
 from .models import Property, Location, PropertyImage, SavedProperty
+from agents.serializers import AgentCompactSerializer
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -61,9 +62,6 @@ class PropertyListSerializer(serializers.ModelSerializer):
         # If we need 'rejected', we might need a Status field in the model.
         # For now let's map is_verified to 'verified'/'pending'
         return "verified" if obj.is_verified else "pending"
-
-
-from agents.serializers import AgentCompactSerializer
 
 
 class PropertyDetailSerializer(serializers.ModelSerializer):
