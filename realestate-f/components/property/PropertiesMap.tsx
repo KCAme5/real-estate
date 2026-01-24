@@ -131,7 +131,7 @@ export default function PropertiesMap({ properties }: PropertiesMapProps) {
                                         </div>
                                     </div>
                                     <Link
-                                        href={`/properties/${property.id}`}
+                                        href={`/properties/${property.slug}`}
                                         className="block w-full text-center bg-primary text-primary-foreground text-xs font-bold py-2.5 rounded-lg hover:bg-primary/90 transition-all shadow-md mt-1"
                                     >
                                         View Details

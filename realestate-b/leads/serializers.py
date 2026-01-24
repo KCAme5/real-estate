@@ -49,7 +49,9 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ConversationSerializer(serializers.ModelSerializer):
-    property_title = serializers.CharField(source="property.title", read_only=True, allow_null=True)
+    property_title = serializers.CharField(
+        source="property.title", read_only=True, allow_null=True
+    )
     property_image = serializers.SerializerMethodField()
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
@@ -73,7 +75,7 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     def get_property_image(self, obj):
         if obj.property and obj.property.main_image:
-            return obj.property.main_image.url
+            return obj.property.main_image
         return None
 
     def get_last_message(self, obj):
