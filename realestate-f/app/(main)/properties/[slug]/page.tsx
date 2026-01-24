@@ -93,21 +93,21 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
         try {
             setIsStartingChat(true);
-            const res = await leadsAPI.createConversation(property.id, agent.id);
+            const res = await leadsAPI.createConversation(property.id, agent?.id);
             const conversationId = res.id || res.data?.id;
 
             const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
             if (conversationId) {
                 router.push(`${baseMessagesPath}?id=${conversationId}`);
             } else {
-                router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent.id}`);
+                router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent?.id}`);
             }
         } catch (error: any) {
             if (error?.status !== 400 && error?.response?.status !== 400) {
                 console.error('Inquiry creation note:', error);
             }
             const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
-            router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent.id}`);
+            router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent?.id}`);
         } finally {
             setIsStartingChat(false);
         }
@@ -501,10 +501,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                 <h3 className="text-lg font-bold text-gray-900 mb-4">Property Agent</h3>
                                 <div className="flex items-center gap-4 mb-4">
                                     <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden">
-                                        {agent.profile_picture ? (
+                                        {agent?.profile_picture ? (
                                             <Image
                                                 src={agent.profile_picture}
-                                                alt={agent.username}
+                                                alt={agent?.username || 'Agent'}
                                                 width={64}
                                                 height={64}
                                                 className="object-cover"
@@ -512,13 +512,13 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-blue-100">
                                                 <span className="text-blue-600 font-bold text-xl">
-                                                    {agent.username.charAt(0).toUpperCase()}
+                                                    {agent?.username?.charAt(0)?.toUpperCase() || 'A'}
                                                 </span>
                                             </div>
                                         )}
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-gray-900">{agent.username}</h4>
+                                        <h4 className="font-semibold text-gray-900">{agent?.username || 'Loading agent...'}</h4>
                                         <p className="text-sm text-gray-600">Real Estate Agent</p>
                                     </div>
                                 </div>
@@ -535,7 +535,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         )}
                                         {isStartingChat ? 'Starting Chat...' : 'Contact Agent'}
                                     </button>
-                                    {agent.phone_number && (
+                                    {agent?.phone_number && (
                                         <a
                                             href={`tel:${agent.phone_number}`}
                                             className="w-full py-3 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
