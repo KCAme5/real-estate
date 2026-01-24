@@ -329,7 +329,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         <button
                                             key={index}
                                             onClick={() => setActiveImageIndex(index)}
-                                            className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${index === activeImageIndex
+                                            className={`shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${index === activeImageIndex
                                                 ? 'border-blue-500 shadow-lg'
                                                 : 'border-gray-200 hover:border-gray-300'
                                                 }`}
@@ -414,7 +414,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         {property.features.map((feature: string, index: number) => (
                                             <div key={index} className="flex items-center gap-2">
-                                                <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                                <Check className="w-5 h-5 text-green-500 shrink-0" />
                                                 <span className="text-gray-700">{feature}</span>
                                             </div>
                                         ))}
@@ -441,10 +441,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                 <h2 className="text-xl font-bold text-gray-900 mb-4">Location Map</h2>
                                 <div className="h-[400px] rounded-2xl overflow-hidden">
                                     <Map
-                                        center={{
-                                            lat: property.latitude || 0,
-                                            lng: property.longitude || 0
-                                        }}
+                                        center={[
+                                            property.latitude || 0,
+                                            property.longitude || 0
+                                        ]}
                                         zoom={15}
                                     />
                                 </div>
