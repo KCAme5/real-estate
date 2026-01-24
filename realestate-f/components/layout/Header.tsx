@@ -156,7 +156,7 @@ export default function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 align="start"
-                                className="w-72 p-2 rounded-xl bg-card shadow-xl border border-border"
+                                className="w-72 p-2 rounded-xl bg-card/95 backdrop-blur-md shadow-xl border border-border"
                             >
                                 {/* For Sale Section */}
                                 <div className="px-3 py-2">
@@ -276,7 +276,7 @@ export default function Header() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
-                                    className="w-56 p-2 rounded-xl bg-card shadow-xl border border-border"
+                                    className="w-56 p-2 rounded-xl bg-card/95 backdrop-blur-md shadow-xl border border-border"
                                 >
                                     <DropdownMenuItem
                                         asChild
