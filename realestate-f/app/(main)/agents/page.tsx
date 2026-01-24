@@ -175,7 +175,7 @@ export default function AgentsPage() {
         <main className="min-h-screen pt-24 pb-16 bg-background">
             {/* Hero Section */}
             <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5" />
+                <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-secondary/5" />
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
                     <div className="max-w-4xl mx-auto text-center py-12 lg:py-16">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
@@ -368,9 +368,9 @@ export default function AgentsPage() {
                                     <div className="p-4 md:p-6">
                                         <div className="flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6">
                                             {/* Agent Avatar & Basic Info */}
-                                            <div className="flex-shrink-0">
+                                            <div className="shrink-0">
                                                 <div className="relative">
-                                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 p-1">
+                                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-linear-to-br from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 p-1">
                                                         {agent.user_avatar ? (
                                                             <div className="w-full h-full rounded-xl overflow-hidden">
                                                                 <Image
@@ -381,7 +381,7 @@ export default function AgentsPage() {
                                                                 />
                                                             </div>
                                                         ) : (
-                                                            <div className="w-full h-full rounded-xl bg-gradient-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
+                                                            <div className="w-full h-full rounded-xl bg-linear-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
                                                                 <span className="text-2xl font-bold text-white">
                                                                     {agent.user_name?.[0]?.toUpperCase() || 'A'}
                                                                 </span>

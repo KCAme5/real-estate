@@ -166,7 +166,7 @@ export default function PropertyDetails({ property, onContact }: PropertyDetails
                         {property.features.map((feature: string, index: number) => {
                             const FeatureIcon = getFeatureIcon(feature);
                             return (
-                                <div key={index} className="group flex items-center gap-4 p-5 md:p-6 bg-card border border-border/50 rounded-[2rem] hover:bg-primary/5 hover:border-primary/20 transition-all duration-300">
+                                <div key={index} className="group flex items-center gap-4 p-5 md:p-6 bg-card border border-border/50 rounded-4xl hover:bg-primary/5 hover:border-primary/20 transition-all duration-300">
                                     <div className="p-3 bg-muted group-hover:bg-primary/10 rounded-xl transition-colors">
                                         <FeatureIcon size={20} className="text-foreground group-hover:text-primary transition-colors" />
                                     </div>

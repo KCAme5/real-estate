@@ -58,7 +58,7 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
     };
 
     return (
-        <div className="group relative bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 aspect-[4/5] sm:aspect-[3/4]">
+        <div className="group relative bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 aspect-4/5 sm:aspect-3/4">
             <Link href={`/properties/${property.slug}`} className="absolute inset-0 z-10" />
 
             {/* Main Image - Now covers the whole card */}
@@ -75,7 +75,7 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
                 />
 
                 {/* Gradient Overlay for better text readability on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
             {/* Status Badges - Top Left (Keep these minimal) */}
@@ -112,7 +112,7 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
                     <div className="flex items-center gap-1.5 text-white/80">
                         <MapPin size={14} className="text-blue-400" />
                         <span className="text-sm truncate">
-                            {property.location?.name || property.location_name || 'Location N/A'}
+                            {property.location?.name || 'Location N/A'}
                         </span>
                     </div>
                 </div>

@@ -91,7 +91,7 @@ export default function AgentDetailPage() {
                     {/* Agent Profile Card */}
                     <div className="lg:col-span-1">
                         <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800 sticky top-24">
-                            <div className="h-32 bg-gradient-to-r from-blue-600 to-emerald-600"></div>
+                            <div className="h-32 bg-linear-to-r from-blue-600 to-emerald-600"></div>
                             <div className="px-8 pb-8 -mt-16 text-center">
                                 <div className="avatar mb-4">
                                     <div className="w-32 h-32 rounded-3xl ring-8 ring-white dark:ring-gray-900 overflow-hidden bg-white shadow-lg">

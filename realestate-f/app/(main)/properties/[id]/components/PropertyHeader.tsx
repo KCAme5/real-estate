@@ -22,7 +22,7 @@ export default function PropertyHeader({
     router
 }: PropertyHeaderProps) {
     return (
-        <div className="sticky top-0 z-[60] bg-background/60 backdrop-blur-2xl border-b border-border/50">
+        <div className="sticky top-0 z-60 bg-background/60 backdrop-blur-2xl border-b border-border/50">
             <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4">
                 <div className="flex items-center justify-between gap-4">
                     {/* Left: Back & Title */}
@@ -53,7 +53,7 @@ export default function PropertyHeader({
                             <div tabIndex={0} role="button" className="p-2.5 md:p-3 bg-muted/50 hover:bg-background rounded-2xl transition-all shadow-sm">
                                 <Share2 size={20} className="text-foreground" />
                             </div>
-                            <div tabIndex={0} className="dropdown-content z-50 mt-4 p-4 shadow-2xl bg-card border border-border rounded-[2rem] w-72 backdrop-blur-xl">
+                            <div tabIndex={0} className="dropdown-content z-50 mt-4 p-4 shadow-2xl bg-card border border-border rounded-4xl w-72 backdrop-blur-xl">
                                 <div className="p-2 mb-4 border-b border-border/50">
                                     <h3 className="font-black text-foreground uppercase tracking-widest text-xs">Share Property</h3>
                                 </div>

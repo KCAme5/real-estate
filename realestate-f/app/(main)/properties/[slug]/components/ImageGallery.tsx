@@ -111,7 +111,7 @@ export default function ImageGallery({
                         <button
                             key={index}
                             onClick={() => setActiveImage(index)}
-                            className={`shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-[1.5rem] overflow-hidden border-2 transition-all p-1 ${index === activeImage
+                            className={`shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-3xl overflow-hidden border-2 transition-all p-1 ${index === activeImage
                                     ? 'border-primary bg-primary/20 scale-105'
                                     : 'border-transparent hover:border-primary/50'
                                 }`}
@@ -125,7 +125,7 @@ export default function ImageGallery({
                     ))}
                     <button
                         onClick={onLightboxOpen}
-                        className="shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-[1.5rem] bg-muted flex flex-col items-center justify-center gap-2 border-2 border-transparent hover:border-primary/30 transition-all group"
+                        className="shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-3xl bg-muted flex flex-col items-center justify-center gap-2 border-2 border-transparent hover:border-primary/30 transition-all group"
                     >
                         <Grid size={20} className="text-muted-foreground group-hover:text-primary transition-colors" />
                         <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors">View All</span>

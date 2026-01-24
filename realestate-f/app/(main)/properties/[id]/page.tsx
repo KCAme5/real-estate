@@ -298,10 +298,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
         <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
             {/* Lightbox for Images */}
             {isLightboxOpen && images.length > 0 && (
-                <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4">
+                <div className="fixed inset-0 z-100 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-4">
                     <button
                         onClick={() => setIsLightboxOpen(false)}
-                        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-[110]"
+                        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-110"
                     >
                         <X size={24} />
                     </button>
@@ -309,7 +309,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     <div className="relative w-full h-full max-w-6xl flex items-center justify-center">
                         <button
                             onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                            className="absolute left-4 p-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all z-[110]"
+                            className="absolute left-4 p-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all z-110"
                         >
                             <ChevronLeft size={32} />
                         </button>
@@ -327,7 +327,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
                         <button
                             onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                            className="absolute right-4 p-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all z-[110]"
+                            className="absolute right-4 p-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl transition-all z-110"
                         >
                             <ChevronRight size={32} />
                         </button>
@@ -429,7 +429,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                             <div className="flex-1">
                                 {images.length > 0 ? (
                                     <div
-                                        className="relative aspect-[16/9] lg:aspect-[21/9] rounded-3xl overflow-hidden bg-gray-100 dark:bg-slate-800 shadow-2xl group cursor-zoom-in"
+                                        className="relative aspect-video lg:aspect-21/9 rounded-3xl overflow-hidden bg-gray-100 dark:bg-slate-800 shadow-2xl group cursor-zoom-in"
                                         onClick={() => setIsLightboxOpen(true)}
                                     >
                                         <Image
@@ -443,7 +443,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                         />
 
                                         {/* Overlay Gradient */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none" />
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-60 pointer-events-none" />
 
                                         {/* Navigation Arrows - Glass Effect */}
                                         {images.length > 1 && (
@@ -491,7 +491,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="aspect-[16/9] lg:aspect-[21/9] rounded-3xl bg-gray-50 flex flex-col items-center justify-center border-2 border-dashed border-gray-200">
+                                    <div className="aspect-video lg:aspect-21/9 rounded-3xl bg-gray-50 flex flex-col items-center justify-center border-2 border-dashed border-gray-200">
                                         <Home className="w-20 h-20 text-gray-200 mb-4" />
                                         <p className="text-gray-400 font-medium">No images available for this property</p>
                                     </div>
@@ -526,7 +526,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                         <button
                                             key={index}
                                             onClick={() => setActiveImageIndex(index)}
-                                            className={`relative flex-shrink-0 w-24 aspect-square rounded-2xl overflow-hidden transition-all ${activeImageIndex === index ? 'ring-2 ring-blue-500 scale-95' : 'opacity-70'}`}
+                                            className={`relative shrink-0 w-24 aspect-square rounded-2xl overflow-hidden transition-all ${activeImageIndex === index ? 'ring-2 ring-blue-500 scale-95' : 'opacity-70'}`}
                                         >
                                             <Image
                                                 src={img}
@@ -578,7 +578,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                     </div>
 
                                     {/* Stats Grid - High Visual Impact */}
-                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50/50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-100/80 dark:border-white/5">
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-slate-50/50 dark:bg-slate-800/50 rounded-4xl border border-slate-100/80 dark:border-white/5">
                                         {[
                                             { icon: Home, label: 'Bedrooms', val: property.bedrooms || 0, color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' },
                                             { icon: Ruler, label: 'Bathrooms', val: property.bathrooms || 0, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' },
@@ -659,7 +659,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                     </div>
                                     Property Location
                                 </h2>
-                                <div className="relative h-[450px] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800">
+                                <div className="relative h-[450px] rounded-4xl overflow-hidden shadow-2xl border-4 border-white dark:border-slate-800">
                                     {property.latitude && property.longitude ? (
                                         <Map
                                             center={[parseFloat(property.latitude), parseFloat(property.longitude)]}
@@ -906,7 +906,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                     <button
                         onClick={handleStartChat}
                         disabled={isStartingChat}
-                        className="h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-[2rem] font-black uppercase tracking-widest text-[10px] shadow-xl shadow-blue-500/40 transition-all active:scale-95 flex items-center gap-3"
+                        className="h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-4xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-blue-500/40 transition-all active:scale-95 flex items-center gap-3"
                     >
                         {isStartingChat ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
                         {isStartingChat ? 'Creating Chat...' : 'Inquiry'}
@@ -916,7 +916,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
             {/* Schedule Viewing Modal */}
             {isViewingModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
                     <div
                         className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
                         onClick={() => setIsViewingModalOpen(false)}
@@ -990,7 +990,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                                 <button
                                     type="submit"
                                     disabled={isSubmittingViewing}
-                                    className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-2xl shadow-blue-600/30 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
+                                    className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white rounded-4xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-blue-600/30 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
                                 >
                                     {isSubmittingViewing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Calendar className="w-5 h-5" />}
                                     {isSubmittingViewing ? 'Processing...' : 'Confirm Request'}

@@ -265,7 +265,7 @@ export default function DiasporaServicesPage() {
                             return (
                                 <div key={index} className="bg-linear-to-b from-muted to-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
                                     <div className="flex items-start gap-4 mb-6">
-                                        <div className="flex-shrink-0">
+                                        <div className="shrink-0">
                                             <div className="w-14 h-14 rounded-xl bg-linear-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
                                                 <Icon className="w-7 h-7 text-primary" />
                                             </div>
@@ -282,7 +282,7 @@ export default function DiasporaServicesPage() {
                                     <div className="space-y-3">
                                         {service.features.map((feature, idx) => (
                                             <div key={idx} className="flex items-center gap-3">
-                                                <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                                                <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
                                                 <span className="text-muted-foreground">{feature}</span>
                                             </div>
                                         ))}
@@ -321,7 +321,7 @@ export default function DiasporaServicesPage() {
                                                 }`}
                                         >
                                             <div className="flex items-start gap-4">
-                                                <div className="flex-shrink-0">
+                                                <div className="shrink-0">
                                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${activeProcess === index
                                                         ? 'bg-linear-to-br from-primary to-secondary'
                                                         : 'bg-muted'
@@ -352,7 +352,7 @@ export default function DiasporaServicesPage() {
                             </div>
 
                             {/* Process Visualization */}
-                            <div className="lg:w-80 flex-shrink-0">
+                            <div className="lg:w-80 shrink-0">
                                 <div className="sticky top-24 bg-card rounded-2xl p-8 shadow-xl">
                                     <div className="text-center mb-8">
                                         <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-linear-to-br from-primary/5 to-secondary/5 mb-4">
@@ -434,7 +434,7 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-slate-800 to-slate-700">
+            <section className="py-16 bg-linear-to-r from-slate-800 to-slate-700">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-white">

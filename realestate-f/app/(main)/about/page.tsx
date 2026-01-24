@@ -126,7 +126,7 @@ export default function AboutPage() {
                             {activeTab === 'mission' && (
                                 <div className="space-y-6">
                                     <div className="flex items-start gap-4">
-                                        <Target className="w-12 h-12 text-primary flex-shrink-0" />
+                                        <Target className="w-12 h-12 text-primary shrink-0" />
                                         <div>
                                             <h3 className="text-2xl font-bold text-foreground mb-4">
                                                 Our Mission
@@ -137,19 +137,19 @@ export default function AboutPage() {
                                             </p>
                                             <div className="mt-6 space-y-4">
                                                 <div className="flex items-start gap-3">
-                                                    <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
+                                                    <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 shrink-0" />
                                                     <span className="text-muted-foreground">
                                                         Empower clients with knowledge and tools for informed decisions
                                                     </span>
                                                 </div>
                                                 <div className="flex items-start gap-3">
-                                                    <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
+                                                    <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 shrink-0" />
                                                     <span className="text-muted-foreground">
                                                         Maintain the highest standards of integrity and professionalism
                                                     </span>
                                                 </div>
                                                 <div className="flex items-start gap-3">
-                                                    <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 flex-shrink-0" />
+                                                    <CheckCircle className="w-5 h-5 text-emerald-500 mt-1 shrink-0" />
                                                     <span className="text-muted-foreground">
                                                         Build lasting relationships based on trust and results
                                                     </span>
@@ -163,7 +163,7 @@ export default function AboutPage() {
                             {activeTab === 'vision' && (
                                 <div className="space-y-6">
                                     <div className="flex items-start gap-4">
-                                        <TrendingUp className="w-12 h-12 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                                        <TrendingUp className="w-12 h-12 text-emerald-600 dark:text-emerald-400 shrink-0" />
                                         <div>
                                             <h3 className="text-2xl font-bold text-foreground mb-4">
                                                 Our Vision
@@ -205,7 +205,7 @@ export default function AboutPage() {
                             {activeTab === 'story' && (
                                 <div className="space-y-6">
                                     <div className="flex items-start gap-4">
-                                        <Building2 className="w-12 h-12 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                                        <Building2 className="w-12 h-12 text-purple-600 dark:text-purple-400 shrink-0" />
                                         <div>
                                             <h3 className="text-2xl font-bold text-foreground mb-4">
                                                 Our Story
@@ -292,7 +292,7 @@ export default function AboutPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 {services.map((service, index) => (
                                     <div key={index} className="flex items-center gap-3">
-                                        <CheckCircle className="w-5 h-5 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />
+                                        <CheckCircle className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                                         <span className="text-muted-foreground">{service}</span>
                                     </div>
                                 ))}

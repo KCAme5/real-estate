@@ -123,7 +123,7 @@ export default function ClientDashboard() {
                     {loading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {[1, 2, 3].map(i => (
-                                <div key={i} className="aspect-[4/3] bg-muted/50 rounded-[2.5rem] animate-pulse"></div>
+                                <div key={i} className="aspect-4/3 bg-muted/50 rounded-[2.5rem] animate-pulse"></div>
                             ))}
                         </div>
                     ) : (

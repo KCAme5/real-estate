@@ -151,28 +151,28 @@ export default function ManagementDashboard() {
                         <p className="text-sm text-muted-foreground font-medium mt-1">Real-time platform activity</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-2xl p-5 md:p-6 border border-primary/20">
+                        <div className="bg-linear-to-r from-primary/10 to-primary/5 rounded-2xl p-5 md:p-6 border border-primary/20">
                             <div className="flex items-center justify-between">
                                 <Home className="text-primary w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <p className="text-2xl md:text-3xl font-bold text-primary mt-3 md:mt-4">{analytics.today.new_properties}</p>
                             <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">New Properties</p>
                         </div>
-                        <div className="bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-2xl p-5 md:p-6 border border-secondary/20">
+                        <div className="bg-linear-to-r from-secondary/10 to-secondary/5 rounded-2xl p-5 md:p-6 border border-secondary/20">
                             <div className="flex items-center justify-between">
                                 <TrendingUp className="text-secondary w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <p className="text-2xl md:text-3xl font-bold text-secondary mt-3 md:mt-4">{analytics.today.new_leads}</p>
                             <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">New Leads</p>
                         </div>
-                        <div className="bg-gradient-to-r from-accent/10 to-accent/5 rounded-2xl p-5 md:p-6 border border-accent/20">
+                        <div className="bg-linear-to-r from-accent/10 to-accent/5 rounded-2xl p-5 md:p-6 border border-accent/20">
                             <div className="flex items-center justify-between">
                                 <Eye className="text-accent w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <p className="text-2xl md:text-3xl font-bold text-accent mt-3 md:mt-4">{analytics.today.property_views}</p>
                             <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest mt-2">Property Views</p>
                         </div>
-                        <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-2xl p-5 md:p-6 border border-success/20">
+                        <div className="bg-linear-to-r from-success/10 to-success/5 rounded-2xl p-5 md:p-6 border border-success/20">
                             <div className="flex items-center justify-between">
                                 <Activity className="text-success w-5 h-5 md:w-6 md:h-6" />
                             </div>
