@@ -273,15 +273,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="min-h-screen bg-background pt-20">
             <div className="container mx-auto px-4 py-8">
                 {/* Breadcrumb */}
-                <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-                    <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+                <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6">
+                    <Link href="/" className="hover:text-primary transition-colors">Home</Link>
                     <span>/</span>
-                    <Link href="/properties" className="hover:text-blue-600 transition-colors">Properties</Link>
+                    <Link href="/properties" className="hover:text-primary transition-colors">Properties</Link>
                     <span>/</span>
-                    <span className="text-gray-900 font-medium">{property.title}</span>
+                    <span className="text-foreground font-medium">{property.title}</span>
                 </nav>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -289,7 +289,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                     <div className="lg:col-span-2 space-y-8">
                         {/* Image Gallery */}
                         <div className="relative">
-                            <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden bg-gray-100">
+                            <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden bg-muted">
                                 {images.length > 0 ? (
                                     <>
                                         <Image
@@ -348,11 +348,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                         </div>
 
                         {/* Property Details */}
-                        <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                        <div className="bg-card rounded-3xl p-8 shadow-sm border border-border">
                             <div className="flex items-start justify-between mb-6">
                                 <div>
-                                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{property.title}</h1>
-                                    <div className="flex items-center gap-4 text-gray-600">
+                                    <h1 className="text-3xl font-bold text-foreground mb-2">{property.title}</h1>
+                                    <div className="flex items-center gap-4 text-muted-foreground">
                                         <div className="flex items-center gap-1">
                                             <MapPin className="w-4 h-4" />
                                             <span>{property.location?.name}</span>
@@ -364,10 +364,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-3xl font-bold text-blue-600">
+                                    <div className="text-3xl font-bold text-primary">
                                         {formatCurrency(property.price)}
                                     </div>
-                                    <div className="text-sm text-gray-500">
+                                    <div className="text-sm text-muted-foreground">
                                         {property.listing_type === 'rent' ? '/month' : ''}
                                     </div>
                                 </div>
@@ -375,34 +375,34 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
                             {/* Property Features */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                                <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <Home className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                                    <div className="font-semibold text-gray-900">{property.bedrooms || 0}</div>
-                                    <div className="text-sm text-gray-600">Bedrooms</div>
+                                <div className="bg-muted rounded-xl p-4 text-center">
+                                    <Home className="w-6 h-6 text-primary mx-auto mb-2" />
+                                    <div className="font-semibold text-foreground">{property.bedrooms || 0}</div>
+                                    <div className="text-sm text-muted-foreground">Bedrooms</div>
                                 </div>
-                                <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <div className="w-6 h-6 bg-blue-100 rounded-full mx-auto mb-2 flex items-center justify-center">
-                                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <div className="bg-muted rounded-xl p-4 text-center">
+                                    <div className="w-6 h-6 bg-primary/10 rounded-full mx-auto mb-2 flex items-center justify-center">
+                                        <div className="w-3 h-3 bg-primary rounded-full"></div>
                                     </div>
-                                    <div className="font-semibold text-gray-900">{property.bathrooms || 0}</div>
-                                    <div className="text-sm text-gray-600">Bathrooms</div>
+                                    <div className="font-semibold text-foreground">{property.bathrooms || 0}</div>
+                                    <div className="text-sm text-muted-foreground">Bathrooms</div>
                                 </div>
-                                <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <Maximize2 className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                                    <div className="font-semibold text-gray-900">{property.square_feet || 0}</div>
-                                    <div className="text-sm text-gray-600">sq ft</div>
+                                <div className="bg-muted rounded-xl p-4 text-center">
+                                    <Maximize2 className="w-6 h-6 text-primary mx-auto mb-2" />
+                                    <div className="font-semibold text-foreground">{property.square_feet || 0}</div>
+                                    <div className="text-sm text-muted-foreground">sq ft</div>
                                 </div>
-                                <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <Ruler className="w-6 h-6 text-blue-500 mx-auto mb-2" />
-                                    <div className="font-semibold text-gray-900">{property.property_type}</div>
-                                    <div className="text-sm text-gray-600">Type</div>
+                                <div className="bg-muted rounded-xl p-4 text-center">
+                                    <Ruler className="w-6 h-6 text-primary mx-auto mb-2" />
+                                    <div className="font-semibold text-foreground">{property.property_type}</div>
+                                    <div className="text-sm text-muted-foreground">Type</div>
                                 </div>
                             </div>
 
                             {/* Description */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">Description</h2>
-                                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                                <h2 className="text-xl font-bold text-foreground mb-4">Description</h2>
+                                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                                     {property.description}
                                 </p>
                             </div>
@@ -410,12 +410,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             {/* Features */}
                             {property.features && property.features.length > 0 && (
                                 <div className="mb-8">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-4">Features</h2>
+                                    <h2 className="text-xl font-bold text-foreground mb-4">Features</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                         {property.features.map((feature: string, index: number) => (
                                             <div key={index} className="flex items-center gap-2">
                                                 <Check className="w-5 h-5 text-green-500 shrink-0" />
-                                                <span className="text-gray-700">{feature}</span>
+                                                <span className="text-foreground">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -424,21 +424,21 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
                             {/* Location */}
                             <div className="mb-8">
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">Location</h2>
-                                <div className="bg-gray-50 rounded-xl p-6">
+                                <h2 className="text-xl font-bold text-foreground mb-4">Location</h2>
+                                <div className="bg-muted rounded-xl p-6">
                                     <div className="flex items-center gap-2 mb-4">
-                                        <MapPin className="w-5 h-5 text-blue-500" />
-                                        <span className="font-semibold text-gray-900">{property.location?.name}</span>
+                                        <MapPin className="w-5 h-5 text-primary" />
+                                        <span className="font-semibold text-foreground">{property.location?.name}</span>
                                     </div>
                                     {property.location?.county && (
-                                        <p className="text-gray-600">{property.location.county}</p>
+                                        <p className="text-muted-foreground">{property.location.county}</p>
                                     )}
                                 </div>
                             </div>
 
                             {/* Map */}
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">Location Map</h2>
+                                <h2 className="text-xl font-bold text-foreground mb-4">Location Map</h2>
                                 <div className="h-[400px] rounded-2xl overflow-hidden">
                                     <Map
                                         center={[
@@ -453,8 +453,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
                         {/* Similar Properties */}
                         {similarProperties && similarProperties.length > 0 && (
-                            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Similar Properties</h2>
+                            <div className="bg-card rounded-3xl p-8 shadow-sm border border-border">
+                                <h2 className="text-2xl font-bold text-foreground mb-6">Similar Properties</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {similarProperties.map((similarProperty: any) => (
                                         <Link
@@ -462,8 +462,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                             href={`/properties/${similarProperty.slug}`}
                                             className="group block"
                                         >
-                                            <div className="bg-gray-50 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
-                                                <div className="relative h-48 bg-gray-100">
+                                            <div className="bg-muted rounded-2xl overflow-hidden hover:shadow-lg transition-shadow">
+                                                <div className="relative h-48 bg-muted">
                                                     {similarProperty.main_image ? (
                                                         <Image
                                                             src={similarProperty.main_image}
@@ -473,15 +473,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                                         />
                                                     ) : (
                                                         <div className="h-full w-full flex items-center justify-center">
-                                                            <Home className="w-12 h-12 text-gray-300" />
+                                                            <Home className="w-12 h-12 text-muted-foreground" />
                                                         </div>
                                                     )}
                                                 </div>
                                                 <div className="p-4">
-                                                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                                    <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
                                                         {similarProperty.title}
                                                     </h3>
-                                                    <div className="text-blue-600 font-bold">
+                                                    <div className="text-primary font-bold">
                                                         {formatCurrency(similarProperty.price)}
                                                     </div>
                                                 </div>
@@ -497,10 +497,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                     <div className="space-y-6">
                         {/* Agent Card */}
                         {agent && (
-                            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                                <h3 className="text-lg font-bold text-gray-900 mb-4">Property Agent</h3>
+                            <div className="bg-card rounded-3xl p-6 shadow-sm border border-border">
+                                <h3 className="text-lg font-bold text-foreground mb-4">Property Agent</h3>
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden">
+                                    <div className="w-16 h-16 bg-muted rounded-full overflow-hidden">
                                         {agent?.profile_picture ? (
                                             <Image
                                                 src={agent.profile_picture}
@@ -510,23 +510,23 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                                 className="object-cover"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-blue-100">
-                                                <span className="text-blue-600 font-bold text-xl">
+                                            <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                                                <span className="text-primary font-bold text-xl">
                                                     {agent?.username?.charAt(0)?.toUpperCase() || 'A'}
                                                 </span>
                                             </div>
                                         )}
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-gray-900">{agent?.username || 'Loading agent...'}</h4>
-                                        <p className="text-sm text-gray-600">Real Estate Agent</p>
+                                        <h4 className="font-semibold text-foreground">{agent?.username || 'Loading agent...'}</h4>
+                                        <p className="text-sm text-muted-foreground">Real Estate Agent</p>
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <button
                                         onClick={handleStartChat}
                                         disabled={isStartingChat}
-                                        className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {isStartingChat ? (
                                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -538,7 +538,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                     {agent?.phone_number && (
                                         <a
                                             href={`tel:${agent.phone_number}`}
-                                            className="w-full py-3 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                                            className="w-full py-3 bg-muted text-foreground rounded-xl hover:bg-muted/80 transition-colors flex items-center justify-center gap-2"
                                         >
                                             <Phone className="w-4 h-4" />
                                             Call Agent
@@ -549,12 +549,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                         )}
 
                         {/* Actions */}
-                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                        <div className="bg-card rounded-3xl p-6 shadow-sm border border-border">
                             <div className="space-y-3">
                                 <button
                                     onClick={handleToggleSave}
                                     disabled={isSaving}
-                                    className="w-full py-3 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-muted text-foreground rounded-xl hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
                                     {isSaving ? (
                                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -565,12 +565,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                 </button>
                                 <button
                                     onClick={() => setIsViewingModalOpen(true)}
-                                    className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                                    className="w-full py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Calendar className="w-4 h-4" />
                                     Schedule Viewing
                                 </button>
-                                <button className="w-full py-3 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                                <button className="w-full py-3 bg-muted text-foreground rounded-xl hover:bg-muted/80 transition-colors flex items-center justify-center gap-2">
                                     <Share2 className="w-4 h-4" />
                                     Share Property
                                 </button>
@@ -578,11 +578,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                         </div>
 
                         {/* Property Status */}
-                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Property Status</h3>
+                        <div className="bg-card rounded-3xl p-6 shadow-sm border border-border">
+                            <h3 className="text-lg font-bold text-foreground mb-4">Property Status</h3>
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">Status</span>
+                                    <span className="text-muted-foreground">Status</span>
                                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${property.verification_status === 'verified'
                                         ? 'bg-green-100 text-green-800'
                                         : property.verification_status === 'rejected'
@@ -593,13 +593,13 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-600">Listed</span>
-                                    <span className="text-gray-900">{new Date(property.created_at).toLocaleDateString()}</span>
+                                    <span className="text-muted-foreground">Listed</span>
+                                    <span className="text-foreground">{new Date(property.created_at).toLocaleDateString()}</span>
                                 </div>
                                 {property.views !== undefined && (
                                     <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Views</span>
-                                        <span className="text-gray-900">{property.views.toLocaleString()}</span>
+                                        <span className="text-muted-foreground">Views</span>
+                                        <span className="text-foreground">{property.views.toLocaleString()}</span>
                                     </div>
                                 )}
                             </div>
