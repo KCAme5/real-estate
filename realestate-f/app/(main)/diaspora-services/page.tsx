@@ -434,7 +434,7 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-gradient-to-r from-primary to-secondary">
+            <section className="py-16 bg-gradient-to-r from-slate-800 to-slate-700">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-3xl lg:text-4xl font-bold mb-6 text-white">
@@ -447,7 +447,7 @@ export default function DiasporaServicesPage() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/contact"
-                                className="px-8 py-3 bg-white text-primary hover:bg-gray-100 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                                className="px-8 py-3 bg-white text-slate-800 hover:bg-gray-100 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                             >
                                 <Phone className="w-5 h-5" />
                                 Schedule Free Consultation
