@@ -14,7 +14,9 @@ class AgentProfileSerializer(serializers.ModelSerializer):
     user_phone = serializers.CharField(source="user.phone_number", read_only=True)
     user_avatar = serializers.ImageField(source="user.profile_picture", read_only=True)
     reviews = AgentReviewSerializer(many=True, read_only=True)
-    user_date_joined = serializers.DateTimeField(source="user.date_joined", read_only=True)
+    user_date_joined = serializers.DateTimeField(
+        source="user.date_joined", read_only=True
+    )
 
     active_properties = serializers.IntegerField(
         source="user.properties.count", read_only=True
@@ -52,6 +54,7 @@ class AgentProfileSerializer(serializers.ModelSerializer):
 
     def get_properties(self, obj):
         from properties.serializers import PropertyListSerializer
+
         properties = obj.user.properties.filter(is_active=True)
         return PropertyListSerializer(properties, many=True).data
 
@@ -87,10 +90,10 @@ class AgentListSerializer(serializers.ModelSerializer):
 
 
 class AgentCompactSerializer(serializers.ModelSerializer):
-    user_name = serializers.CharField(source="user.get_full_name", read_only=True)
-    user_avatar = serializers.ImageField(source="user.profile_picture", read_only=True)
-    user_phone = serializers.CharField(source="user.phone_number", read_only=True)
-    user_email = serializers.CharField(source="user.email", read_only=True)
+    user_name = serializers.SerializerMethodField()
+    user_avatar = serializers.SerializerMethodField()
+    user_phone = serializers.SerializerMethodField()
+    user_email = serializers.SerializerMethodField()
 
     class Meta:
         model = AgentProfile
@@ -105,3 +108,23 @@ class AgentCompactSerializer(serializers.ModelSerializer):
             "years_of_experience",
             "is_verified",
         )
+
+    def get_user_name(self, obj):
+        if hasattr(obj, "user") and obj.user:
+            return obj.user.get_full_name() or obj.user.username
+        return "Agent"
+
+    def get_user_avatar(self, obj):
+        if hasattr(obj, "user") and obj.user and obj.user.profile_picture:
+            return obj.user.profile_picture.url
+        return None
+
+    def get_user_phone(self, obj):
+        if hasattr(obj, "user") and obj.user and obj.user.phone_number:
+            return obj.user.phone_number
+        return None
+
+    def get_user_email(self, obj):
+        if hasattr(obj, "user") and obj.user:
+            return obj.user.email
+        return None
