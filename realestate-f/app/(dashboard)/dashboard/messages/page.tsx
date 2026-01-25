@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/toast';
 
 function MessagesContent() {
     const { user } = useAuth();
-    const { success, error, info } = useToast();
+    const { success, error: showError, info } = useToast();
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
     const recipientId = searchParams.get('recipientId');
@@ -245,7 +245,7 @@ function MessagesContent() {
             setTimeout(scrollToBottom, 100);
         } catch (error) {
             console.error('Failed to send message:', error);
-            error('Failed to send message', 'Please try again');
+            showError('Failed to send message', 'Please try again');
         } finally {
             setSending(false);
         }
@@ -271,7 +271,7 @@ function MessagesContent() {
             success('Conversation deleted', 'The conversation has been permanently deleted');
         } catch (error) {
             console.error('Failed to delete conversation:', error);
-            error('Failed to delete conversation', 'Please try again');
+            showError('Failed to delete conversation', 'Please try again');
         }
     };
 
@@ -289,7 +289,7 @@ function MessagesContent() {
             success('Message deleted', 'The message has been permanently deleted');
         } catch (error) {
             console.error('Failed to delete message:', error);
-            error('Failed to delete message', 'Please try again');
+            showError('Failed to delete message', 'Please try again');
         }
     };
 
