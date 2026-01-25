@@ -71,6 +71,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
     const agent = property?.agent;
 
+    // Debug: Log the full property and agent data
+    console.log('Full property data:', property);
+    console.log('Agent data:', agent);
+
     const { data: similarProperties } = useQuery({
         queryKey: ["similar-properties", property?.property_type, property?.location?.id],
         queryFn: async () => {
