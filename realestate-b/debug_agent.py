@@ -9,43 +9,55 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "realestate.settings")
 django.setup()
 
 from properties.models import Property
-from properties.serializers import PropertyDetailSerializer
 from agents.models import AgentProfile
+from django.contrib.auth import get_user_model
 
-print("=== DEBUGGING AGENT DATA ===")
+User = get_user_model()
 
+print("=== FINDING DUKE USER ===")
+
+# Find user with username 'duke' or similar
+duke_users = User.objects.filter(username__icontains="duke")
+print(f"Users with duke in username: {duke_users.count()}")
+for user in duke_users:
+    print(
+        f"ID: {user.id}, Username: {user.username}, Email: {user.email}, User Type: {user.user_type}"
+    )
+
+# Also check all agent users
+agent_users = User.objects.filter(user_type="agent")
+print(f"\nAll agent users:")
+for user in agent_users:
+    print(f"ID: {user.id}, Username: {user.username}, Email: {user.email}")
+
+print("\n=== CURRENT PROPERTY ASSIGNMENTS ===")
 # Check properties and their agents
 properties = Property.objects.all()
 print(f"Total properties: {properties.count()}")
 
 for prop in properties:
-    print(f"\nProperty ID: {prop.id}")
-    print(f"Property Title: {prop.title}")
-    print(f"Agent ID: {prop.agent_id}")
-
+    print(f"Property ID: {prop.id}, Title: {prop.title}, Agent ID: {prop.agent_id}")
     if prop.agent:
-        print(f"Agent object: {prop.agent}")
-        print(f"Agent user: {prop.agent.user}")
-        if prop.agent.user:
-            print(f"User username: {prop.agent.user.username}")
-            print(f"User email: {prop.agent.user.email}")
-            print(f"User get_full_name: {prop.agent.user.get_full_name()}")
-        else:
-            print("NO USER RELATIONSHIP!")
+        print(f"  -> Agent Username: {prop.agent.username}, Email: {prop.agent.email}")
     else:
-        print("NO AGENT!")
+        print("  -> No agent assigned")
 
-# Test serialization
-print("\n=== SERIALIZATION TEST ===")
-property = Property.objects.first()
-if property:
-    serializer = PropertyDetailSerializer(property)
-    data = serializer.data
-    print(f"Serialized agent data: {data['agent']}")
+print("\n=== LOOKING FOR USER ID 22 ===")
+# Check what happened to user ID 22
+try:
+    user_22 = User.objects.get(id=22)
+    print(
+        f"User ID 22: {user_22.username}, Email: {user_22.email}, Type: {user_22.user_type}"
+    )
+except User.DoesNotExist:
+    print("User ID 22 does not exist")
+
+# Check if there's a user with username containing 'duke'
+duke_user = User.objects.filter(username__icontains="duke").first()
+if duke_user:
+    print(f"\nFound Duke user: ID {duke_user.id}, Username: {duke_user.username}")
+    print(f"Updating all properties to use Duke (ID: {duke_user.id})")
+    updated = Property.objects.all().update(agent_id=duke_user.id)
+    print(f"Updated {updated} properties to use Duke")
 else:
-    print("No properties found")
-
-print("\n=== ALL AGENT PROFILES ===")
-agents = AgentProfile.objects.all()
-for agent in agents:
-    print(f"Agent ID: {agent.id}, User ID: {agent.user_id}, User: {agent.user}")
+    print('\nNo user found with "duke" in username')
