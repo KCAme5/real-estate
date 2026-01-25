@@ -96,35 +96,29 @@ class AgentCompactSerializer(serializers.ModelSerializer):
     user_email = serializers.SerializerMethodField()
 
     class Meta:
-        model = AgentProfile
+        model = User  # Changed from AgentProfile to User
         fields = (
             "id",
-            "slug",
+            "username",  # Add username field
             "user_name",
             "user_avatar",
             "user_phone",
             "user_email",
-            "average_rating",
-            "years_of_experience",
-            "is_verified",
         )
 
     def get_user_name(self, obj):
-        if hasattr(obj, "user") and obj.user:
-            return obj.user.get_full_name() or obj.user.username
-        return "Agent"
+        # obj is now a User object directly
+        return obj.get_full_name() or obj.username
 
     def get_user_avatar(self, obj):
-        if hasattr(obj, "user") and obj.user and obj.user.profile_picture:
-            return obj.user.profile_picture.url
+        if hasattr(obj, "profile_picture") and obj.profile_picture:
+            return obj.profile_picture.url
         return None
 
     def get_user_phone(self, obj):
-        if hasattr(obj, "user") and obj.user and obj.user.phone_number:
-            return obj.user.phone_number
+        if hasattr(obj, "phone_number") and obj.phone_number:
+            return obj.phone_number
         return None
 
     def get_user_email(self, obj):
-        if hasattr(obj, "user") and obj.user:
-            return obj.user.email
-        return None
+        return obj.email
