@@ -31,7 +31,7 @@ const WhatsAppChatInfo: React.FC<WhatsAppChatInfoProps> = ({
             </div>
 
             <div className="p-6 text-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mx-auto mb-4">
+                <div className="w-24 h-24 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center mx-auto mb-4">
                     <UserIcon size={48} className="text-white" />
                 </div>
                 <h3 className="text-white font-medium text-lg mb-1">{conversation.other_user.name}</h3>

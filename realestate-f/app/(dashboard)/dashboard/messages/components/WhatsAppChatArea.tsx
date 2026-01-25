@@ -16,7 +16,8 @@ import {
     Phone,
     Video,
     Mic,
-    X
+    X,
+    MessageSquare
 } from 'lucide-react';
 import { Message, Conversation } from '@/lib/api/leads';
 
