@@ -4,13 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { leadsAPI, Conversation, Message } from '@/lib/api/leads';
+import { messagesAPI } from '@/lib/api/messages';
 import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
-import { Send, User as UserIcon, Home, CheckCircle2, Search, ArrowLeft, MoreVertical, Paperclip, Smile, MessageSquare, Edit3, Bell } from 'lucide-react';
+import { Send, User as UserIcon, Home, CheckCircle2, Search, ArrowLeft, MoreVertical, Paperclip, Smile, MessageSquare, Edit3, Bell, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useToast } from '@/components/ui/toast';
 
 function AgentMessagesContent() {
     const { user } = useAuth();
+    const { success, error, info } = useToast();
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
     const recipientId = searchParams.get('recipientId');
@@ -236,8 +239,48 @@ function AgentMessagesContent() {
             setTimeout(scrollToBottom, 100);
         } catch (error) {
             console.error('Failed to send message:', error);
+            error('Failed to send message', 'Please try again');
         } finally {
             setSending(false);
+        }
+    };
+
+    const handleDeleteConversation = async (conversationId: number) => {
+        if (!confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await messagesAPI.deleteConversation(conversationId);
+
+            setConversations(prev => prev.filter(conv => conv.id !== conversationId));
+
+            if (activeConversation?.id === conversationId) {
+                setActiveConversation(null);
+                setMessages([]);
+            }
+
+            success('Conversation deleted', 'The conversation has been permanently deleted');
+        } catch (error) {
+            console.error('Failed to delete conversation:', error);
+            error('Failed to delete conversation', 'Please try again');
+        }
+    };
+
+    const handleDeleteMessage = async (messageId: number) => {
+        if (!confirm('Are you sure you want to delete this message?')) {
+            return;
+        }
+
+        try {
+            await messagesAPI.deleteMessage(activeConversation!.id, messageId);
+
+            setMessages(prev => prev.filter(msg => msg.id !== messageId));
+
+            success('Message deleted', 'The message has been permanently deleted');
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+            error('Failed to delete message', 'Please try again');
         }
     };
 
@@ -283,41 +326,49 @@ function AgentMessagesContent() {
                         </div>
                     ) : (
                         conversations.map((conv) => (
-                            <button
-                                key={conv.id}
-                                onClick={() => {
-                                    setActiveConversation(conv);
-                                    fetchMessages(conv.id);
-                                }}
-                                className={`w-full p-6 flex gap-4 transition-all border-b border-border/50 hover:bg-muted/30 text-left ${activeConversation?.id === conv.id ? 'bg-primary/5 ring-1 ring-inset ring-primary/10' : ''}`}
-                            >
-                                <div className="relative flex-shrink-0">
-                                    <div className="w-14 h-14 rounded-2xl bg-muted overflow-hidden border border-border/50">
-                                        {conv.property_image ? (
-                                            <Image src={conv.property_image} alt={conv.property_title} fill className="object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-primary/10">
-                                                <Home className="text-primary" size={24} />
-                                            </div>
+                            <div key={conv.id} className={`w-full p-6 flex gap-4 transition-all border-b border-border/50 hover:bg-muted/30 text-left relative group ${activeConversation?.id === conv.id ? 'bg-primary/5 ring-1 ring-inset ring-primary/10' : ''}`}>
+                                <button
+                                    onClick={() => {
+                                        setActiveConversation(conv);
+                                        fetchMessages(conv.id);
+                                    }}
+                                    className="flex-1 flex gap-4"
+                                >
+                                    <div className="relative flex-shrink-0">
+                                        <div className="w-14 h-14 rounded-2xl bg-muted overflow-hidden border border-border/50">
+                                            {conv.property_image ? (
+                                                <Image src={conv.property_image} alt={conv.property_title} fill className="object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                                                    <Home className="text-primary" size={24} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        {conv.unread_count > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-[10px] font-black text-white rounded-full flex items-center justify-center border-2 border-background">
+                                                {conv.unread_count}
+                                            </span>
                                         )}
                                     </div>
-                                    {conv.unread_count > 0 && (
-                                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-[10px] font-black text-white rounded-full flex items-center justify-center border-2 border-background">
-                                            {conv.unread_count}
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="flex-1 min-w-0 space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-bold text-sm truncate">{conv.other_user.name}</h3>
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                    <div className="flex-1 min-w-0 space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-bold text-sm truncate">{conv.other_user.name}</h3>
+                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                        </div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/70 truncate">{conv.property_title}</p>
+                                        <p className="text-xs text-muted-foreground truncate font-medium">
+                                            {conv.last_message?.content || 'Started a conversation'}
+                                        </p>
                                     </div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary/70 truncate">{conv.property_title}</p>
-                                    <p className="text-xs text-muted-foreground truncate font-medium">
-                                        {conv.last_message?.content || 'Started a conversation'}
-                                    </p>
-                                </div>
-                            </button>
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteConversation(conv.id)}
+                                    className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                    title="Delete conversation"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
                         ))
                     )}
                 </div>
@@ -359,8 +410,17 @@ function AgentMessagesContent() {
                             {messages.map((msg, idx) => {
                                 const isMe = msg.sender === user?.id;
                                 return (
-                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[80%] space-y-2 ${isMe ? 'text-right' : 'text-left'}`}>
+                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group`}>
+                                        <div className={`max-w-[80%] space-y-2 ${isMe ? 'text-right' : 'text-left'} relative`}>
+                                            {isMe && (
+                                                <button
+                                                    onClick={() => handleDeleteMessage(msg.id)}
+                                                    className="absolute -top-2 -right-2 p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                                    title="Delete message"
+                                                >
+                                                    <Trash2 size={12} />
+                                                </button>
+                                            )}
                                             <div className={`inline-block px-6 py-4 rounded-[2rem] text-sm font-medium shadow-sm ${isMe ? 'bg-primary text-primary-foreground rounded-tr-none' : 'bg-background border border-border rounded-tl-none'}`}>
                                                 {msg.content}
                                             </div>

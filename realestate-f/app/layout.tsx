@@ -5,6 +5,7 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from "@/components/theme-provider"
 import LayoutWrapper from '@/components/LayoutWrapper';
+import { ToastProvider } from '@/components/ui/toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -36,13 +37,15 @@ export default function RootLayout({
         >
           <AuthProvider>
             <QueryProvider>
-              <LayoutWrapper>
-                <Header />
-                <div className="pt-20">
-                  {children}
-                </div>
-                <Footer />
-              </LayoutWrapper>
+              <ToastProvider>
+                <LayoutWrapper>
+                  <Header />
+                  <div className="pt-20">
+                    {children}
+                  </div>
+                  <Footer />
+                </LayoutWrapper>
+              </ToastProvider>
             </QueryProvider>
           </AuthProvider>
         </ThemeProvider>

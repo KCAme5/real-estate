@@ -16,6 +16,7 @@ import { agentsAPI } from "@/lib/api/agents";
 import { leadsAPI } from "@/lib/api/leads";
 import { bookingsAPI } from "@/lib/api/bookings";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from '@/components/ui/toast';
 
 const Map = dynamic(() => import('@/components/ui/Map'), {
     ssr: false,
@@ -33,6 +34,7 @@ const Map = dynamic(() => import('@/components/ui/Map'), {
 
 export default function PropertyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { user } = useAuth();
+    const { success, error: showError } = useToast();
     const { slug } = use(params);
     const router = useRouter();
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -132,15 +134,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                     await propertyAPI.saveProperty(property.id);
                 }
                 setIsSaved(false);
-                alert("Removed from saved properties");
+                success("Property removed", "Property has been removed from your saved list");
             } else {
                 await propertyAPI.saveProperty(property.id);
                 setIsSaved(true);
-                alert("Property saved!");
+                success("Property saved!", "Property has been added to your saved list");
             }
         } catch (error) {
             console.error("Error saving property:", error);
-            alert("Failed to save property. Please try again.");
+            showError("Failed to save property", "Please try again");
         } finally {
             setIsSaving(false);
         }
@@ -171,11 +173,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                 client_notes: `Phone: ${viewingForm.phone}\n${viewingForm.notes}`
             });
             setIsViewingModalOpen(false);
-            alert("Viewing request sent! Our agent will contact you shortly.");
+            success("Viewing request sent!", "Our agent will contact you shortly");
             setViewingForm({ date: '', time: 'Morning (9AM - 12PM)', phone: '', notes: '' });
         } catch (error) {
             console.error("Error scheduling viewing:", error);
-            alert("Failed to schedule viewing. Please try again.");
+            showError("Failed to schedule viewing", "Please try again");
         } finally {
             setIsSubmittingViewing(false);
         }
