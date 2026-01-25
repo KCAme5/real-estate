@@ -71,17 +71,21 @@ class ConversationListView(generics.ListCreateAPIView):
         property_id = request.data.get("property")
         agent_id = request.data.get("agent")
         client = request.user
-        
+
         # Check if conversation already exists
         if property_id:
-            existing = Conversation.objects.filter(property_id=property_id, client=client).first()
+            existing = Conversation.objects.filter(
+                property_id=property_id, client=client
+            ).first()
         else:
-            existing = Conversation.objects.filter(property__isnull=True, client=client, agent_id=agent_id).first()
-            
+            existing = Conversation.objects.filter(
+                property__isnull=True, client=client, agent_id=agent_id
+            ).first()
+
         if existing:
             serializer = self.get_serializer(existing)
             return Response(serializer.data)
-            
+
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -137,3 +141,27 @@ class MessageCreateView(generics.CreateAPIView):
             raise PermissionDenied("You are not part of this conversation")
 
         serializer.save(sender=self.request.user, conversation=conversation)
+
+
+class ConversationDeleteView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Conversation.objects.filter(models.Q(client=user) | models.Q(agent=user))
+
+    def perform_destroy(self, instance):
+        # Also delete all messages in this conversation
+        Message.objects.filter(conversation=instance).delete()
+        super().perform_destroy(instance)
+
+
+class MessageDeleteView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        conversation_id = self.kwargs["conversation_id"]
+        return Message.objects.filter(
+            conversation_id=conversation_id,
+            sender=self.request.user,  # Users can only delete their own messages
+        )

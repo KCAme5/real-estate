@@ -18,9 +18,19 @@ urlpatterns = [
         name="conversation-detail",
     ),
     path(
+        "conversations/<int:pk>/delete/",
+        views.ConversationDeleteView.as_view(),
+        name="conversation-delete",
+    ),
+    path(
         "conversations/<int:pk>/messages/",
         views.MessageListView.as_view(),
         name="message-list",
+    ),
+    path(
+        "conversations/<int:conversation_id>/messages/<int:pk>/delete/",
+        views.MessageDeleteView.as_view(),
+        name="message-delete",
     ),
     path("messages/create/", views.MessageCreateView.as_view(), name="message-create"),
 ]
