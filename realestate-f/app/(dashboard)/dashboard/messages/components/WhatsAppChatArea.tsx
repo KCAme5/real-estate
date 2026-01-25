@@ -306,10 +306,10 @@ const WhatsAppChatArea: React.FC<WhatsAppChatAreaProps> = ({
                         )}
 
                         <form onSubmit={onSendMessage} className="flex items-center gap-2">
-                            <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors">
+                            <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                                 <Smile size={24} />
                             </button>
-                            <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors">
+                            <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                                 <Paperclip size={24} />
                             </button>
                             <input
@@ -329,34 +329,34 @@ const WhatsAppChatArea: React.FC<WhatsAppChatAreaProps> = ({
                                 }}
                                 onBlur={onTypingStop}
                                 placeholder={editingMessage ? "Edit message..." : "Type a message"}
-                                className="flex-1 px-4 py-2 rounded-full text-white placeholder-gray-400 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                className="flex-1 px-4 py-2 rounded-full text-white placeholder-gray-400 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[44px]"
                             />
                             {editingMessage ? (
                                 <>
                                     <button
                                         type="button"
                                         onClick={onSaveEdit}
-                                        className="p-2 text-green-500 hover:bg-green-600 rounded-full transition-colors"
+                                        className="p-2 text-green-500 hover:bg-green-600 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                                     >
                                         <CheckCircle2 size={24} />
                                     </button>
                                     <button
                                         type="button"
                                         onClick={onCancelEdit}
-                                        className="p-2 text-red-500 hover:bg-red-600 rounded-full transition-colors"
+                                        className="p-2 text-red-500 hover:bg-red-600 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                                     >
                                         <X size={24} />
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors">
+                                    <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                                         <Mic size={24} />
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={!newMessage.trim() || sending}
-                                        className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[44px] min-h-[44px] flex items-center justify-center"
                                     >
                                         <Send size={24} />
                                     </button>
@@ -371,9 +371,9 @@ const WhatsAppChatArea: React.FC<WhatsAppChatAreaProps> = ({
                         <div className="w-32 h-32 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                             <MessageSquare className="text-white" size={64} />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-2">WhatsApp Web</h2>
+                        <h2 className="text-3xl font-bold text-white mb-2">Kenyaprime Messages</h2>
                         <p className="text-gray-400 mb-6">Send and receive messages without keeping your phone online.</p>
-                        <p className="text-gray-500 text-sm">Use WhatsApp on up to 4 linked devices and 1 phone at the same time.</p>
+                        <p className="text-gray-500 text-sm">Connect with agents and manage your property inquiries.</p>
                     </div>
                 </div>
             )}

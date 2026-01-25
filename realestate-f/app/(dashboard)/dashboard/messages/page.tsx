@@ -13,8 +13,8 @@ import WhatsAppSidebar from './components/WhatsAppSidebar';
 import WhatsAppChatArea from './components/WhatsAppChatArea';
 import WhatsAppChatInfo from './components/WhatsAppChatInfo';
 
-// WhatsApp color palette
-export const WHATSAPP_COLORS = {
+// Kenyaprime color palette
+export const KENYAPRIME_COLORS = {
     GREEN: '#25D366',
     DARK_GREEN: '#128C7E',
     LIGHT_GREEN: '#DCF8C6',
@@ -188,8 +188,35 @@ function MessagesContent() {
         }
     }, [conversations, conversationIdParam, recipientId, propertyId, activeConversation?.id, loading]);
 
+    // Group conversations by agent
+    const groupedConversations = React.useMemo(() => {
+        const grouped = new Map<number, Conversation>();
+
+        conversations.forEach(conv => {
+            const agentId = conv.other_user.id;
+            const existing = grouped.get(agentId);
+
+            if (!existing || new Date(conv.updated_at) > new Date(existing.updated_at)) {
+                // Count total messages and unread for this agent
+                const agentConversations = conversations.filter(c => c.other_user.id === agentId);
+                const totalUnread = agentConversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+                const totalMessages = agentConversations.reduce((sum, c) => sum + (c.message_count || 0), 0);
+
+                grouped.set(agentId, {
+                    ...conv,
+                    unread_count: totalUnread,
+                    message_count: totalMessages,
+                    property_title: agentConversations.length > 1 ? `${agentConversations.length} properties` : conv.property_title,
+                    last_message: conv.last_message
+                });
+            }
+        });
+
+        return Array.from(grouped.values());
+    }, [conversations]);
+
     // Filter conversations based on search
-    const filteredConversations = conversations.filter(conv =>
+    const filteredConversations = groupedConversations.filter(conv =>
         conv.other_user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         conv.property_title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         conv.last_message?.content.toLowerCase().includes(searchQuery.toLowerCase())
@@ -385,17 +412,17 @@ function MessagesContent() {
 
     if (loading && !conversations.length) {
         return (
-            <div className="flex h-screen items-center justify-center" style={{ backgroundColor: WHATSAPP_COLORS.DARK_GRAY }}>
+            <div className="flex h-screen items-center justify-center" style={{ backgroundColor: KENYAPRIME_COLORS.DARK_GRAY }}>
                 <div className="text-center">
                     <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-green-500 font-medium">Loading WhatsApp...</p>
+                    <p className="text-green-500 font-medium">Loading Kenyaprime...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex h-screen" style={{ backgroundColor: WHATSAPP_COLORS.DARK_GRAY }}>
+        <div className="flex h-screen" style={{ backgroundColor: KENYAPRIME_COLORS.DARK_GRAY }}>
             {/* Sidebar - Conversation List */}
             <WhatsAppSidebar
                 conversations={filteredConversations}
@@ -408,7 +435,7 @@ function MessagesContent() {
                 }}
                 onDeleteConversation={handleDeleteConversation}
                 user={user}
-                colors={WHATSAPP_COLORS}
+                colors={KENYAPRIME_COLORS}
                 isVisible={!activeConversation}
             />
 
@@ -443,7 +470,7 @@ function MessagesContent() {
                 user={user}
                 inputRef={inputRef}
                 messagesEndRef={messagesEndRef}
-                colors={WHATSAPP_COLORS}
+                colors={KENYAPRIME_COLORS}
             />
 
             {/* Chat Info Sidebar */}
@@ -451,7 +478,7 @@ function MessagesContent() {
                 <WhatsAppChatInfo
                     conversation={activeConversation}
                     onClose={() => setShowChatInfo(false)}
-                    colors={WHATSAPP_COLORS}
+                    colors={KENYAPRIME_COLORS}
                 />
             )}
         </div>

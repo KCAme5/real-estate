@@ -44,38 +44,38 @@ const WhatsAppSidebar: React.FC<WhatsAppSidebarProps> = ({
     };
 
     return (
-        <div className={`w-full md:w-96 lg:w-1/3 flex flex-col ${isVisible ? 'flex' : 'hidden md:flex'}`} style={{ backgroundColor: colors.DARK_GRAY }}>
+        <div className={`w-full md:w-96 lg:w-1/3 flex flex-col ${isVisible ? 'flex' : 'hidden md:flex'} h-screen`} style={{ backgroundColor: colors.DARK_GRAY }}>
             {/* Sidebar Header */}
-            <div className="p-4" style={{ backgroundColor: colors.DARK_GRAY, borderBottom: `1px solid ${colors.MEDIUM_GRAY}` }}>
+            <div className="p-3 sm:p-4" style={{ backgroundColor: colors.DARK_GRAY, borderBottom: `1px solid ${colors.MEDIUM_GRAY}` }}>
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-linear-to-br from-green-400 to-green-600 flex items-center justify-center">
-                            <UserIcon size={20} className="text-white" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                            <UserIcon size={16} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-white font-semibold">WhatsApp</h1>
+                            <h1 className="text-white font-semibold text-sm sm:text-base">Kenyaprime</h1>
                             <p className="text-xs text-gray-400">Online</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
-                            <Camera size={20} className="text-gray-300" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <button className="p-1.5 sm:p-2 hover:bg-gray-700 rounded-full transition-colors">
+                            <Camera size={16} className="text-gray-300" />
                         </button>
-                        <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
-                            <Edit3 size={20} className="text-gray-300" />
+                        <button className="p-1.5 sm:p-2 hover:bg-gray-700 rounded-full transition-colors">
+                            <Edit3 size={16} className="text-gray-300" />
                         </button>
                     </div>
                 </div>
 
                 {/* Search Bar */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input
                         type="text"
                         placeholder="Search or start new chat"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg text-sm text-white placeholder-gray-400 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full pl-9 pr-3 py-2 sm:pl-10 sm:pr-4 sm:py-3 rounded-lg text-xs sm:text-sm text-white placeholder-gray-400 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                         style={{ backgroundColor: colors.INPUT_BG }}
                     />
                 </div>
@@ -96,11 +96,11 @@ const WhatsAppSidebar: React.FC<WhatsAppSidebarProps> = ({
                             onClick={() => onSelectConversation(conv)}
                         >
                             <div className="relative">
-                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center overflow-hidden">
-                                    {conv.property_image ? (
-                                        <Image src={conv.property_image} alt={conv.property_title || 'Property'} fill className="rounded-full object-cover" />
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center overflow-hidden">
+                                    {conv.other_user.avatar ? (
+                                        <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full rounded-full object-cover" />
                                     ) : (
-                                        <Home size={20} className="text-white" />
+                                        <UserIcon size={20} className="text-white" />
                                     )}
                                 </div>
                                 {conv.unread_count > 0 && (
