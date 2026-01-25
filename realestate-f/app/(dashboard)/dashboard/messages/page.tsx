@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { leadsAPI, Conversation, Message } from '@/lib/api/leads';
 import { messagesAPI } from '@/lib/api/messages';
 import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
-import { Send, User as UserIcon, Home, CheckCircle2, Search, ArrowLeft, MoreVertical, Paperclip, Smile, MessageSquare, Edit3, Trash2 } from 'lucide-react';
+import { Send, User as UserIcon, Home, CheckCircle2, Search, ArrowLeft, MoreVertical, Paperclip, Smile, MessageSquare, Edit3, Trash2, Reply, Copy } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
@@ -25,6 +25,10 @@ function MessagesContent() {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
+    const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+    const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+    const [editingMessage, setEditingMessage] = useState<number | null>(null);
+    const [editText, setEditText] = useState('');
     const [typingUsers, setTypingUsers] = useState<Map<number, string>>(new Map());
     const [isTyping, setIsTyping] = useState(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -293,6 +297,69 @@ function MessagesContent() {
         }
     };
 
+    const handleReply = (message: Message) => {
+        setReplyingTo(message);
+        setSelectedMessage(null);
+        inputRef.current?.focus();
+    };
+
+    const handleCopy = async (content: string) => {
+        try {
+            await navigator.clipboard.writeText(content);
+            success('Copied', 'Message copied to clipboard');
+            setSelectedMessage(null);
+        } catch (error) {
+            showError('Failed to copy', 'Please try again');
+        }
+    };
+
+    const handleEdit = (message: Message) => {
+        setEditingMessage(message.id);
+        setEditText(message.content);
+        setSelectedMessage(null);
+        inputRef.current?.focus();
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editText.trim() || !editingMessage) return;
+
+        try {
+            // Update in local state first (optimistic update)
+            setMessages(prev => prev.map(msg =>
+                msg.id === editingMessage
+                    ? { ...msg, content: editText.trim() }
+                    : msg
+            ));
+
+            // TODO: Call API to update message
+            // await messagesAPI.updateMessage(activeConversation!.id, editingMessage, editText.trim());
+
+            setEditingMessage(null);
+            setEditText('');
+            success('Message updated', 'Your message has been edited');
+        } catch (error) {
+            console.error('Failed to edit message:', error);
+            showError('Failed to edit message', 'Please try again');
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingMessage(null);
+        setEditText('');
+    };
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (selectedMessage !== null) {
+                setSelectedMessage(null);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [selectedMessage]);
+
     if (loading && !conversations.length) {
         return (
             <div className="flex h-[80vh] items-center justify-center">
@@ -335,7 +402,7 @@ function MessagesContent() {
                                     }}
                                     className="flex-1 flex gap-4"
                                 >
-                                    <div className="relative flex-shrink-0">
+                                    <div className="relative shrink-0">
                                         <div className="w-14 h-14 rounded-2xl bg-muted overflow-hidden border border-border/50">
                                             {conv.property_image ? (
                                                 <Image src={conv.property_image} alt={conv.property_title || 'Property'} fill className="object-cover" />
@@ -362,17 +429,23 @@ function MessagesContent() {
                                         </p>
                                     </div>
                                 </button>
-                                <button
-                                    onClick={() => handleDeleteConversation(conv.id)}
-                                    className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                    title="Delete conversation"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
                             </div>
                         ))
                     )}
                 </div>
+
+                {/* Delete Conversation Button - Fixed Position */}
+                {activeConversation && (
+                    <div className="p-4 border-t border-border/50">
+                        <button
+                            onClick={() => handleDeleteConversation(activeConversation.id)}
+                            className="w-full flex items-center justify-center gap-2 p-3 text-red-500 hover:bg-red-50 rounded-2xl transition-all border border-red-200/50"
+                        >
+                            <Trash2 size={16} />
+                            <span className="font-medium">Delete Conversation</span>
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Chat Area */}
@@ -410,21 +483,115 @@ function MessagesContent() {
                         <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
                             {messages.map((msg, idx) => {
                                 const isMe = msg.sender === user?.id;
+                                const isSelected = selectedMessage === msg.id;
+                                const isEditing = editingMessage === msg.id;
+
                                 return (
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group`}>
                                         <div className={`max-w-[80%] space-y-2 ${isMe ? 'text-right' : 'text-left'} relative`}>
-                                            {isMe && (
+                                            {/* Message Actions Dropdown */}
+                                            <div className={`absolute ${isMe ? '-left-12' : '-right-12'} top-0 opacity-0 group-hover:opacity-100 transition-opacity`}>
                                                 <button
-                                                    onClick={() => handleDeleteMessage(msg.id)}
-                                                    className="absolute -top-2 -right-2 p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                                    title="Delete message"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedMessage(isSelected ? null : msg.id);
+                                                    }}
+                                                    className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all"
+                                                    title="More options"
                                                 >
-                                                    <Trash2 size={12} />
+                                                    <MoreVertical size={14} />
                                                 </button>
-                                            )}
-                                            <div className={`inline-block px-6 py-4 rounded-[2rem] text-sm font-medium shadow-sm ${isMe ? 'bg-primary text-primary-foreground rounded-tr-none' : 'bg-background border border-border rounded-tl-none'}`}>
-                                                {msg.content}
+
+                                                {isSelected && (
+                                                    <div className={`absolute ${isMe ? 'right-0' : 'left-0'} top-8 bg-background border border-border rounded-lg shadow-lg py-1 min-w-[140px] z-10`}>
+                                                        {isMe && (
+                                                            <>
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleEdit(msg);
+                                                                    }}
+                                                                    className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+                                                                >
+                                                                    <Edit3 size={14} />
+                                                                    Edit
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleReply(msg);
+                                                            }}
+                                                            className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+                                                        >
+                                                            <Reply size={14} />
+                                                            Reply
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleCopy(msg.content);
+                                                            }}
+                                                            className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2"
+                                                        >
+                                                            <Copy size={14} />
+                                                            Copy
+                                                        </button>
+                                                        {isMe && (
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDeleteMessage(msg.id);
+                                                                }}
+                                                                className="w-full px-3 py-2 text-left text-sm hover:bg-red-50 text-red-500 flex items-center gap-2"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                                Delete
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
+
+                                            {/* Message Bubble */}
+                                            <div className={`inline-block px-6 py-4 rounded-4xl text-sm font-medium shadow-sm ${isMe ? 'bg-primary text-primary-foreground rounded-tr-none' : 'bg-background border border-border rounded-tl-none'}`}>
+                                                {isEditing ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="text"
+                                                            value={editText}
+                                                            onChange={(e) => setEditText(e.target.value)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    e.preventDefault();
+                                                                    handleSaveEdit();
+                                                                } else if (e.key === 'Escape') {
+                                                                    handleCancelEdit();
+                                                                }
+                                                            }}
+                                                            className="bg-transparent border-none outline-none flex-1"
+                                                            autoFocus
+                                                        />
+                                                        <button
+                                                            onClick={handleSaveEdit}
+                                                            className="text-xs font-bold uppercase"
+                                                        >
+                                                            ✓
+                                                        </button>
+                                                        <button
+                                                            onClick={handleCancelEdit}
+                                                            className="text-xs font-bold uppercase"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    msg.content
+                                                )}
+                                            </div>
+
+                                            {/* Message Info */}
                                             <div className="flex items-center justify-end gap-2 px-2">
                                                 <span className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                 {isMe && msg.is_read && <CheckCircle2 size={12} className="text-secondary" />}
@@ -455,15 +622,35 @@ function MessagesContent() {
 
                         {/* Chat Input */}
                         <div className="p-6 bg-background border-t border-border">
-                            <form onSubmit={handleSendMessage} className="flex items-center gap-4 bg-muted/30 p-2 rounded-[2.5rem] border border-border/50 focus-within:ring-2 ring-primary/10 transition-all">
+                            {/* Reply Indicator */}
+                            {replyingTo && (
+                                <div className="mb-3 p-3 bg-muted/50 rounded-2xl border border-border/50">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-xs font-bold uppercase text-muted-foreground">Replying to {replyingTo.sender_name}</span>
+                                        <button
+                                            onClick={() => setReplyingTo(null)}
+                                            className="text-muted-foreground hover:text-foreground"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground truncate">{replyingTo.content}</p>
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-4 bg-muted/30 p-2 rounded-4xl border border-border/50 focus-within:ring-2 ring-primary/10 transition-all">
                                 <button type="button" className="p-3 text-muted-foreground hover:text-primary rounded-full transition-colors">
                                     <Paperclip size={20} />
                                 </button>
                                 <input
                                     ref={inputRef}
-                                    value={newMessage}
+                                    value={editingMessage ? editText : newMessage}
                                     onChange={(e) => {
-                                        setNewMessage(e.target.value);
+                                        if (editingMessage) {
+                                            setEditText(e.target.value);
+                                        } else {
+                                            setNewMessage(e.target.value);
+                                        }
                                         if (e.target.value.trim()) {
                                             handleTypingStart();
                                         } else {
@@ -471,19 +658,40 @@ function MessagesContent() {
                                         }
                                     }}
                                     onBlur={handleTypingStop}
-                                    placeholder="Type your message here..."
+                                    placeholder={editingMessage ? "Edit message..." : "Type your message here..."}
                                     className="flex-1 bg-transparent border-none outline-none py-2 text-sm font-medium"
                                 />
-                                <button type="button" className="p-3 text-muted-foreground hover:text-primary rounded-full transition-colors hidden sm:block">
-                                    <Smile size={20} />
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={!newMessage.trim() || sending}
-                                    className="bg-primary text-primary-foreground p-3 rounded-full shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
-                                >
-                                    <Send size={20} />
-                                </button>
+                                {editingMessage ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={handleSaveEdit}
+                                            className="p-3 text-green-500 hover:bg-green-50 rounded-full transition-colors"
+                                        >
+                                            ✓
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleCancelEdit}
+                                            className="p-3 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                        >
+                                            ✕
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button type="button" className="p-3 text-muted-foreground hover:text-primary rounded-full transition-colors hidden sm:block">
+                                            <Smile size={20} />
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={!newMessage.trim() || sending}
+                                            className="bg-primary text-primary-foreground p-3 rounded-full shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                                        >
+                                            <Send size={20} />
+                                        </button>
+                                    </>
+                                )}
                             </form>
                         </div>
                     </>
