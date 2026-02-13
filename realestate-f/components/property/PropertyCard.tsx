@@ -58,7 +58,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
         }
     };
 
-    return (
+
     if (viewMode === 'list') {
         return (
             <div className="group relative bg-slate-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col md:flex-row h-full md:h-64 lg:h-72">
