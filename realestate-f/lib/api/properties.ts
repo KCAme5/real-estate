@@ -13,6 +13,8 @@ export interface PropertyData {
     features?: string[];
     main_image?: File;
     images?: File[];
+    floor_plan?: File;
+    virtual_tour_url?: string;
 }
 
 export interface Property {
@@ -42,6 +44,8 @@ export interface Property {
     };
     created_at: string;
     views?: number;
+    floor_plan?: string;
+    virtual_tour_url?: string;
 }
 
 export const propertyAPI = {

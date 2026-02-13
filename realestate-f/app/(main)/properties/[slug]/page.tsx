@@ -9,7 +9,7 @@ import {
     MapPin, Home, Maximize2, Calendar, Phone, Mail, MessageSquare,
     Share2, Heart, Check, Loader2, AlertCircle, ArrowLeft, Ruler, Sparkles,
     ChevronLeft, ChevronRight, Users, Shield, Clock, X, Star, ExternalLink,
-    Zap, Download, Landmark, Eye, Bed, Bath, TrendingUp
+    Zap, Download, Landmark, Eye, Bed, Bath, TrendingUp, FileVideo
 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { propertyAPI } from "@/lib/api/properties";
@@ -373,7 +373,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         {property.views || 0} Views
                                     </span>
                                 </div>
-                                <h1 className="text-4xl lg:text-5xl font-black text-white mb-4 leading-tight">{property.title}</h1>
+                                <h1 className="text-4xl lg:text-6xl font-black text-white mb-4 leading-tight tracking-tight">{property.title}</h1>
                                 <div className="flex items-center gap-3 text-slate-400">
                                     <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-emerald-500">
                                         <MapPin size={20} />
@@ -395,16 +395,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                     {/* 4. Quick Specs Bar */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
                         {[
-                            { icon: <Bed size={22} />, value: property.bedrooms, label: 'Bedrooms' },
-                            { icon: <Bath size={22} />, value: property.bathrooms, label: 'Bathrooms' },
-                            { icon: <Maximize2 size={22} />, value: `${property.square_feet} sqft`, label: 'Living Area' },
-                            { icon: <Sparkles size={22} />, value: property.property_type, label: 'Type' },
-                            { icon: <Zap size={22} />, value: 'Fiber Ready', label: 'Internet' },
+                            { icon: <Bed size={24} />, value: property.bedrooms, label: 'Bedrooms' },
+                            { icon: <Bath size={24} />, value: property.bathrooms, label: 'Bathrooms' },
+                            { icon: <Maximize2 size={24} />, value: `${property.square_feet} sqft`, label: 'Living Area' },
+                            { icon: <Sparkles size={24} />, value: property.property_type, label: 'Type' },
+                            { icon: <Zap size={24} />, value: property.year_built || '2024', label: 'Year Built' },
                         ].map((spec, i) => (
-                            <div key={i} className="bg-slate-900 rounded-[2rem] p-6 border border-slate-800 hover:border-emerald-500/30 transition-all group hover:-translate-y-1">
-                                <div className="text-emerald-500 mb-3 group-hover:scale-110 transition-transform">{spec.icon}</div>
-                                <div className="text-xl font-black text-white uppercase">{spec.value || 'N/A'}</div>
-                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{spec.label}</div>
+                            <div key={i} className="bg-slate-900/80 rounded-[2.5rem] p-8 border border-slate-800 hover:border-emerald-500/40 transition-all group hover:-translate-y-1 shadow-xl">
+                                <div className="text-emerald-500 mb-4 group-hover:scale-110 transition-transform">{spec.icon}</div>
+                                <div className="text-2xl font-black text-white uppercase tracking-tighter">{spec.value || 'N/A'}</div>
+                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">{spec.label}</div>
                             </div>
                         ))}
                     </div>
@@ -418,7 +418,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             {/* Description */}
                             <section>
                                 <div className="flex items-center gap-4 mb-8">
-                                    <h2 className="text-3xl font-black text-white">Property Description</h2>
+                                    <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Property Description</h2>
                                     <div className="h-px flex-1 bg-slate-800" />
                                 </div>
                                 <div className="prose prose-invert max-w-none">
@@ -432,7 +432,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             {property.features && property.features.length > 0 && (
                                 <section>
                                     <div className="flex items-center gap-4 mb-8">
-                                        <h2 className="text-3xl font-black text-white">Outstanding Features</h2>
+                                        <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Outstanding Features</h2>
                                         <div className="h-px flex-1 bg-slate-800" />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -449,35 +449,51 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             )}
 
                             {/* Floor Plan & Virtual Tour Slot */}
-                            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="bg-slate-900 rounded-[2.5rem] p-8 border border-slate-800">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h3 className="text-xl font-black text-white">Floor Plan</h3>
-                                        <button className="text-emerald-500 hover:text-emerald-400 transition-colors">
-                                            <Download size={20} />
-                                        </button>
-                                    </div>
-                                    <div className="relative aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center group cursor-pointer">
-                                        <Image src={images[0]} alt="Floorplan Placeholder" fill className="object-cover opacity-20 pointer-events-none" />
-                                        <div className="relative z-10 text-center p-4">
-                                            <Maximize2 size={40} className="text-slate-700 mx-auto mb-4 group-hover:text-emerald-500 transition-colors" />
-                                            <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">View Full Layout</p>
+                            {(property.floor_plan || property.virtual_tour_url) && (
+                                <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {property.floor_plan && (
+                                        <div className="bg-slate-900 rounded-[2.5rem] p-8 border border-slate-800 group hover:border-emerald-500/30 transition-all">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="text-xl font-black text-white">Floor Plan</h3>
+                                                <a href={property.floor_plan} target="_blank" className="text-emerald-500 hover:text-emerald-400 transition-colors">
+                                                    <Download size={20} />
+                                                </a>
+                                            </div>
+                                            <div className="relative aspect-square rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center cursor-pointer group/plan">
+                                                {property.floor_plan.match(/\.(jpg|jpeg|png|webp|gif)$/i) ? (
+                                                    <Image src={property.floor_plan} alt="Floor Plan" fill className="object-contain p-4 group-hover/plan:scale-110 transition-transform duration-700" />
+                                                ) : (
+                                                    <div className="text-center p-4">
+                                                        <FileVideo size={40} className="text-slate-700 mx-auto mb-4" />
+                                                        <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">Document View</p>
+                                                    </div>
+                                                )}
+                                                <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/plan:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <div className="px-6 py-2 bg-emerald-600 text-white rounded-full text-xs font-bold uppercase tracking-widest">View Full Plan</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="bg-emerald-950/20 rounded-[2.5rem] p-8 border border-emerald-500/20 relative overflow-hidden group">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/20 transition-all duration-700"></div>
-                                    <h3 className="text-xl font-black text-white mb-6">360° Virtual Tour</h3>
-                                    <div className="relative aspect-square rounded-2xl bg-slate-950 border border-emerald-500/20 flex flex-col items-center justify-center p-6 text-center shadow-2xl">
-                                        <Zap size={48} className="text-emerald-500 mb-6 animate-pulse" />
-                                        <p className="text-white font-black text-lg mb-2">Experience it Live</p>
-                                        <p className="text-emerald-200/50 text-xs font-bold uppercase tracking-widest leading-relaxed mb-6">Step inside this home from your screen</p>
-                                        <button className="px-8 py-3 bg-white text-emerald-900 font-black rounded-xl hover:bg-emerald-50 transition-all shadow-xl shadow-white/5">
-                                            LAUNCH TOUR
-                                        </button>
-                                    </div>
-                                </div>
-                            </section>
+                                    )}
+                                    {property.virtual_tour_url && (
+                                        <div className="bg-emerald-950/20 rounded-[2.5rem] p-8 border border-emerald-500/20 relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/20 transition-all duration-700"></div>
+                                            <h3 className="text-xl font-black text-white mb-6">360° Virtual Tour</h3>
+                                            <div className="relative aspect-square rounded-2xl bg-slate-950 border border-emerald-500/20 flex flex-col items-center justify-center p-6 text-center shadow-2xl">
+                                                <Zap size={48} className="text-emerald-500 mb-6 animate-pulse" />
+                                                <p className="text-white font-black text-lg mb-2">Experience it Live</p>
+                                                <p className="text-emerald-200/50 text-xs font-bold uppercase tracking-widest leading-relaxed mb-6">Step inside this home from your screen</p>
+                                                <a
+                                                    href={property.virtual_tour_url}
+                                                    target="_blank"
+                                                    className="px-8 py-3 bg-white text-emerald-900 font-black rounded-xl hover:bg-emerald-50 transition-all shadow-xl shadow-white/5"
+                                                >
+                                                    LAUNCH TOUR
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
+                                </section>
+                            )}
 
                             {/* Location Map */}
                             <section>

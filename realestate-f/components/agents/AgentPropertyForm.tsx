@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Upload, ArrowLeft, X, Plus, Trash2, Square, Bed, Bath, Maximize, Calendar, FileVideo, Image as ImageIcon, ChevronDown, ChevronUp, MapPin, DollarSign, Home, Star, Link, AlertCircle } from 'lucide-react';
+import { Upload, ArrowLeft, X, Plus, Trash2, Square, Bed, Bath, Maximize, Calendar, FileVideo, Image as ImageIcon, ChevronDown, ChevronUp, MapPin, DollarSign, Home, Star, Link, AlertCircle, ExternalLink, Download } from 'lucide-react';
 import { propertyAPI, PropertyData } from '@/lib/api/properties';
 
 interface FormErrors {
@@ -56,6 +56,9 @@ export default function AgentPropertyForm({
     const [features, setFeatures] = useState<string[]>(initial?.features || []);
     const [featureInput, setFeatureInput] = useState('');
     const [videoUrl, setVideoUrl] = useState(initial?.video_url || '');
+    const [virtualTourUrl, setVirtualTourUrl] = useState(initial?.virtual_tour_url || '');
+    const [floorPlanFile, setFloorPlanFile] = useState<File | null>(null);
+    const [floorPlanPreview, setFloorPlanPreview] = useState<string>(initial?.floor_plan || '');
 
     // Images
     const [images, setImages] = useState<File[]>([]);
@@ -274,6 +277,8 @@ export default function AgentPropertyForm({
 
             // Media
             if (videoUrl) fd.append('video_url', videoUrl);
+            if (virtualTourUrl) fd.append('virtual_tour_url', virtualTourUrl);
+            if (floorPlanFile) fd.append('floor_plan', floorPlanFile);
 
             // Images - handle both file uploads and URLs
             if (images.length > 0) {
@@ -372,6 +377,9 @@ export default function AgentPropertyForm({
         setImageUrls([]);
         setImageUrlInput('');
         setPreviewUrls([]);
+        setFloorPlanFile(null);
+        setFloorPlanPreview('');
+        setVirtualTourUrl('');
         setOwnerName('');
         setOwnerPhone('');
         setErrors({});
@@ -859,10 +867,92 @@ export default function AgentPropertyForm({
                                             value={videoUrl}
                                             onChange={(e) => setVideoUrl(e.target.value)}
                                             className="flex-1 px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
-                                            placeholder="https://youtube.com/watch?v=..."
+                                            placeholder="YouTube/Vimeo URL"
                                         />
                                     </div>
                                     {errors.videoUrl && <p className="text-xs text-destructive">{errors.videoUrl}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-bold uppercase tracking-wider">
+                                        Virtual Tour URL (Optional)
+                                    </label>
+                                    <div className="flex gap-2">
+                                        <ExternalLink size={16} className="text-muted-foreground" />
+                                        <input
+                                            type="url"
+                                            value={virtualTourUrl}
+                                            onChange={(e) => setVirtualTourUrl(e.target.value)}
+                                            className="flex-1 px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-ring/20 transition-all bg-background"
+                                            placeholder="Matterport/Other Virtual Tour URL"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 pt-4 border-t border-border">
+                                    <label className="block text-sm font-bold uppercase tracking-wider">
+                                        Floor Plan (Optional)
+                                    </label>
+                                    <div className="flex flex-col gap-4">
+                                        <input
+                                            type="file"
+                                            accept="image/*,application/pdf"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setFloorPlanFile(file);
+                                                    if (file.type.startsWith('image/')) {
+                                                        setFloorPlanPreview(URL.createObjectURL(file));
+                                                    } else {
+                                                        setFloorPlanPreview('');
+                                                    }
+                                                }
+                                            }}
+                                            className="hidden"
+                                            id="floor-plan-upload"
+                                        />
+                                        <label
+                                            htmlFor="floor-plan-upload"
+                                            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary/50 transition-colors bg-background"
+                                        >
+                                            {floorPlanPreview ? (
+                                                <div className="relative w-full h-full p-2">
+                                                    <img src={floorPlanPreview} alt="Floor plan preview" className="w-full h-full object-contain rounded-lg" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setFloorPlanFile(null);
+                                                            setFloorPlanPreview('');
+                                                        }}
+                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                </div>
+                                            ) : floorPlanFile ? (
+                                                <div className="flex flex-col items-center justify-center text-primary">
+                                                    <Download size={24} />
+                                                    <p className="text-xs mt-1">{floorPlanFile.name}</p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setFloorPlanFile(null);
+                                                        }}
+                                                        className="text-xs text-red-500 hover:underline mt-1"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                                    <Upload size={24} />
+                                                    <p className="text-xs mt-1 px-4 text-center">Upload Floor Plan (Image or PDF)</p>
+                                                </div>
+                                            )}
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
