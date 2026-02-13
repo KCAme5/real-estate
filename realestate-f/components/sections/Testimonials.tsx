@@ -46,30 +46,36 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
-      <div className="container mx-auto px-4">
+    <section className="py-24 bg-slate-950 text-white relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-900/10 rounded-full blur-3xl"></div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <div className="inline-flex items-center gap-2 bg-emerald-900/30 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
             Client Experiences
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             What Our Clients Say
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
             Hear from our satisfied clients who have found their dream properties through KenyaPrime.
           </p>
         </div>
 
         {/* Testimonials Carousel */}
         <div className="max-w-4xl mx-auto">
-          {/* Active Testimonial */}
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 md:p-12 mb-8">
-            <div className="flex items-start gap-6">
+          {/* Active Testimonial Card */}
+          <div className="relative group bg-slate-900 rounded-3xl p-8 md:p-12 mb-8 shadow-lg transition-all duration-300">
+            {/* Animated Green Frame */}
+            <div className="absolute inset-0 border-2 border-emerald-500/0 group-hover:border-emerald-500/50 rounded-3xl transition-colors duration-500 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+            <div className="relative z-10 flex items-start gap-6">
               {/* Client Image */}
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+                <div className="w-20 h-20 bg-slate-800 text-emerald-400 border border-emerald-900/40 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-md group-hover:border-emerald-500/50 transition-colors">
                   {testimonials[activeTestimonial].name.split(' ').map(n => n[0]).join('')}
                 </div>
               </div>
@@ -82,16 +88,16 @@ export default function Testimonials() {
                 </div>
 
                 {/* Testimonial Text */}
-                <blockquote className="text-lg md:text-xl text-gray-200 mb-6 leading-relaxed italic">
+                <blockquote className="text-lg md:text-xl text-slate-300 mb-6 leading-relaxed italic">
                   "{testimonials[activeTestimonial].content}"
                 </blockquote>
 
                 {/* Client Info */}
                 <div>
-                  <div className="font-semibold text-white text-lg">
+                  <div className="font-semibold text-white text-lg group-hover:text-emerald-400 transition-colors">
                     {testimonials[activeTestimonial].name}
                   </div>
-                  <div className="text-cyan-400">
+                  <div className="text-emerald-500/80">
                     {testimonials[activeTestimonial].role}
                   </div>
                 </div>
@@ -105,11 +111,10 @@ export default function Testimonials() {
               <button
                 key={index}
                 onClick={() => setActiveTestimonial(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === activeTestimonial 
-                    ? 'bg-cyan-400 w-8' 
-                    : 'bg-white/30 hover:bg-white/50'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === activeTestimonial
+                    ? 'bg-emerald-500 w-8'
+                    : 'bg-emerald-900/40 hover:bg-emerald-500/50'
+                  }`}
               />
             ))}
           </div>
@@ -123,9 +128,9 @@ export default function Testimonials() {
             { icon: '🔒', label: 'Secure Transactions' },
             { icon: '💬', label: '24/7 Support' }
           ].map((item, index) => (
-            <div key={index} className="text-center">
-              <div className="text-3xl mb-2">{item.icon}</div>
-              <div className="text-gray-300 font-medium text-sm">{item.label}</div>
+            <div key={index} className="text-center group border border-transparent hover:border-emerald-500/30 rounded-xl p-4 transition-all hover:bg-emerald-900/10">
+              <div className="text-3xl mb-2 grayscale group-hover:grayscale-0 transition-all">{item.icon}</div>
+              <div className="text-slate-400 group-hover:text-emerald-400 font-medium text-sm transition-colors">{item.label}</div>
             </div>
           ))}
         </div>

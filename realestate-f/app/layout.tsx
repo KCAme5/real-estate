@@ -30,8 +30,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem
+          forcedTheme="dark"
           disableTransitionOnChange
           storageKey="kenyaprime-theme"
         >

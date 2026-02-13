@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { Menu, X, ChevronDown, User } from "lucide-react";
 import {
@@ -246,17 +245,12 @@ export default function Header() {
 
                     {/* Desktop Actions */}
                     <div className="hidden lg:flex items-center gap-3">
-                        {/* Theme Toggle */}
-                        <div className="relative">
-                            <ThemeToggle />
-                        </div>
-
                         {/* Auth Buttons */}
                         {user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-muted hover:bg-accent transition-all duration-200 font-medium group">
-                                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                    <button className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-900/20 hover:bg-emerald-900/40 transition-all duration-200 font-medium group border border-emerald-500/20">
+                                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
                                             <span className="text-sm font-semibold text-white">
                                                 {user.username?.[0]?.toUpperCase() ||
                                                     user.email?.[0]?.toUpperCase() ||
@@ -264,23 +258,23 @@ export default function Header() {
                                             </span>
                                         </div>
                                         <div className="flex flex-col items-start">
-                                            <span className="text-sm font-medium text-foreground truncate max-w-[120px]">
+                                            <span className="text-sm font-medium text-emerald-100 truncate max-w-[120px]">
                                                 {user.username || user.email?.split("@")[0]}
                                             </span>
-                                            <span className="text-xs text-muted-foreground capitalize">
+                                            <span className="text-xs text-emerald-400/70 capitalize">
                                                 {user.user_type}
                                             </span>
                                         </div>
-                                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                        <ChevronDown className="w-4 h-4 text-emerald-400/70" />
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
-                                    className="w-56 p-2 rounded-xl bg-card/95 backdrop-blur-md shadow-xl border border-border"
+                                    className="w-56 p-2 rounded-xl bg-slate-900/95 backdrop-blur-md shadow-xl border border-emerald-900/20"
                                 >
                                     <DropdownMenuItem
                                         asChild
-                                        className="px-3 py-2.5 rounded-lg cursor-pointer"
+                                        className="px-3 py-2.5 rounded-lg cursor-pointer hover:bg-emerald-900/20 focus:bg-emerald-900/20"
                                     >
                                         <Link
                                             href={
@@ -288,15 +282,15 @@ export default function Header() {
                                                     ? "/dashboard/agent"
                                                     : "/dashboard"
                                             }
-                                            className="w-full text-sm text-foreground"
+                                            className="w-full text-sm text-emerald-100"
                                         >
                                             Dashboard
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
+                                    <DropdownMenuSeparator className="bg-emerald-900/20" />
                                     <DropdownMenuItem
                                         onClick={handleLogout}
-                                        className="px-3 py-2.5 rounded-lg cursor-pointer text-destructive hover:bg-destructive/10"
+                                        className="px-3 py-2.5 rounded-lg cursor-pointer text-red-400 hover:bg-red-500/10 focus:bg-red-500/10"
                                     >
                                         <span className="text-sm">Logout</span>
                                     </DropdownMenuItem>
@@ -306,13 +300,13 @@ export default function Header() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                                    className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors"
                                 >
                                     Login
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="px-5 py-2.5 text-sm font-medium bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                                    className="px-5 py-2.5 text-sm font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-emerald-500/20"
                                 >
                                     Register
                                 </Link>
@@ -322,12 +316,11 @@ export default function Header() {
 
                     {/* Mobile Menu Button */}
                     <div className="flex lg:hidden items-center gap-3">
-                        <ThemeToggle />
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className={`p-2 rounded-lg transition-all duration-200 ${mobileMenuOpen
-                                ? "bg-muted text-foreground"
-                                : "hover:bg-muted text-muted-foreground"
+                                ? "bg-emerald-900/20 text-emerald-400"
+                                : "hover:bg-emerald-900/10 text-slate-400"
                                 }`}
                             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                         >
