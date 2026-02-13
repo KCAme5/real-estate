@@ -60,18 +60,20 @@ export default function WhyChooseUs() {
     ];
 
     return (
-        <section className="py-20 bg-background">
-            <div className="container mx-auto px-4">
+        <section className="py-24 bg-slate-950 relative overflow-hidden">
+            <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2 w-96 h-96 bg-emerald-900/10 rounded-full blur-3xl"></div>
+
+            <div className="container mx-auto px-4 relative z-10">
                 {/* Section Header */}
                 <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="inline-flex items-center gap-2 bg-emerald-900/30 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-emerald-500/20">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                         Why Choose Us
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                         The KenyaPrime Advantage
                     </h2>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    <p className="text-xl text-slate-400 max-w-2xl mx-auto">
                         Experience the difference with our comprehensive real estate solutions and exceptional service.
                     </p>
                 </div>
@@ -81,23 +83,25 @@ export default function WhyChooseUs() {
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="group text-center p-8 rounded-2xl bg-card border border-border hover:border-primary/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+                            className="group text-center p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:-translate-y-2 relative overflow-hidden"
                         >
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
                             {/* Icon */}
-                            <div className="w-20 h-20 bg-primary text-primary-foreground rounded-xl flex items-center justify-center mx-auto mb-6 shadow-md">
+                            <div className="w-24 h-24 bg-slate-800 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md border border-slate-700 group-hover:scale-110 transition-transform duration-300 relative z-10">
                                 {feature.icon}
                             </div>
 
                             {/* Content */}
-                            <h3 className="text-xl font-bold text-foreground mb-4">
+                            <h3 className="text-xl font-bold text-white mb-4 relative z-10">
                                 {feature.title}
                             </h3>
-                            <p className="text-muted-foreground leading-relaxed">
+                            <p className="text-slate-400 leading-relaxed relative z-10">
                                 {feature.description}
                             </p>
 
                             {/* Hover Indicator */}
-                            <div className="mt-6 w-12 h-0.5 bg-primary rounded-full mx-auto scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                            <div className="mt-6 w-16 h-1 bg-emerald-500 rounded-full mx-auto scale-x-50 group-hover:scale-x-100 transition-transform duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
                         </div>
                     ))}
                 </div>
@@ -111,10 +115,10 @@ export default function WhyChooseUs() {
                         { number: '24/7', label: 'Support' }
                     ].map((stat, index) => (
                         <div key={index} className="text-center">
-                            <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                            <div className="text-3xl md:text-4xl font-bold text-emerald-400 mb-2">
                                 {stat.number}
                             </div>
-                            <div className="text-muted-foreground font-medium">{stat.label}</div>
+                            <div className="text-slate-400 font-medium">{stat.label}</div>
                         </div>
                     ))}
                 </div>

@@ -46,18 +46,18 @@ export default function DiasporaServices() {
     ];
 
     return (
-        <section className="py-20 bg-background">
+        <section className="py-24 bg-slate-950">
             <div className="container mx-auto px-4">
                 {/* Section Header */}
                 <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="inline-flex items-center gap-2 bg-emerald-900/30 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-emerald-500/20">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                         Tailored Solutions
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                         Diaspora Services
                     </h2>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    <p className="text-xl text-slate-400 max-w-2xl mx-auto">
                         Comprehensive real estate solutions designed specifically for Kenyans living abroad.
                     </p>
                 </div>
@@ -67,22 +67,26 @@ export default function DiasporaServices() {
                     {services.map((service, index) => (
                         <div
                             key={index}
-                            className="group bg-card rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-border hover:border-primary/30"
+                            className="group relative bg-slate-900 rounded-2xl p-8 shadow-lg transition-all duration-300 overflow-hidden hover:-translate-y-1"
                         >
-                            <div className="flex items-start gap-6">
+                            {/* Animated Green Frame */}
+                            <div className="absolute inset-0 border-2 border-emerald-500/0 group-hover:border-emerald-500/50 rounded-2xl transition-colors duration-500 pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                            <div className="relative z-10 flex items-start gap-6">
                                 {/* Icon */}
                                 <div className="shrink-0">
-                                    <div className="w-16 h-16 bg-primary text-primary-foreground rounded-xl flex items-center justify-center shadow-md">
+                                    <div className="w-16 h-16 bg-slate-800 text-emerald-400 rounded-xl flex items-center justify-center shadow-md group-hover:bg-emerald-500/20 transition-colors duration-300">
                                         {service.icon}
                                     </div>
                                 </div>
 
                                 {/* Content */}
                                 <div className="flex-1">
-                                    <h3 className="text-2xl font-bold text-foreground mb-3">
+                                    <h3 className="text-2xl font-bold text-white mb-3">
                                         {service.title}
                                     </h3>
-                                    <p className="text-muted-foreground mb-4 leading-relaxed">
+                                    <p className="text-slate-400 mb-4 leading-relaxed">
                                         {service.description}
                                     </p>
 
@@ -91,9 +95,9 @@ export default function DiasporaServices() {
                                         {service.features.map((feature, featureIndex) => (
                                             <span
                                                 key={featureIndex}
-                                                className="inline-flex items-center gap-1 bg-muted text-foreground px-3 py-1 rounded-full text-sm font-medium border border-border"
+                                                className="inline-flex items-center gap-1 bg-slate-800 text-slate-300 px-3 py-1 rounded-full text-sm font-medium border border-slate-700"
                                             >
-                                                <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
                                                 {feature}
                                             </span>
                                         ))}
@@ -102,7 +106,7 @@ export default function DiasporaServices() {
                             </div>
 
                             {/* Hover Effect Line */}
-                            <div className="mt-6 h-0.5 bg-primary rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-emerald-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                         </div>
                     ))}
                 </div>

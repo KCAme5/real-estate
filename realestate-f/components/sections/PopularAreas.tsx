@@ -1,41 +1,74 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { apiClient } from '@/lib/api/client';
 
-const cities = [
+const initialCities = [
     {
         name: 'Nairobi',
-        count: '2,450',
-        image: 'https://images.unsplash.com/photo-1620549146396-9024d914cd99?q=80&w=600&auto=format&fit=crop', // Nairobi skyline placeholder
+        count: '...',
+        image: 'https://images.unsplash.com/photo-1620549146396-9024d914cd99?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Mombasa',
-        count: '1,120',
-        image: 'https://images.unsplash.com/photo-1547895056-bb6d0c733350?q=80&w=600&auto=format&fit=crop', // Coastal/Mombasa link
+        count: '...',
+        image: 'https://images.unsplash.com/photo-1547895056-bb6d0c733350?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Kisumu',
-        count: '680',
-        image: 'https://images.unsplash.com/photo-1549247656-749448834d88?q=80&w=600&auto=format&fit=crop', // Lake/Nature
+        count: '...',
+        image: 'https://images.unsplash.com/photo-1549247656-749448834d88?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Nakuru',
-        count: '450',
-        image: 'https://images.unsplash.com/photo-1580974852860-19d26390a424?q=80&w=600&auto=format&fit=crop', // Flamingo/Lake
+        count: '...',
+        image: 'https://images.unsplash.com/photo-1580974852860-19d26390a424?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Eldoret',
-        count: '192',
-        image: 'https://images.unsplash.com/photo-1565514020176-db8a7fb99564?q=80&w=600&auto=format&fit=crop', // General urban/nature
+        count: '...',
+        image: 'https://images.unsplash.com/photo-1565514020176-db8a7fb99564?q=80&w=600&auto=format&fit=crop',
     },
 ];
 
 const PopularAreas = () => {
+    const [cities, setCities] = useState(initialCities);
+
+    useEffect(() => {
+        const fetchCounts = async () => {
+            const updatedCities = await Promise.all(
+                initialCities.map(async (city) => {
+                    try {
+                        // Pass location as a query param.
+                        const data = await apiClient.get('/properties/', { params: { location: city.name } });
+                        let count = '0';
+                        if (data && typeof data.count === 'number') {
+                            count = data.count.toString();
+                        } else if (Array.isArray(data)) {
+                            count = data.length.toString();
+                        } else if (data && Array.isArray(data.results)) {
+                            count = data.results.length.toString();
+                        }
+
+                        return { ...city, count };
+                    } catch (error) {
+                        console.error(`Error fetching count for ${city.name}:`, error);
+                        return { ...city, count: '0' };
+                    }
+                })
+            );
+            setCities(updatedCities);
+        };
+
+        fetchCounts();
+    }, []);
+
     return (
         <section className="py-24 bg-slate-950 relative">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-emerald-900/10 rounded-full blur-3xl"></div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
                     <div>
@@ -43,7 +76,7 @@ const PopularAreas = () => {
                         <div className="h-1 w-20 bg-emerald-500 rounded-full"></div>
                     </div>
                     <Link
-                        href="/locations"
+                        href="/properties"
                         className="group flex items-center text-emerald-500 font-medium hover:text-emerald-400 transition-colors"
                     >
                         View All Locations
@@ -57,7 +90,7 @@ const PopularAreas = () => {
                         <Link
                             key={city.name}
                             href={`/properties?location=${city.name}`}
-                            className="group relative h-80 rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                            className="group relative h-80 rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-slate-800"
                         >
                             {/* Background Image */}
                             <div
@@ -72,7 +105,7 @@ const PopularAreas = () => {
                             <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
                                 <h3 className="text-xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">{city.name}</h3>
                                 <p className="text-xs font-bold text-slate-300 tracking-wider uppercase mb-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                                    {city.count} Properties
+                                    {city.count} {parseInt(city.count) === 1 ? 'Property' : 'Properties'}
                                 </p>
                             </div>
                         </Link>
