@@ -13,6 +13,10 @@ function PropertiesContent() {
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
+    const [totalCount, setTotalCount] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const PAGE_SIZE = 20;
+
     const [filters, setFilters] = useState({
         property_type: '',
         location: '',
@@ -35,18 +39,29 @@ function PropertiesContent() {
         fetchProperties(urlFilters);
     }, [searchParams]);
 
-    const fetchProperties = async (searchFilters = {}) => {
+    const fetchProperties = async (searchFilters = {}, page = 1) => {
         try {
             setLoading(true);
             // Clean up empty filters
-            const cleanFilters: Record<string, any> = {};
+            const cleanFilters: Record<string, any> = {
+                page: page,
+                page_size: PAGE_SIZE
+            };
             Object.entries(searchFilters).forEach(([key, value]) => {
                 if (value) cleanFilters[key] = value;
             });
 
             const queryParams = new URLSearchParams(cleanFilters).toString();
             const data = await apiClient.get(`/properties/?${queryParams}`);
-            setProperties(data.results || data);
+
+            if (data.results) {
+                setProperties(data.results);
+                setTotalCount(data.count || data.results.length);
+            } else {
+                setProperties(data);
+                setTotalCount(Array.isArray(data) ? data.length : 0);
+            }
+            setCurrentPage(page);
         } catch (error) {
             console.error('Error fetching properties:', error);
         } finally {
@@ -123,20 +138,52 @@ function PropertiesContent() {
                             </div>
                         )}
 
-                        {/* Pagination Placeholder */}
-                        {properties.length > 0 && (
+                        {/* Functional Pagination */}
+                        {totalCount > PAGE_SIZE && (
                             <div className="flex justify-center mt-16 gap-2">
-                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all disabled:opacity-50">
+                                <button
+                                    onClick={() => fetchProperties(filters, currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </button>
-                                <button className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/20 flex items-center justify-center transition-all">1</button>
-                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">2</button>
-                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">3</button>
-                                <span className="w-10 h-10 flex items-center justify-center text-slate-500">...</span>
-                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">12</button>
-                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">
+
+                                {Array.from({ length: Math.ceil(totalCount / PAGE_SIZE) }).map((_, i) => {
+                                    const pageNum = i + 1;
+                                    if (
+                                        pageNum === 1 ||
+                                        pageNum === Math.ceil(totalCount / PAGE_SIZE) ||
+                                        (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                                    ) {
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => fetchProperties(filters, pageNum)}
+                                                className={`w-10 h-10 rounded-xl font-bold transition-all flex items-center justify-center ${currentPage === pageNum
+                                                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                                                        : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800'
+                                                    }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    } else if (
+                                        (pageNum === currentPage - 2 && pageNum > 1) ||
+                                        (pageNum === currentPage + 2 && pageNum < Math.ceil(totalCount / PAGE_SIZE))
+                                    ) {
+                                        return <span key={pageNum} className="w-10 h-10 flex items-center justify-center text-slate-500">...</span>;
+                                    }
+                                    return null;
+                                })}
+
+                                <button
+                                    onClick={() => fetchProperties(filters, currentPage + 1)}
+                                    disabled={currentPage === Math.ceil(totalCount / PAGE_SIZE)}
+                                    className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>

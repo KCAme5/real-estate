@@ -1,8 +1,36 @@
 'use client';
 
-import { TrendingUp, FileText, ArrowRight, Heart, Bell } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { TrendingUp, FileText, Bell, Heart } from 'lucide-react';
+import { propertyAPI } from '@/lib/api/properties';
+import { formatRelativeTime } from '@/lib/utils/time';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function PropertiesSidebar() {
+    const { isAuthenticated } = useAuth();
+    const [savedProperties, setSavedProperties] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchSavedProperties();
+        }
+    }, [isAuthenticated]);
+
+    const fetchSavedProperties = async () => {
+        try {
+            setLoading(true);
+            const data = await propertyAPI.getSavedProperties();
+            // Data usually comes as results or direct array
+            setSavedProperties((data.results || data).slice(0, 5)); // Limit to last 5
+        } catch (error) {
+            console.error('Error fetching saved properties:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-8">
 
@@ -45,28 +73,48 @@ export default function PropertiesSidebar() {
                 </button>
             </div>
 
-            {/* Saved Searches Widget */}
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-lg relative overflow-hidden">
+            {/* Real Saved Properties Widget */}
+            <div className="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-lg relative overflow-hidden">
                 <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Saved Searches</h3>
+                    <h3 className="text-lg font-bold text-white">Saved Properties</h3>
                     <Bell size={18} className="text-slate-400" />
                 </div>
 
                 <div className="space-y-3">
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-dotted border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors cursor-pointer group">
-                        <div className="flex justify-between items-start mb-1">
-                            <h4 className="font-semibold text-slate-900 dark:text-slate-200 text-sm group-hover:text-emerald-500 transition-colors">3BHK Apartment Nyali</h4>
-                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    {!isAuthenticated ? (
+                        <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center">
+                            <p className="text-sm text-slate-500 mb-3">Sign in to see your saved properties</p>
+                            <Link href="/login" className="text-xs font-bold text-emerald-500 hover:text-emerald-400 uppercase tracking-wider">Sign In</Link>
                         </div>
-                        <p className="text-xs text-slate-500">Updated 2h ago</p>
-                    </div>
-
-                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-dotted border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors cursor-pointer group">
-                        <div className="flex justify-between items-start mb-1">
-                            <h4 className="font-semibold text-slate-900 dark:text-slate-200 text-sm group-hover:text-emerald-500 transition-colors">Villas in Karen & Runda</h4>
+                    ) : loading ? (
+                        <div className="space-y-3">
+                            {[1, 2].map(i => <div key={i} className="h-16 bg-slate-800 rounded-xl animate-pulse"></div>)}
                         </div>
-                        <p className="text-xs text-slate-500">Updated 1d ago</p>
-                    </div>
+                    ) : savedProperties.length > 0 ? (
+                        savedProperties.map((saved: any) => (
+                            <Link
+                                key={saved.id}
+                                href={`/properties/${saved.property_details?.slug || saved.property}`}
+                                className="block bg-slate-950 p-4 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition-colors group"
+                            >
+                                <div className="flex justify-between items-start mb-1">
+                                    <h4 className="font-semibold text-slate-200 text-sm group-hover:text-emerald-500 transition-colors truncate pr-2">
+                                        {saved.property_details?.title || 'Property'}
+                                    </h4>
+                                    <div className="flex-shrink-0">
+                                        <Heart size={12} className="text-emerald-500 fill-emerald-500" />
+                                    </div>
+                                </div>
+                                <p className="text-xs text-slate-500">
+                                    Saved {formatRelativeTime(saved.saved_at || saved.created_at)}
+                                </p>
+                            </Link>
+                        ))
+                    ) : (
+                        <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center">
+                            <p className="text-sm text-slate-500">No saved properties yet</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -86,9 +134,9 @@ export default function PropertiesSidebar() {
                         Talk to our property advisors for personalized recommendations.
                     </p>
 
-                    <button className="bg-white text-emerald-700 w-full py-3.5 rounded-xl font-bold text-sm tracking-wide hover:bg-emerald-50 transition-colors shadow-lg">
+                    <Link href="/contact" className="block bg-white text-emerald-700 w-full py-4 rounded-xl font-bold text-sm tracking-wide hover:bg-emerald-50 transition-colors shadow-lg">
                         CONTACT SUPPORT
-                    </button>
+                    </Link>
                 </div>
             </div>
 
