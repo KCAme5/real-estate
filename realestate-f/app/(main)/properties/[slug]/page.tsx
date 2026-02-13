@@ -373,7 +373,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         {property.views || 0} Views
                                     </span>
                                 </div>
-                                <h1 className="text-4xl lg:text-6xl font-black text-white mb-4 leading-tight tracking-tight">{property.title}</h1>
+                                <h1 className="text-3xl lg:text-5xl font-black text-white mb-4 leading-tight tracking-tight">{property.title}</h1>
                                 <div className="flex items-center gap-3 text-slate-400">
                                     <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-emerald-500">
                                         <MapPin size={20} />
@@ -395,15 +395,15 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                     {/* 4. Quick Specs Bar */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-12">
                         {[
-                            { icon: <Bed size={24} />, value: property.bedrooms, label: 'Bedrooms' },
-                            { icon: <Bath size={24} />, value: property.bathrooms, label: 'Bathrooms' },
-                            { icon: <Maximize2 size={24} />, value: `${property.square_feet} sqft`, label: 'Living Area' },
-                            { icon: <Sparkles size={24} />, value: property.property_type, label: 'Type' },
-                            { icon: <Zap size={24} />, value: property.year_built || '2024', label: 'Year Built' },
+                            { icon: <Bed size={20} />, value: property.bedrooms, label: 'Bedrooms' },
+                            { icon: <Bath size={20} />, value: property.bathrooms, label: 'Bathrooms' },
+                            { icon: <Maximize2 size={20} />, value: `${property.square_feet} sqft`, label: 'Living Area' },
+                            { icon: <Sparkles size={20} />, value: property.property_type, label: 'Type' },
+                            { icon: <Calendar size={20} />, value: property.year_built || '2024', label: 'Year Built' },
                         ].map((spec, i) => (
-                            <div key={i} className="bg-slate-900/80 rounded-[2.5rem] p-8 border border-slate-800 hover:border-emerald-500/40 transition-all group hover:-translate-y-1 shadow-xl">
-                                <div className="text-emerald-500 mb-4 group-hover:scale-110 transition-transform">{spec.icon}</div>
-                                <div className="text-2xl font-black text-white uppercase tracking-tighter">{spec.value || 'N/A'}</div>
+                            <div key={i} className="bg-slate-900/80 rounded-[2.5rem] p-6 border border-slate-800 hover:border-emerald-500/40 transition-all group hover:-translate-y-1 shadow-xl text-center">
+                                <div className="text-emerald-500 mb-2 flex justify-center group-hover:scale-110 transition-transform">{spec.icon}</div>
+                                <div className="text-lg font-black text-white uppercase tracking-tighter">{spec.value || 'N/A'}</div>
                                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">{spec.label}</div>
                             </div>
                         ))}
@@ -418,11 +418,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             {/* Description */}
                             <section>
                                 <div className="flex items-center gap-4 mb-8">
-                                    <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Property Description</h2>
+                                    <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight">Property Description</h2>
                                     <div className="h-px flex-1 bg-slate-800" />
                                 </div>
                                 <div className="prose prose-invert max-w-none">
-                                    <p className="text-slate-400 text-lg leading-relaxed whitespace-pre-wrap font-medium">
+                                    <p className="text-slate-400 text-base leading-relaxed whitespace-pre-wrap">
                                         {property.description}
                                     </p>
                                 </div>
@@ -432,7 +432,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             {property.features && property.features.length > 0 && (
                                 <section>
                                     <div className="flex items-center gap-4 mb-8">
-                                        <h2 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Outstanding Features</h2>
+                                        <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight">Outstanding Features</h2>
                                         <div className="h-px flex-1 bg-slate-800" />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -498,52 +498,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             {/* Location Map */}
                             <section>
                                 <div className="flex items-center gap-4 mb-8">
-                                    <h2 className="text-3xl font-black text-white">Explore Area</h2>
+                                    <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight">Location Map</h2>
                                     <div className="h-px flex-1 bg-slate-800" />
                                 </div>
                                 <div className="relative h-[450px] rounded-[2.5rem] overflow-hidden border border-slate-800 shadow-2xl">
                                     <Map center={[property.latitude || -1.2921, property.longitude || 36.8219]} zoom={15} />
-                                </div>
-                                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {[
-                                        { icon: <Shield size={18} />, label: 'Safety Score', value: 'High' },
-                                        { icon: <Star size={18} />, label: 'Prime Area', value: 'Yes' },
-                                        { icon: <TrendingUp size={18} />, label: 'Appreciation', value: '12% / yr' },
-                                    ].map((stat, i) => (
-                                        <div key={i} className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 flex items-center gap-4">
-                                            <div className="text-emerald-500">{stat.icon}</div>
-                                            <div>
-                                                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</div>
-                                                <div className="text-lg font-black text-white">{stat.value}</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-
-                            {/* Nearby Amenities */}
-                            <section>
-                                <div className="flex items-center gap-4 mb-8">
-                                    <h2 className="text-3xl font-black text-white">Nearby Essentials</h2>
-                                    <div className="h-px flex-1 bg-slate-800" />
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {[
-                                        { name: 'Sarit Centre', dist: '5 min drive', type: 'Shopping' },
-                                        { name: 'Nairobi Hospital', dist: '12 min drive', type: 'Medical' },
-                                        { name: 'International School', dist: '8 min drive', type: 'Education' },
-                                        { name: 'Karura Forest', dist: '15 min drive', type: 'Leisure' },
-                                        { name: 'Central Business District', dist: '20 min drive', type: 'Business' },
-                                    ].map((amenity, idx) => (
-                                        <div key={idx} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl hover:border-emerald-500/50 transition-all cursor-default">
-                                            <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">{amenity.type}</div>
-                                            <h4 className="text-white font-bold mb-1">{amenity.name}</h4>
-                                            <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-                                                <Clock size={12} />
-                                                {amenity.dist}
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </section>
 
@@ -634,27 +593,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                 </form>
                             </div>
 
-                            {/* Mortgage Widget Mock */}
-                            <div className="bg-linear-to-br from-indigo-900/40 to-slate-900 rounded-[2.5rem] p-8 border border-indigo-500/20 group cursor-pointer hover:border-indigo-500/40 transition-all">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
-                                        <Landmark size={20} />
-                                    </div>
-                                    <h3 className="text-lg font-black text-white">Mortgage Estimator</h3>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estimated Monthly</div>
-                                        <div className="text-2xl font-black text-indigo-400">{formatCurrency(Math.round(Number(property.price) / 240))}</div>
-                                    </div>
-                                    <div className="h-2 bg-slate-950 rounded-full overflow-hidden">
-                                        <div className="h-full bg-indigo-500 w-1/3" />
-                                    </div>
-                                    <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                                        Based on 20% downpayment & 12% annual interest rates. *Market rates vary.
-                                    </p>
-                                </div>
-                            </div>
+
 
                         </div>
                     </div>
@@ -664,8 +603,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                         <div className="mt-24 pt-24 border-t border-slate-900">
                             <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                                 <div>
-                                    <div className="text-emerald-500 font-black text-xs uppercase tracking-[0.3em] mb-3">EXECUTIVE COLLECTION</div>
-                                    <h2 className="text-5xl font-black text-white">Similar Properties</h2>
+                                    <div className="text-emerald-500 font-bold text-[10px] uppercase tracking-[0.3em] mb-3">EXECUTIVE COLLECTION</div>
+                                    <h2 className="text-3xl lg:text-4xl font-black text-white">Similar Properties</h2>
                                 </div>
                                 <Link href="/properties" className="group flex items-center gap-3 text-slate-400 hover:text-white transition-all font-bold uppercase tracking-widest text-sm">
                                     View Full Marketplace
