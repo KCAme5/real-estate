@@ -6,7 +6,7 @@ import SearchFilters from '@/components/property/SearchFilters';
 
 const heroImages = [
     {
-        url: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/477640729.jpg?k=729decae88959601f7305063ae1ef461afccce3018d08f4e782d49fc57f69e32&o=',
+        url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1920',
         alt: 'Modern Kenyan family home'
     },
     {
@@ -129,6 +129,9 @@ export default function HeroSection() {
                 <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
                     Premium real estate solutions connecting Kenyans and the diaspora with
                     exceptional properties and investment opportunities across the country.
+                </p>
+                <p className="text-lg md:text-xl text-slate-200 mb-12 font-medium tracking-wide">
+                    Buy • Sell • Rent • Commercial
                 </p>
 
                 {/* CTA Buttons */}
