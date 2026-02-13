@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Property } from '@/types/property';
 import PropertyCard from '@/components/property/PropertyCard';
-import SearchFilters from '@/components/property/SearchFilters';
+import PropertyFiltersBar from '@/components/property/PropertyFiltersBar';
+import PropertiesSidebar from '@/components/property/PropertiesSidebar';
 import { apiClient } from '@/lib/api/client';
 
 function PropertiesContent() {
     const searchParams = useSearchParams();
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState(true);
-    const [showFilters, setShowFilters] = useState(false);
+    const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
     const [filters, setFilters] = useState({
         property_type: '',
         location: '',
@@ -56,156 +57,108 @@ function PropertiesContent() {
     const handleSearch = (searchFilters: any) => {
         setFilters(searchFilters);
         fetchProperties(searchFilters);
-        setShowFilters(false);
-    };
-
-    // Helper to generate dynamic title
-    const getPageTitle = () => {
-        const type = searchParams.get('listing_type');
-        const category = searchParams.get('property_type');
-        const isDev = searchParams.get('is_development');
-
-        if (isDev) return 'Development Projects';
-
-        let title = 'premium properties';
-        if (category) {
-            title = category.charAt(0).toUpperCase() + category.slice(1) + 's';
-            if (category === 'land') title = 'Land';
-            if (category === 'commercial') title = 'Commercial Properties';
-        }
-
-        if (type) {
-            title += ` for ${type.charAt(0).toUpperCase() + type.slice(1)}`;
-        } else if (!category) {
-            return 'Browse Properties';
-        }
-
-        return title;
     };
 
     return (
-        <div className="pt-20 min-h-screen bg-background">
-            {/* Header */}
-            <div className="bg-card border-b border-border">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2 capitalize">
-                                {getPageTitle()}
-                            </h1>
-                            <p className="text-sm text-muted-foreground">
-                                Discover {properties.length} {getPageTitle().toLowerCase()} across Kenya
-                            </p>
-                        </div>
+        <div className="min-h-screen bg-slate-950 pt-20">
 
-                        <div className="flex gap-4">
-                            <button
-                                onClick={() => setShowFilters(true)}
-                                className="flex items-center gap-2 bg-background border border-input hover:border-primary text-foreground hover:text-primary px-6 py-3 rounded-xl font-semibold transition-all duration-300"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                </svg>
-                                Filters
-                            </button>
+            {/* Sticky Filters Bar */}
+            <PropertyFiltersBar
+                onSearch={handleSearch}
+                currentFilters={filters}
+                onViewChange={setViewMode}
+                currentView={viewMode}
+                totalProperties={properties.length}
+            />
 
-                            <select className="bg-background border border-input text-foreground px-4 py-3 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option>Sort by: Newest</option>
-                                <option>Price: Low to High</option>
-                                <option>Price: High to Low</option>
-                                <option>Most Popular</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div className="container mx-auto px-4 pb-16">
+                <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-            {/* Content */}
-            <div className="container mx-auto px-4 py-8">
-                {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="animate-pulse">
-                                <div className="bg-muted h-64 rounded-2xl mb-4"></div>
-                                <div className="space-y-3">
-                                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                                    <div className="h-4 bg-muted rounded w-1/2"></div>
-                                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                    {/* Main Results Area */}
+                    <div className="flex-1 w-full order-2 lg:order-1">
+
+                        {loading ? (
+                            <div className={viewMode === 'list' ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'}>
+                                {[...Array(6)].map((_, i) => (
+                                    <div key={i} className={`bg-slate-900 rounded-3xl animate-pulse ${viewMode === 'list' ? 'h-64' : 'h-96'}`}></div>
+                                ))}
+                            </div>
+                        ) : viewMode === 'map' ? (
+                            <div className="bg-slate-900 border border-slate-800 rounded-3xl h-[600px] flex items-center justify-center relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Kenya&zoom=6&size=800x600&sensor=false')] bg-cover opacity-20 grayscale group-hover:grayscale-0 transition-all duration-700"></div>
+                                <div className="relative z-10 text-center p-8 bg-slate-950/80 backdrop-blur-xl rounded-2xl border border-slate-800">
+                                    <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-500">
+                                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-white mb-2">Interactive Map View</h3>
+                                    <p className="text-slate-400 max-w-sm mb-6">Explore properties visually on our interactive map interface. Zoom in to specific areas and see prices at a glance.</p>
+                                    <button className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-500/20">
+                                        Launch Full Map
+                                    </button>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                ) : properties.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {properties.map((property) => (
-                            <PropertyCard key={property.id} property={property} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-16">
-                        <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg className="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">No properties found</h3>
-                        <p className="text-muted-foreground mb-6">Try adjusting your search filters</p>
-                        <button
-                            onClick={() => setShowFilters(true)}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-xl font-semibold transition-colors"
-                        >
-                            Adjust Filters
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            {/* Filters Modal */}
-            {showFilters && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-                    <div className="bg-white dark:bg-gray-950 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-100 dark:border-gray-800">
-                        <div className="p-6">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-2xl font-bold text-foreground">Search Filters</h3>
+                        ) : properties.length > 0 ? (
+                            <div className={viewMode === 'list' ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'}>
+                                {properties.map((property) => (
+                                    <PropertyCard key={property.id} property={property} viewMode={viewMode === 'list' ? 'list' : 'grid'} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-24 bg-slate-900/50 rounded-3xl border border-slate-800 border-dashed">
+                                <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-500">
+                                    <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-white mb-2">No properties found</h3>
+                                <p className="text-slate-400 mb-8 max-w-md mx-auto">We couldn't find any properties matching your current filters. Try adjusting your search criteria.</p>
                                 <button
-                                    onClick={() => setShowFilters(false)}
-                                    className="text-muted-foreground hover:text-foreground transition-colors"
+                                    onClick={() => handleSearch({})}
+                                    className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-emerald-500/25"
                                 >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    Clear All Filters
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Pagination Placeholder */}
+                        {properties.length > 0 && (
+                            <div className="flex justify-center mt-16 gap-2">
+                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all disabled:opacity-50">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <button className="w-10 h-10 rounded-xl bg-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/20 flex items-center justify-center transition-all">1</button>
+                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">2</button>
+                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">3</button>
+                                <span className="w-10 h-10 flex items-center justify-center text-slate-500">...</span>
+                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">12</button>
+                                <button className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800 flex items-center justify-center transition-all">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
                             </div>
-                            <SearchFilters
-                                onClose={() => setShowFilters(false)}
-                                onSearch={handleSearch}
-                                initialFilters={filters}
-                            />
-                        </div>
+                        )}
                     </div>
+
+                    {/* Sidebar */}
+                    <div className="w-full lg:w-96 shrink-0 order-1 lg:order-2 space-y-8 sticky top-36">
+                        <PropertiesSidebar />
+                    </div>
+
                 </div>
-            )}
+            </div>
         </div>
     );
 }
 
-import { Suspense } from 'react';
-
 export default function PropertiesPage() {
     return (
-        <Suspense fallback={
-            <div className="pt-20 min-h-screen bg-background">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="animate-pulse">
-                                <div className="bg-muted h-64 rounded-2xl mb-4"></div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        }>
+        <Suspense fallback={<div className="min-h-screen bg-slate-950 pt-20 flex items-center justify-center"><div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div></div>}>
             <PropertiesContent />
         </Suspense>
     );

@@ -10,9 +10,10 @@ import { useAuth } from '@/hooks/useAuth';
 interface PropertyCardProps {
     property: Property;
     initialSaved?: boolean;
+    viewMode?: 'grid' | 'list';
 }
 
-export default function PropertyCard({ property, initialSaved = false }: PropertyCardProps) {
+export default function PropertyCard({ property, initialSaved = false, viewMode = 'grid' }: PropertyCardProps) {
     const { isAuthenticated } = useAuth();
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
@@ -57,6 +58,98 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
         }
     };
 
+    return (
+    if (viewMode === 'list') {
+        return (
+            <div className="group relative bg-slate-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col md:flex-row h-full md:h-64 lg:h-72">
+                {/* Animated Green Frame */}
+                <div className="absolute inset-0 border-2 border-emerald-500/0 group-hover:border-emerald-500/50 rounded-3xl transition-colors duration-500 pointer-events-none z-20"></div>
+
+                <Link href={`/properties/${property.slug}`} className="absolute inset-0 z-10" />
+
+                {/* Left Side - Image */}
+                <div className="relative w-full md:w-2/5 h-48 md:h-full overflow-hidden">
+                    {!imageLoaded && !imageError && (
+                        <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+                    )}
+                    <img
+                        src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
+                        alt={property.title}
+                        onLoad={() => setImageLoaded(true)}
+                        onError={() => setImageError(true)}
+                        className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                    />
+                    <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                        {property.is_featured && (
+                            <span className="bg-emerald-600 text-white text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                <Star size={10} fill="currentColor" />
+                                Featured
+                            </span>
+                        )}
+                        <span className="bg-slate-950/60 backdrop-blur-md text-emerald-100 text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg border border-emerald-500/20">
+                            {property.property_type || 'For Sale'}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Right Side - Content */}
+                <div className="relative p-6 flex flex-col justify-between w-full md:w-3/5 bg-slate-900">
+                    <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className={`absolute top-6 right-6 z-30 p-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors ${isSaved ? 'text-emerald-500' : ''}`}
+                    >
+                        <Heart size={18} fill={isSaved ? 'currentColor' : 'none'} className={saving ? 'animate-pulse' : ''} />
+                    </button>
+
+                    <div className="space-y-4 pr-10">
+                        <div>
+                            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors line-clamp-1">
+                                {property.title}
+                            </h3>
+                            <div className="flex items-center gap-2 text-slate-400 text-sm">
+                                <MapPin size={14} className="text-emerald-500" />
+                                <span className="truncate">{property.location?.name || 'Location N/A'}</span>
+                            </div>
+                        </div>
+
+                        <div className="text-2xl font-bold text-white">
+                            {formatPrice(property.price)}
+                        </div>
+
+                        <p className="text-slate-400 text-sm line-clamp-2 md:line-clamp-3 leading-relaxed">
+                            {property.description || 'Experience luxury living in this stunning property. Featuring modern amenities, spacious interiors, and a prime location.'}
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-6 mt-4 pt-4 border-t border-slate-800">
+                        <div className="flex items-center gap-2">
+                            <Bed size={18} className="text-emerald-500" />
+                            <span className="text-sm font-semibold text-slate-300">{property.bedrooms} <span className="text-slate-500 font-normal ml-1">Beds</span></span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Bath size={18} className="text-emerald-500" />
+                            <span className="text-sm font-semibold text-slate-300">{property.bathrooms} <span className="text-slate-500 font-normal ml-1">Baths</span></span>
+                        </div>
+                        {property.square_feet && (
+                            <div className="flex items-center gap-2">
+                                <Maximize size={18} className="text-emerald-500" />
+                                <span className="text-sm font-semibold text-slate-300">{property.square_feet} <span className="text-slate-500 font-normal ml-1">sqft</span></span>
+                            </div>
+                        )}
+
+                        <div className="ml-auto">
+                            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest hover:underline cursor-pointer">
+                                View Details
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Default Grid View (Unchanged logic, just wrapped/ensured it's returned if not list)
     return (
         <div className="group relative bg-slate-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 aspect-3/4 sm:aspect-2/3 hover:-translate-y-2">
             {/* Animated Green Frame */}
@@ -145,4 +238,5 @@ export default function PropertyCard({ property, initialSaved = false }: Propert
             </div>
         </div>
     );
+
 }
