@@ -155,7 +155,7 @@ export default function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 align="start"
-                                className="w-72 p-2 rounded-xl bg-card/95 backdrop-blur-md shadow-xl border border-border"
+                                className="w-72 p-2 rounded-xl bg-slate-900 shadow-xl border border-slate-800"
                             >
                                 {/* For Sale Section */}
                                 <div className="px-3 py-2">
@@ -270,7 +270,7 @@ export default function Header() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
-                                    className="w-56 p-2 rounded-xl bg-slate-900/95 backdrop-blur-md shadow-xl border border-emerald-900/20"
+                                    className="w-56 p-2 rounded-xl bg-slate-900 shadow-xl border border-slate-800"
                                 >
                                     <DropdownMenuItem
                                         asChild
@@ -335,7 +335,7 @@ export default function Header() {
 
                 {/* Mobile Menu */}
                 <div
-                    className={`lg:hidden fixed inset-x-0 top-16 bg-card border-t border-border shadow-2xl transition-all duration-300 ease-in-out ${mobileMenuOpen
+                    className={`lg:hidden fixed inset-x-0 top-16 bg-slate-900 border-t border-slate-800 shadow-2xl transition-all duration-300 ease-in-out ${mobileMenuOpen
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 -translate-y-4 pointer-events-none"
                         }`}

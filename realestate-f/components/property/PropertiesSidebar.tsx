@@ -94,7 +94,7 @@ export default function PropertiesSidebar() {
                         savedProperties.map((saved: any) => (
                             <Link
                                 key={saved.id}
-                                href={`/properties/${saved.property_details?.slug || saved.property}`}
+                                href={`/properties/${saved.property_details?.slug || (typeof saved.property === 'object' ? saved.property.slug : saved.property)}`}
                                 className="block bg-slate-950 p-4 rounded-xl border border-slate-800 hover:border-emerald-500/50 transition-colors group"
                             >
                                 <div className="flex justify-between items-start mb-1">
