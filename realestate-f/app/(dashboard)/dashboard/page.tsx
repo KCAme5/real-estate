@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import { PropertyCardsContainer } from '@/components/dashboard/PropertyCard';
+import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { Search, Calendar, MessageSquare, Settings, Upload, ArrowRight, Sparkles, MapPin } from 'lucide-react';
 
@@ -123,7 +124,7 @@ export default function ClientDashboard() {
                     {loading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {[1, 2, 3].map(i => (
-                                <div key={i} className="aspect-4/3 bg-muted/50 rounded-[2.5rem] animate-pulse"></div>
+                                <PropertyCardSkeleton key={i} />
                             ))}
                         </div>
                     ) : (
@@ -213,14 +214,14 @@ export default function ClientDashboard() {
                                 <tbody className="divide-y divide-border/30">
                                     {loading ? (
                                         [1, 2, 3].map((i) => (
-                                            <tr key={i} className="animate-pulse">
-                                                <td className="px-8 py-6"><div className="h-10 bg-muted/50 rounded-xl w-24"></div></td>
-                                                <td className="px-8 py-6"><div className="h-10 bg-muted/50 rounded-xl w-48"></div></td>
-                                                <td className="px-8 py-6"><div className="h-10 bg-muted/50 rounded-xl w-32"></div></td>
-                                                <td className="px-8 py-6"><div className="h-10 bg-muted/50 rounded-xl w-24"></div></td>
+                                            <tr key={i}>
+                                                <td className="px-8 py-6"><Skeleton className="h-10 w-24 rounded-xl" /></td>
+                                                <td className="px-8 py-6"><Skeleton className="h-10 w-48 rounded-xl" /></td>
+                                                <td className="px-8 py-6"><Skeleton className="h-10 w-32 rounded-xl" /></td>
+                                                <td className="px-8 py-6"><Skeleton className="h-10 w-24 rounded-xl" /></td>
                                             </tr>
                                         ))
-                                    ) : bookings.length > 0 ? (
+                                    ) : (bookings.length > 0 ? (
                                         bookings.slice(0, 5).map((booking, i) => (
                                             <tr key={i} className="hover:bg-muted/10 transition-colors group">
                                                 <td className="px-8 py-6">

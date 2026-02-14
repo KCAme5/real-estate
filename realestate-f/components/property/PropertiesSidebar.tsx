@@ -6,6 +6,7 @@ import { TrendingUp, FileText, Bell, Heart } from 'lucide-react';
 import { propertyAPI } from '@/lib/api/properties';
 import { formatRelativeTime } from '@/lib/utils/time';
 import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function PropertiesSidebar() {
     const { isAuthenticated } = useAuth();
@@ -88,7 +89,12 @@ export default function PropertiesSidebar() {
                         </div>
                     ) : loading ? (
                         <div className="space-y-3">
-                            {[1, 2].map(i => <div key={i} className="h-16 bg-slate-800 rounded-xl animate-pulse"></div>)}
+                            {[1, 2, 3].map(i => (
+                                <div key={i} className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                                    <Skeleton className="h-4 w-3/4 mb-2 bg-slate-800/50" />
+                                    <Skeleton className="h-3 w-1/2 bg-slate-800/50" />
+                                </div>
+                            ))}
                         </div>
                     ) : savedProperties.length > 0 ? (
                         savedProperties.map((saved: any) => (

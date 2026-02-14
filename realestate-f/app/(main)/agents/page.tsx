@@ -6,6 +6,7 @@ import { Agent } from '@/types/agent';
 import { Search, Filter, Building2, UserCheck, ShieldCheck, Loader2, RefreshCw, Phone, Mail, MapPin, Star, Calendar, CheckCircle, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AgentCardSkeleton from '@/components/agents/AgentCardSkeleton';
 
 export default function AgentsPage() {
     const [agents, setAgents] = useState<Agent[]>([]);
@@ -115,28 +116,7 @@ export default function AgentsPage() {
         return `${years} years experience`;
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen pt-24 pb-16 flex flex-col items-center justify-center bg-background">
-                <div className="flex flex-col items-center gap-6">
-                    <div className="relative">
-                        <div className="w-20 h-20 border-4 border-primary/20 rounded-full"></div>
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                        </div>
-                    </div>
-                    <div className="text-center">
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                            Loading Professional Agents
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                            Finding the best real estate experts for you...
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+
 
     if (error) {
         return (
@@ -313,7 +293,13 @@ export default function AgentsPage() {
             </div>
             {/* Agents List */}
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                {filteredAgents.length === 0 ? (
+                {loading ? (
+                    <div className="space-y-6">
+                        {[...Array(5)].map((_, i) => (
+                            <AgentCardSkeleton key={i} />
+                        ))}
+                    </div>
+                ) : filteredAgents.length === 0 ? (
                     <div className="bg-card rounded-2xl shadow-lg p-12 text-center">
                         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                             <UserCheck className="w-10 h-10 text-muted-foreground" />

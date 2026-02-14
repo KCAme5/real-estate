@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Property } from '@/types/property';
 import PropertyCard from '@/components/property/PropertyCard';
+import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 import PropertyFiltersBar from '@/components/property/PropertyFiltersBar';
 import PropertiesSidebar from '@/components/property/PropertiesSidebar';
 import { apiClient } from '@/lib/api/client';
@@ -95,7 +96,7 @@ function PropertiesContent() {
                         {loading ? (
                             <div className={viewMode === 'list' ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'}>
                                 {[...Array(6)].map((_, i) => (
-                                    <div key={i} className={`bg-slate-900 rounded-3xl animate-pulse ${viewMode === 'list' ? 'h-64' : 'h-96'}`}></div>
+                                    <PropertyCardSkeleton key={i} viewMode={viewMode === 'list' ? 'list' : 'grid'} />
                                 ))}
                             </div>
                         ) : viewMode === 'map' ? (
@@ -163,8 +164,8 @@ function PropertiesContent() {
                                                 key={pageNum}
                                                 onClick={() => fetchProperties(filters, pageNum)}
                                                 className={`w-10 h-10 rounded-xl font-bold transition-all flex items-center justify-center ${currentPage === pageNum
-                                                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                                                        : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800'
+                                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                                                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-emerald-500 hover:bg-slate-800'
                                                     }`}
                                             >
                                                 {pageNum}
@@ -205,7 +206,17 @@ function PropertiesContent() {
 
 export default function PropertiesPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-slate-950 pt-20 flex items-center justify-center"><div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div></div>}>
+        <Suspense fallback={
+            <div className="min-h-screen bg-slate-950 pt-20">
+                <div className="container mx-auto px-4 py-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {[...Array(6)].map((_, i) => (
+                            <PropertyCardSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        }>
             <PropertiesContent />
         </Suspense>
     );

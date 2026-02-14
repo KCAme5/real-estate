@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Property } from '@/types/property';
 import PropertyCard from '@/components/property/PropertyCard';
+import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 import { apiClient } from '@/lib/api/client';
 import { ChevronRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FeaturedProperties() {
     const [properties, setProperties] = useState<Property[]>([]);
@@ -27,26 +29,28 @@ export default function FeaturedProperties() {
 
     if (loading) {
         return (
-            <section className="py-20 bg-muted/50">
-                <div className="container mx-auto px-4">
+            <section className="py-24 bg-slate-950 relative overflow-hidden">
+                <div className="absolute top-0 left-0 -translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-900/20 rounded-full blur-3xl"></div>
+                <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                        <div className="inline-flex items-center gap-2 bg-emerald-900/30 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-emerald-500/20">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                            Premium Selection
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
                             Featured Properties
                         </h2>
-                        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                            Discover our handpicked selection of premium properties
-                        </p>
+                        <Skeleton className="h-6 w-1/2 mx-auto bg-slate-800/50 mb-4 rounded-md" />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[...Array(3)].map((_, i) => (
-                            <div key={i} className="animate-pulse">
-                                <div className="bg-muted h-64 rounded-2xl mb-4"></div>
-                                <div className="space-y-3">
-                                    <div className="h-4 bg-muted rounded w-3/4"></div>
-                                    <div className="h-4 bg-muted rounded w-1/2"></div>
+
+                    <div className="overflow-x-auto scrollbar-hide pb-4">
+                        <div className="flex gap-6 min-w-max">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="w-80 shrink-0">
+                                    <PropertyCardSkeleton />
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>

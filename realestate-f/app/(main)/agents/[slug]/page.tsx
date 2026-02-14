@@ -7,6 +7,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Agent } from '@/types/agent';
 import { Loader2, ShieldCheck, Star, MessageSquare, Phone, Mail, Building2, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
+import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 
 export default function AgentDetailPage() {
     const params = useParams();
@@ -50,9 +52,35 @@ export default function AgentDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen pt-20 flex items-center justify-center">
-                <div className="loading loading-spinner loading-lg text-primary"></div>
-            </div>
+            <main className="min-h-screen pt-24 pb-16 bg-gray-50 dark:bg-gray-950">
+                <div className="container mx-auto px-4 max-w-6xl">
+                    <div className="h-6 w-32 mb-8 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-md"></div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-1">
+                            <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
+                                <Skeleton className="h-32 w-full rounded-none" />
+                                <div className="px-8 pb-8 -mt-16 text-center">
+                                    <Skeleton className="w-32 h-32 rounded-3xl mx-auto mb-4 border-8 border-white dark:border-gray-900" />
+                                    <Skeleton className="h-8 w-48 mx-auto mb-2" />
+                                    <Skeleton className="h-6 w-32 mx-auto mb-6 rounded-full" />
+                                    <div className="space-y-3">
+                                        <Skeleton className="h-14 w-full rounded-2xl" />
+                                        <Skeleton className="h-14 w-full rounded-2xl" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="lg:col-span-2 space-y-8">
+                            <Skeleton className="h-64 w-full rounded-3xl" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <PropertyCardSkeleton />
+                                <PropertyCardSkeleton />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         );
     }
 
