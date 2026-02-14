@@ -221,7 +221,7 @@ export default function ClientDashboard() {
                                                 <td className="px-8 py-6"><Skeleton className="h-10 w-24 rounded-xl" /></td>
                                             </tr>
                                         ))
-                                    ) : (bookings.length > 0 ? (
+                                    ) : bookings.length > 0 ? (
                                         bookings.slice(0, 5).map((booking, i) => (
                                             <tr key={i} className="hover:bg-muted/10 transition-colors group">
                                                 <td className="px-8 py-6">
