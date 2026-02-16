@@ -65,18 +65,31 @@ export default function AgentProperties() {
     const filteredProperties = useMemo(() => {
         return properties
             .filter(p => {
-                const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    (typeof p.location?.name === 'string' && p.location.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    p.id.toString().includes(searchQuery);
-                const matchesType = typeFilter === 'All Types' || p.property_type?.toLowerCase() === typeFilter.toLowerCase();
+                const title = p.title || '';
+                const searchQueryLower = (searchQuery || '').toLowerCase();
+                const locationName = p.location?.name || '';
+                const propertyId = (p.id || '').toString();
+
+                const matchesSearch = title.toLowerCase().includes(searchQueryLower) ||
+                    locationName.toLowerCase().includes(searchQueryLower) ||
+                    propertyId.includes(searchQuery);
+
+                const propertyType = p.property_type || '';
+                const typeFilterLower = (typeFilter || '').toLowerCase();
+                const matchesType = typeFilter === 'All Types' || propertyType.toLowerCase() === typeFilterLower;
+
                 return matchesSearch && matchesType;
             })
             .sort((a, b) => {
-                if (sortBy === 'Newest') return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                if (sortBy === 'Oldest') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-                if (sortBy === 'Price: High to Low') return b.price - a.price;
-                if (sortBy === 'Price: Low to High') return a.price - b.price;
-                if (sortBy === 'Most Viewed') return b.views - a.views;
+                if (sortBy === 'Newest') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+                if (sortBy === 'Oldest') return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+                const priceA = a.price || 0;
+                const priceB = b.price || 0;
+                if (sortBy === 'Price: High to Low') return priceB - priceA;
+                if (sortBy === 'Price: Low to High') return priceA - priceB;
+                const viewsA = a.views || 0;
+                const viewsB = b.views || 0;
+                if (sortBy === 'Most Viewed') return viewsB - viewsA;
                 return 0;
             });
     }, [properties, searchQuery, typeFilter, sortBy]);
@@ -93,11 +106,11 @@ export default function AgentProperties() {
     };
 
     const formatPrice = (price: number) => {
-        return `Kes ${price.toLocaleString()}`;
+        return `Kes ${(price || 0).toLocaleString()}`;
     };
 
     const getStatusStyles = (status: string) => {
-        const s = status.toLowerCase();
+        const s = (status || '').toLowerCase();
         if (s === 'active' || s === 'published') return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
         if (s === 'pending') return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
         if (s === 'sold') return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
