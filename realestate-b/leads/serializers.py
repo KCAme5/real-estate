@@ -73,6 +73,8 @@ class ConversationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     unread_count = serializers.SerializerMethodField()
     other_user = serializers.SerializerMethodField()
+    lead_details = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Conversation
@@ -84,6 +86,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             "client",
             "agent",
             "lead",
+            "lead_details",
             "last_message",
             "unread_count",
             "other_user",
@@ -113,16 +116,22 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_other_user(self, obj):
         request = self.context.get("request")
         if request and request.user.is_authenticated:
-            if request.user == obj.client:
-                return {
-                    "id": obj.agent.id,
-                    "name": obj.agent.get_full_name(),
-                    "type": obj.agent.user_type,
-                }
-            else:
-                return {
-                    "id": obj.client.id,
-                    "name": obj.client.get_full_name(),
-                    "type": obj.client.user_type,
-                }
+            user = obj.agent if request.user == obj.client else obj.client
+            return {
+                "id": user.id,
+                "name": user.get_full_name() or user.username,
+                "type": user.user_type,
+                "avatar": user.profile_picture.url if user.profile_picture else None,
+            }
         return None
+
+    def get_lead_details(self, obj):
+        if not obj.lead:
+            return None
+        return {
+            "id": obj.lead.id,
+            "score": obj.lead.score,
+            "priority": obj.lead.priority,
+            "inquiries_count": obj.lead.interactions.filter(interaction_type="inquiry").count(),
+            "is_hot": obj.lead.score > 50,
+        }

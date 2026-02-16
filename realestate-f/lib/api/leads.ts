@@ -99,12 +99,20 @@ export interface Conversation {
     client: number;
     agent: number;
     lead?: number;
+    lead_details?: {
+        id: number;
+        score: number;
+        priority: string;
+        inquiries_count: number;
+        is_hot: boolean;
+    };
     last_message: Message | null;
     unread_count: number;
     other_user: {
         id: number;
         name: string;
         type: string;
+        avatar?: string | null;
     };
     updated_at: string;
 }

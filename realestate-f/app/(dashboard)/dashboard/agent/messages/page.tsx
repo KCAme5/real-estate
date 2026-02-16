@@ -33,7 +33,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
 
-export default function AgentMessagesPage() {
+function AgentMessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
     const searchParams = useSearchParams();
@@ -311,16 +311,22 @@ export default function AgentMessagesPage() {
                             )}
 
                             <div className="relative shrink-0">
-                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg">
-                                    {conv.property_image ? (
-                                        <img src={conv.property_image} alt={conv.other_user.name} className="w-full h-full object-cover" />
+                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg relative">
+                                    {conv.other_user.avatar ? (
+                                        <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-slate-800">
                                             <UserIcon className="text-slate-500" size={24} />
                                         </div>
                                     )}
+                                    {/* Property Badge */}
+                                    {conv.property_image && (
+                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden shadow-xl z-20">
+                                            <img src={conv.property_image} className="w-full h-full object-cover opacity-80" />
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0B0E14]" />
+                                <div className="absolute top-0 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B0E14] z-30" />
                             </div>
 
                             <div className="flex-1 min-w-0 text-left">
@@ -345,7 +351,9 @@ export default function AgentMessagesPage() {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="px-1.5 py-0.5 bg-red-500/10 text-red-500 text-[8px] font-black uppercase tracking-widest rounded-md border border-red-500/20">HOT</span>
+                                        {conv.lead_details?.is_hot && (
+                                            <span className="px-1.5 py-0.5 bg-red-500/10 text-red-500 text-[8px] font-black uppercase tracking-widest rounded-md border border-red-500/20">HOT</span>
+                                        )}
                                         {conv.unread_count > 0 && (
                                             <span className="w-5 h-5 bg-blue-600 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#0B0E14] text-white shadow-lg">
                                                 {conv.unread_count}
@@ -368,7 +376,11 @@ export default function AgentMessagesPage() {
                             <div className="flex items-center gap-4">
                                 <div className="relative">
                                     <div className="w-12 h-12 rounded-2xl bg-slate-800 overflow-hidden border border-slate-700/50">
-                                        <UserIcon className="text-slate-500 m-3" size={24} />
+                                        {activeConversation.other_user.avatar ? (
+                                            <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <UserIcon className="text-slate-500 m-3" size={24} />
+                                        )}
                                     </div>
                                     <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#05070A]" />
                                 </div>
@@ -411,13 +423,13 @@ export default function AgentMessagesPage() {
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                                         <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
                                             <div className={`relative px-6 py-4 rounded-[1.8rem] text-sm font-medium shadow-2xl ${isMe
-                                                    ? 'bg-blue-600 text-white rounded-tr-none'
-                                                    : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
+                                                ? 'bg-blue-600 text-white rounded-tr-none'
+                                                : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
                                                 }`}>
                                                 {/* Chat Bubble Tail */}
                                                 <div className={`absolute top-0 w-4 h-4 ${isMe
-                                                        ? 'right-[-8px] text-blue-600'
-                                                        : 'left-[-8px] text-slate-900/80'
+                                                    ? 'right-[-8px] text-blue-600'
+                                                    : 'left-[-8px] text-slate-900/80'
                                                     }`}>
                                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                                                         <path d={isMe ? "M0 0 L20 0 L0 20 Z" : "M20 0 L0 0 L20 20 Z"} />
@@ -535,9 +547,9 @@ export default function AgentMessagesPage() {
                 <div className="hidden lg:flex w-[340px] border-l border-slate-800/50 flex flex-col bg-[#0B0E14] p-8 overflow-y-auto no-scrollbar pb-20">
                     <div className="flex flex-col items-center text-center space-y-6">
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1">
-                                {activeConversation.property_image ? (
-                                    <img src={activeConversation.property_image} className="w-full h-full object-cover rounded-[2.2rem]" />
+                            <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1 relative">
+                                {activeConversation.other_user.avatar ? (
+                                    <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover rounded-[2.2rem]" />
                                 ) : (
                                     <div className="w-full h-full bg-slate-900 flex items-center justify-center rounded-[2.2rem]">
                                         <UserIcon className="text-slate-700" size={48} />
@@ -559,11 +571,11 @@ export default function AgentMessagesPage() {
                         <div className="grid grid-cols-2 gap-4 w-full">
                             <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl space-y-1">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">LEAD SCORE</p>
-                                <p className="text-xl font-black text-blue-400">92%</p>
+                                <p className="text-xl font-black text-blue-400">{activeConversation.lead_details?.score || 0}%</p>
                             </div>
                             <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl space-y-1">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">INQUIRIES</p>
-                                <p className="text-xl font-black text-white">4</p>
+                                <p className="text-xl font-black text-white">{activeConversation.lead_details?.inquiries_count || 0}</p>
                             </div>
                         </div>
                     </div>

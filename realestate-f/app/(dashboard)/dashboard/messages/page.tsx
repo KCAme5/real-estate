@@ -309,16 +309,22 @@ function MessagesContent() {
                             )}
 
                             <div className="relative shrink-0">
-                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg">
-                                    {conv.property_image ? (
-                                        <img src={conv.property_image} alt={conv.other_user.name} className="w-full h-full object-cover" />
+                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg relative">
+                                    {conv.other_user.avatar ? (
+                                        <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-slate-800">
                                             <UserIcon className="text-slate-500" size={24} />
                                         </div>
                                     )}
+                                    {/* Property Badge */}
+                                    {conv.property_image && (
+                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden shadow-xl z-20">
+                                            <img src={conv.property_image} className="w-full h-full object-cover opacity-80" />
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0B0E14]" />
+                                <div className="absolute top-0 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B0E14] z-30" />
                             </div>
 
                             <div className="flex-1 min-w-0 text-left">
@@ -366,7 +372,11 @@ function MessagesContent() {
                                 </button>
                                 <div className="relative">
                                     <div className="w-12 h-12 rounded-2xl bg-slate-800 overflow-hidden border border-slate-700/50">
-                                        <UserIcon className="text-slate-500 m-3" size={24} />
+                                        {activeConversation.other_user.avatar ? (
+                                            <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <UserIcon className="text-slate-500 m-3" size={24} />
+                                        )}
                                     </div>
                                     <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#05070A]" />
                                 </div>
@@ -409,13 +419,13 @@ function MessagesContent() {
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
                                         <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
                                             <div className={`relative px-6 py-4 rounded-[1.8rem] text-sm font-medium shadow-2xl ${isMe
-                                                    ? 'bg-blue-600 text-white rounded-tr-none'
-                                                    : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
+                                                ? 'bg-blue-600 text-white rounded-tr-none'
+                                                : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
                                                 }`}>
                                                 {/* Chat Bubble Tail */}
                                                 <div className={`absolute top-0 w-4 h-4 ${isMe
-                                                        ? 'right-[-8px] text-blue-600'
-                                                        : 'left-[-8px] text-slate-900/80'
+                                                    ? 'right-[-8px] text-blue-600'
+                                                    : 'left-[-8px] text-slate-900/80'
                                                     }`}>
                                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                                                         <path d={isMe ? "M0 0 L20 0 L0 20 Z" : "M20 0 L0 0 L20 20 Z"} />
@@ -508,12 +518,18 @@ function MessagesContent() {
                 <div className="hidden lg:flex w-[340px] border-l border-slate-800/50 flex flex-col bg-[#0B0E14] p-8 overflow-y-auto no-scrollbar pb-20">
                     <div className="flex flex-col items-center text-center space-y-6">
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1">
-                                <img src={activeConversation.property_image || ''} className="w-full h-full object-cover rounded-[2.2rem]" />
+                            <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1 relative">
+                                {activeConversation.property_image ? (
+                                    <img src={activeConversation.property_image} className="w-full h-full object-cover rounded-[2.2rem]" />
+                                ) : (
+                                    <div className="w-full h-full bg-slate-900 flex items-center justify-center rounded-[2.2rem]">
+                                        <Home size={48} className="text-slate-700" />
+                                    </div>
+                                )}
                             </div>
                             <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#0B0E14] rounded-2xl p-1 border border-slate-800">
                                 <div className="w-full h-full bg-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                    <Home size={18} fill="white" className="text-white" />
+                                    <Zap size={18} fill="white" className="text-white" />
                                 </div>
                             </div>
                         </div>
@@ -556,7 +572,11 @@ function MessagesContent() {
 
                             <div className="flex items-center gap-4 group">
                                 <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 group-hover:border-blue-500/50 transition-colors">
-                                    <UserIcon className="text-slate-500 m-4" size={24} />
+                                    {activeConversation.other_user.avatar ? (
+                                        <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <UserIcon className="text-slate-500 m-4" size={24} />
+                                    )}
                                 </div>
                                 <div className="flex-1">
                                     <h5 className="text-sm font-bold text-white mb-0.5">{activeConversation.other_user.name}</h5>
