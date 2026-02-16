@@ -31,6 +31,55 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
 
+const NeonFrame = ({ children }: { children: React.ReactNode }) => (
+    <div className="neon-frame-wrapper w-full h-full max-h-full">
+        <style jsx global>{`
+            @keyframes rotate-neon {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .neon-frame-wrapper {
+                position: relative;
+                padding: 3px;
+                overflow: hidden;
+                border-radius: 2.6rem;
+                background: #0B0E14;
+            }
+            .neon-frame-wrapper::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(
+                    transparent,
+                    #22c55e, 
+                    transparent 20%,
+                    transparent 50%,
+                    #22c55e,
+                    transparent 70%
+                );
+                animation: rotate-neon 8s linear infinite;
+                z-index: 0;
+            }
+            .neon-frame-content {
+                position: relative;
+                z-index: 2;
+                background: #020617;
+                border-radius: 2.5rem;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+        `}</style>
+        <div className="neon-frame-content">
+            {children}
+        </div>
+    </div>
+);
+
+
 function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
@@ -271,346 +320,348 @@ function MessagesContent() {
     }
 
     return (
-        <div className="flex h-screen bg-[#020617] text-white overflow-hidden">
-            {/* Column 1: Conversations List */}
-            <div className={`w-full md:w-80 lg:w-[320px] border-r border-slate-800/50 flex flex-col bg-[#0B0E14] ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
-                <div className="p-6 space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
-                        <button className="p-2 bg-slate-800/50 text-blue-400 rounded-xl hover:bg-slate-800 transition-colors">
-                            <Zap size={18} fill="currentColor" />
-                        </button>
-                    </div>
-
-                    <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors" size={16} />
-                        <input
-                            type="text"
-                            placeholder="Search chats..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-800 rounded-2xl py-3 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
-                    {filteredConversations.map((conv) => (
-                        <button
-                            key={conv.id}
-                            onClick={() => {
-                                setActiveConversation(conv);
-                                fetchMessages(conv.id);
-                            }}
-                            className={`w-full px-6 py-5 flex gap-4 border-b border-slate-800/30 transition-all hover:bg-slate-800/30 group relative ${activeConversation?.id === conv.id ? 'bg-blue-600/10' : ''}`}
-                        >
-                            {activeConversation?.id === conv.id && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-                            )}
-
-                            <div className="relative shrink-0">
-                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg relative">
-                                    {conv.other_user.avatar ? (
-                                        <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                                            <UserIcon className="text-slate-500" size={24} />
-                                        </div>
-                                    )}
-                                    {/* Property Badge */}
-                                    {conv.property_image && (
-                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden shadow-xl z-20">
-                                            <img src={conv.property_image} className="w-full h-full object-cover opacity-80" />
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="absolute top-0 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B0E14] z-30" />
+        <div className="flex h-screen bg-[#020617] text-white overflow-hidden p-6 lg:p-10">
+            <NeonFrame>
+                <div className="flex w-full h-full overflow-hidden">
+                    {/* Column 1: Conversations List */}
+                    <div className={`w-full md:w-80 lg:w-[320px] border-r border-slate-800/50 flex flex-col bg-[#0B0E14] ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
+                        <div className="p-6 space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
+                                <button className="p-2 bg-slate-800/50 text-blue-400 rounded-xl hover:bg-slate-800 transition-colors">
+                                    <Zap size={18} fill="currentColor" />
+                                </button>
                             </div>
 
-                            <div className="flex-1 min-w-0 text-left">
-                                <div className="flex justify-between items-start mb-1">
-                                    <h3 className="font-bold text-sm text-slate-200 truncate group-hover:text-white transition-colors">
-                                        {conv.other_user.name}
-                                    </h3>
-                                    <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap">
-                                        {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
-                                    </span>
-                                </div>
-
-                                <p className="text-xs text-slate-400 italic truncate mb-2 leading-relaxed">
-                                    "{conv.last_message?.content || 'Started a conversation'}"
-                                </p>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded-md">
-                                        <Home size={10} className="text-blue-400" />
-                                        <span className="text-[9px] font-black uppercase tracking-tighter text-slate-400 truncate max-w-[100px]">
-                                            {conv.property_title || 'General Inquiry'}
-                                        </span>
-                                    </div>
-                                    {conv.unread_count > 0 && (
-                                        <span className="w-5 h-5 bg-blue-600 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#0B0E14] text-white shadow-lg">
-                                            {conv.unread_count}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Column 2: Chat View */}
-            <div className={`flex-1 flex flex-col bg-[#05070A] ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
-                {activeConversation ? (
-                    <>
-                        {/* Chat Header */}
-                        <div className="px-8 py-5 border-b border-slate-800/50 flex items-center justify-between bg-[#0B0E14]/50 backdrop-blur-md">
-                            <div className="flex items-center gap-4">
-                                <button onClick={() => setActiveConversation(null)} className="md:hidden p-2 hover:bg-slate-800 rounded-xl">
-                                    <ArrowLeft size={18} />
-                                </button>
-                                <div className="relative">
-                                    <div className="w-12 h-12 rounded-2xl bg-slate-800 overflow-hidden border border-slate-700/50">
-                                        {activeConversation.other_user.avatar ? (
-                                            <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <UserIcon className="text-slate-500 m-3" size={24} />
-                                        )}
-                                    </div>
-                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#05070A]" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-lg text-white leading-tight">{activeConversation.other_user.name}</h3>
-                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#25D366]">AGENT ONLINE</span>
-                                        <span className="text-slate-700 mx-1">•</span>
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 truncate max-w-[200px]">
-                                            INQUIRY ABOUT {activeConversation.property_title}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                                <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
-                                    <Phone size={18} />
-                                </button>
-                                <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
-                                    <Video size={18} />
-                                </button>
-                                <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
-                                    <MoreHorizontal size={18} />
-                                </button>
+                            <div className="relative group">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors" size={16} />
+                                <input
+                                    type="text"
+                                    placeholder="Search chats..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-slate-900 border border-slate-800 rounded-2xl py-3 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600"
+                                />
                             </div>
                         </div>
 
-                        {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-8 space-y-10 no-scrollbar relative">
-                            {/* Texture Overlay */}
-                            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+                        <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
+                            {filteredConversations.map((conv) => (
+                                <button
+                                    key={conv.id}
+                                    onClick={() => {
+                                        setActiveConversation(conv);
+                                        fetchMessages(conv.id);
+                                    }}
+                                    className={`w-full px-6 py-5 flex gap-4 border-b border-slate-800/30 transition-all hover:bg-slate-800/30 group relative ${activeConversation?.id === conv.id ? 'bg-blue-600/10' : ''}`}
+                                >
+                                    {activeConversation?.id === conv.id && (
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                                    )}
 
-                            {messages.map((msg, idx) => {
-                                const isMe = msg.sender === user?.id;
-                                return (
-                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                                        <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
-                                            <div className={`relative px-6 py-4 rounded-[1.8rem] text-sm font-medium shadow-2xl ${isMe
-                                                ? 'bg-blue-600 text-white rounded-tr-none'
-                                                : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
-                                                }`}>
-                                                {/* Chat Bubble Tail */}
-                                                <div className={`absolute top-0 w-4 h-4 ${isMe
-                                                    ? 'right-[-8px] text-blue-600'
-                                                    : 'left-[-8px] text-slate-900/80'
-                                                    }`}>
-                                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d={isMe ? "M0 0 L20 0 L0 20 Z" : "M20 0 L0 0 L20 20 Z"} />
-                                                    </svg>
+                                    <div className="relative shrink-0">
+                                        <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg relative">
+                                            {conv.other_user.avatar ? (
+                                                <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                                                    <UserIcon className="text-slate-500" size={24} />
                                                 </div>
+                                            )}
+                                            {/* Property Badge */}
+                                            {conv.property_image && (
+                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden shadow-xl z-20">
+                                                    <img src={conv.property_image} className="w-full h-full object-cover opacity-80" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="absolute top-0 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B0E14] z-30" />
+                                    </div>
 
-                                                {msg.content}
-                                            </div>
-                                            <div className="flex items-center gap-2 mt-2 px-1">
-                                                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    <div className="flex-1 min-w-0 text-left">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="font-bold text-sm text-slate-200 truncate group-hover:text-white transition-colors">
+                                                {conv.property_title || 'General Inquiry'}
+                                            </h3>
+                                            <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap">
+                                                {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
+                                            </span>
+                                        </div>
+
+                                        <p className="text-xs text-slate-400 font-medium truncate mb-2 leading-relaxed">
+                                            Agent: {conv.other_user.name}
+                                        </p>
+
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded-md">
+                                                <Home size={10} className="text-blue-400" />
+                                                <span className="text-[9px] font-black uppercase tracking-tighter text-slate-400 truncate max-w-[100px]">
+                                                    {conv.property_title || 'General Inquiry'}
                                                 </span>
-                                                {isMe && (
-                                                    <div className="flex">
-                                                        <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} />
-                                                        <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} style={{ marginLeft: '-6px' }} />
-                                                    </div>
+                                            </div>
+                                            {conv.unread_count > 0 && (
+                                                <span className="w-5 h-5 bg-blue-600 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#0B0E14] text-white shadow-lg">
+                                                    {conv.unread_count}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Column 2: Chat View */}
+                    <div className={`flex-1 flex flex-col bg-[#05070A] ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
+                        {activeConversation ? (
+                            <>
+                                {/* Chat Header */}
+                                <div className="px-8 py-5 border-b border-slate-800/50 flex items-center justify-between bg-[#0B0E14]/50 backdrop-blur-md">
+                                    <div className="flex items-center gap-4">
+                                        <button onClick={() => setActiveConversation(null)} className="md:hidden p-2 hover:bg-slate-800 rounded-xl">
+                                            <ArrowLeft size={18} />
+                                        </button>
+                                        <div className="relative">
+                                            <div className="w-12 h-12 rounded-2xl bg-slate-800 overflow-hidden border border-slate-700/50">
+                                                {activeConversation.other_user.avatar ? (
+                                                    <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <UserIcon className="text-slate-500 m-3" size={24} />
                                                 )}
                                             </div>
+                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#05070A]" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-bold text-lg text-white leading-tight">{activeConversation.other_user.name}</h3>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#25D366]">AGENT ONLINE</span>
+                                                <span className="text-slate-700 mx-1">•</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 truncate max-w-[200px]">
+                                                    INQUIRY ABOUT {activeConversation.property_title}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                );
-                            })}
 
-                            <div ref={messagesEndRef} />
-                        </div>
-
-                        {/* Quick Actions & Input */}
-                        <div className="p-8 bg-[#0B0E14] border-t border-slate-800/50 space-y-6">
-                            <div className="flex flex-wrap gap-2">
-                                {[
-                                    'BOOK VIEWING', 'GET BROCHURE', 'PRICING INFO', 'RESERVE UNIT'
-                                ].map(action => (
-                                    <button
-                                        key={action}
-                                        className="px-5 py-2.5 bg-slate-800/40 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-800/80 text-[10px] font-black tracking-widest text-slate-400 hover:text-white rounded-xl transition-all"
-                                    >
-                                        {action}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <form onSubmit={handleSendMessage} className="flex items-center gap-4 group">
-                                <div className="flex-1 flex items-center gap-4 bg-slate-900/50 border border-slate-800 rounded-[2.5rem] px-6 py-2 focus-within:ring-2 ring-blue-500/20 transition-all">
-                                    <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
-                                        <Paperclip size={20} />
-                                    </button>
-                                    <input
-                                        ref={inputRef}
-                                        value={newMessage}
-                                        onChange={(e) => {
-                                            setNewMessage(e.target.value);
-                                            handleTypingStart();
-                                        }}
-                                        placeholder="Message your agent..."
-                                        className="flex-1 bg-transparent border-none outline-none py-4 text-sm font-medium text-white placeholder:text-slate-600"
-                                    />
-                                    <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
-                                        <Smile size={20} />
-                                    </button>
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={!newMessage.trim() || sending}
-                                    className="p-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
-                                >
-                                    <Send size={24} />
-                                </button>
-                            </form>
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-8">
-                        <div className="w-32 h-32 bg-slate-900/50 rounded-[4rem] flex items-center justify-center border border-slate-800 relative">
-                            <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-full" />
-                            <MessageSquare className="text-blue-500 opacity-40 relative z-10" size={48} />
-                        </div>
-                        <div className="space-y-3">
-                            <h3 className="text-3xl font-black text-white tracking-tight">Your Communications</h3>
-                            <p className="text-slate-500 font-medium max-w-sm mx-auto leading-relaxed">
-                                Connect with top-tier agents and get all the information you need about your dream properties.
-                            </p>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Column 3: Property & Agent Info */}
-            {activeConversation && (
-                <div className="hidden lg:flex w-[340px] border-l border-slate-800/50 flex flex-col bg-[#0B0E14] p-8 overflow-y-auto no-scrollbar pb-20">
-                    <div className="flex flex-col items-center text-center space-y-6">
-                        <div className="relative">
-                            <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1 relative">
-                                {activeConversation.property_image ? (
-                                    <img src={activeConversation.property_image} className="w-full h-full object-cover rounded-[2.2rem]" />
-                                ) : (
-                                    <div className="w-full h-full bg-slate-900 flex items-center justify-center rounded-[2.2rem]">
-                                        <Home size={48} className="text-slate-700" />
+                                    <div className="flex items-center gap-3">
+                                        <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
+                                            <Phone size={18} />
+                                        </button>
+                                        <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
+                                            <Video size={18} />
+                                        </button>
+                                        <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
+                                            <MoreHorizontal size={18} />
+                                        </button>
                                     </div>
-                                )}
-                            </div>
-                            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#0B0E14] rounded-2xl p-1 border border-slate-800">
-                                <div className="w-full h-full bg-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                    <Zap size={18} fill="white" className="text-white" />
                                 </div>
-                            </div>
-                        </div>
 
-                        <div>
-                            <h2 className="text-xl font-black text-white tracking-tight leading-tight mb-2">
-                                {activeConversation.property_title}
-                            </h2>
-                            <div className="flex items-center justify-center gap-2 text-slate-500">
-                                <MapPin size={12} className="text-blue-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-[200px]">Nairobi, Kenya</span>
-                            </div>
-                        </div>
+                                {/* Messages Area */}
+                                <div className="flex-1 overflow-y-auto p-8 space-y-10 no-scrollbar relative">
+                                    {/* Texture Overlay */}
+                                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
 
-                        <div className="w-full bg-slate-900/50 border border-slate-800 p-6 rounded-[2rem] text-left space-y-4">
-                            <div className="flex items-center justify-between border-b border-slate-800/50 pb-4">
-                                <div className="space-y-1">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">STATUS</p>
-                                    <p className="text-xs font-bold text-white uppercase">For Sale</p>
+                                    {messages.map((msg, idx) => {
+                                        const isMe = msg.sender === user?.id;
+                                        return (
+                                            <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                                                    <div className={`relative px-6 py-4 rounded-[1.8rem] text-sm font-medium shadow-2xl ${isMe
+                                                        ? 'bg-blue-600 text-white rounded-tr-none'
+                                                        : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
+                                                        }`}>
+                                                        {/* Chat Bubble Tail */}
+                                                        <div className={`absolute top-0 w-4 h-4 ${isMe
+                                                            ? 'right-[-8px] text-blue-600'
+                                                            : 'left-[-8px] text-slate-900/80'
+                                                            }`}>
+                                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path d={isMe ? "M0 0 L20 0 L0 20 Z" : "M20 0 L0 0 L20 20 Z"} />
+                                                            </svg>
+                                                        </div>
+
+                                                        {msg.content}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-2 px-1">
+                                                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                        {isMe && (
+                                                            <div className="flex">
+                                                                <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} />
+                                                                <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} style={{ marginLeft: '-6px' }} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+
+                                    <div ref={messagesEndRef} />
                                 </div>
-                                <div className="text-right space-y-1">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">PRICE</p>
-                                    <p className="text-sm font-black text-blue-400">Kes 45,000,000</p>
-                                </div>
-                            </div>
-                            <Link href={`/properties/${activeConversation.property}`} className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all group">
-                                View Details
-                                <ExternalLink size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                            </Link>
-                        </div>
-                    </div>
 
-                    <div className="mt-12 space-y-8">
-                        <section className="space-y-5">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-[1px] bg-blue-500/30" />
-                                <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500 whitespace-nowrap">YOUR AGENT</h4>
-                                <div className="flex-1 h-[1px] bg-slate-800" />
-                            </div>
+                                {/* Quick Actions & Input */}
+                                <div className="p-8 bg-[#0B0E14] border-t border-slate-800/50 space-y-6">
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            'BOOK VIEWING', 'GET BROCHURE', 'PRICING INFO', 'RESERVE UNIT'
+                                        ].map(action => (
+                                            <button
+                                                key={action}
+                                                className="px-5 py-2.5 bg-slate-800/40 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-800/80 text-[10px] font-black tracking-widest text-slate-400 hover:text-white rounded-xl transition-all"
+                                            >
+                                                {action}
+                                            </button>
+                                        ))}
+                                    </div>
 
-                            <div className="flex items-center gap-4 group">
-                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 group-hover:border-blue-500/50 transition-colors">
-                                    {activeConversation.other_user.avatar ? (
-                                        <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <UserIcon className="text-slate-500 m-4" size={24} />
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <h5 className="text-sm font-bold text-white mb-0.5">{activeConversation.other_user.name}</h5>
-                                    <p className="text-[10px] font-black text-slate-500 tracking-widest uppercase">Verified Expert</p>
-                                </div>
-                                <button className="p-2.5 bg-slate-900 border border-slate-800 text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
-                                    <Phone size={14} />
-                                </button>
-                            </div>
-                        </section>
-
-                        <section className="space-y-4">
-                            <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500">NEXT STEPS</h4>
-                            <div className="space-y-3">
-                                {[
-                                    { icon: Calendar, label: 'Schedule Viewing', color: 'blue' },
-                                    { icon: FileText, label: 'Get Sales Agreement', color: 'emerald' },
-                                    { icon: Star, label: 'Add to Favorites', color: 'amber' }
-                                ].map((action, i) => (
-                                    <button
-                                        key={i}
-                                        className="w-full flex items-center gap-4 p-4 bg-slate-900/30 border border-slate-800 rounded-2xl hover:bg-slate-800 hover:border-slate-700 transition-all group"
-                                    >
-                                        <div className={`p-2 rounded-xl bg-slate-800 text-slate-400 group-hover:scale-110 transition-all`}>
-                                            <action.icon size={18} />
+                                    <form onSubmit={handleSendMessage} className="flex items-center gap-4 group">
+                                        <div className="flex-1 flex items-center gap-4 bg-slate-900/50 border border-slate-800 rounded-[2.5rem] px-6 py-2 focus-within:ring-2 ring-blue-500/20 transition-all">
+                                            <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
+                                                <Paperclip size={20} />
+                                            </button>
+                                            <input
+                                                ref={inputRef}
+                                                value={newMessage}
+                                                onChange={(e) => {
+                                                    setNewMessage(e.target.value);
+                                                    handleTypingStart();
+                                                }}
+                                                placeholder="Message your agent..."
+                                                className="flex-1 bg-transparent border-none outline-none py-4 text-sm font-medium text-white placeholder:text-slate-600"
+                                            />
+                                            <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
+                                                <Smile size={20} />
+                                            </button>
                                         </div>
-                                        <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{action.label}</span>
-                                    </button>
-                                ))}
+                                        <button
+                                            type="submit"
+                                            disabled={!newMessage.trim() || sending}
+                                            className="p-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                                        >
+                                            <Send size={24} />
+                                        </button>
+                                    </form>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-8">
+                                <div className="w-32 h-32 bg-slate-900/50 rounded-[4rem] flex items-center justify-center border border-slate-800 relative">
+                                    <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-full" />
+                                    <MessageSquare className="text-blue-500 opacity-40 relative z-10" size={48} />
+                                </div>
+                                <div className="space-y-3">
+                                    <h3 className="text-3xl font-black text-white tracking-tight">Your Communications</h3>
+                                    <p className="text-slate-500 font-medium max-w-sm mx-auto leading-relaxed">
+                                        Connect with top-tier agents and get all the information you need about your dream properties.
+                                    </p>
+                                </div>
                             </div>
-                        </section>
+                        )}
                     </div>
-                </div>
-            )}
+
+                    {/* Column 3: Property & Agent Info */}
+                    {activeConversation && (
+                        <div className="hidden lg:flex w-[340px] border-l border-slate-800/50 flex flex-col bg-[#0B0E14] p-8 overflow-y-auto no-scrollbar pb-20">
+                            <div className="flex flex-col items-center text-center space-y-6">
+                                <div className="relative">
+                                    <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1 relative">
+                                        {activeConversation.property_image ? (
+                                            <img src={activeConversation.property_image} className="w-full h-full object-cover rounded-[2.2rem]" />
+                                        ) : (
+                                            <div className="w-full h-full bg-slate-900 flex items-center justify-center rounded-[2.2rem]">
+                                                <Home size={48} className="text-slate-700" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#0B0E14] rounded-2xl p-1 border border-slate-800">
+                                        <div className="w-full h-full bg-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                            <Zap size={18} fill="white" className="text-white" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h2 className="text-xl font-black text-white tracking-tight leading-tight mb-2">
+                                        {activeConversation.property_title}
+                                    </h2>
+                                    <div className="flex items-center justify-center gap-2 text-slate-500">
+                                        <MapPin size={12} className="text-blue-500" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-[200px]">Nairobi, Kenya</span>
+                                    </div>
+                                </div>
+
+                                <div className="w-full bg-slate-900/50 border border-slate-800 p-6 rounded-[2rem] text-left space-y-4">
+                                    <div className="flex items-center justify-between border-b border-slate-800/50 pb-4">
+                                        <div className="space-y-1">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">STATUS</p>
+                                            <p className="text-xs font-bold text-white uppercase">For Sale</p>
+                                        </div>
+                                        <div className="text-right space-y-1">
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">PRICE</p>
+                                            <p className="text-sm font-black text-blue-400">Kes 45,000,000</p>
+                                        </div>
+                                    </div>
+                                    <Link href={`/properties/${activeConversation.property}`} className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all group">
+                                        View Details
+                                        <ExternalLink size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <div className="mt-12 space-y-8">
+                                <section className="space-y-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-[1px] bg-blue-500/30" />
+                                        <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500 whitespace-nowrap">YOUR AGENT</h4>
+                                        <div className="flex-1 h-[1px] bg-slate-800" />
+                                    </div>
+
+                                    <div className="flex items-center gap-4 group">
+                                        <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 group-hover:border-blue-500/50 transition-colors">
+                                            {activeConversation.other_user.avatar ? (
+                                                <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <UserIcon className="text-slate-500 m-4" size={24} />
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h5 className="text-sm font-bold text-white mb-0.5">{activeConversation.other_user.name}</h5>
+                                            <p className="text-[10px] font-black text-slate-500 tracking-widest uppercase">Verified Expert</p>
+                                        </div>
+                                        <button className="p-2.5 bg-slate-900 border border-slate-800 text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                                            <Phone size={14} />
+                                        </button>
+                                    </div>
+                                </section>
+
+                                <section className="space-y-4">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500">NEXT STEPS</h4>
+                                    <div className="space-y-3">
+                                        {[
+                                            { icon: Calendar, label: 'Schedule Viewing', color: 'blue' },
+                                            { icon: FileText, label: 'Get Sales Agreement', color: 'emerald' },
+                                            { icon: Star, label: 'Add to Favorites', color: 'amber' }
+                                        ].map((action, i) => (
+                                            <button
+                                                key={i}
+                                                className="w-full flex items-center gap-4 p-4 bg-slate-900/30 border border-slate-800 rounded-2xl hover:bg-slate-800 hover:border-slate-700 transition-all group"
+                                            >
+                                                <div className={`p-2 rounded-xl bg-slate-800 text-slate-400 group-hover:scale-110 transition-all`}>
+                                                    <action.icon size={18} />
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{action.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+            </NeonFrame>
         </div>
     );
 }
