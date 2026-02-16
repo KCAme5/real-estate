@@ -3,12 +3,17 @@ from . import views
 
 urlpatterns = [
     path("", views.LeadListView.as_view(), name="lead-list"),
-    path("create/", views.LeadCreateView.as_view(), name="lead-create"),
+    path("stats/", views.CRMStatsView.as_view(), name="crm-stats"),
     path("<int:pk>/", views.LeadDetailView.as_view(), name="lead-detail"),
     path(
         "<int:pk>/activities/", views.LeadActivityView.as_view(), name="lead-activities"
     ),
+    path(
+        "<int:pk>/interactions/", views.LeadInteractionListView.as_view(), name="lead-interactions"
+    ),
     path("my-leads/", views.AgentLeadListView.as_view(), name="agent-leads"),
+    path("tasks/", views.TaskListView.as_view(), name="task-list"),
+    path("tasks/<int:pk>/", views.TaskDetailView.as_view(), name="task-detail"),
     path(
         "conversations/", views.ConversationListView.as_view(), name="conversation-list"
     ),

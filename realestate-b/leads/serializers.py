@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Lead, LeadActivity, WhatsAppMessage, Conversation, Message
+from .models import Lead, LeadActivity, WhatsAppMessage, Conversation, Message, LeadInteraction, Task
 
 
 class LeadActivitySerializer(serializers.ModelSerializer):
@@ -11,6 +11,18 @@ class LeadActivitySerializer(serializers.ModelSerializer):
         read_only_fields = ("agent",)
 
 
+class LeadInteractionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeadInteraction
+        fields = "__all__"
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = "__all__"
+
+
 class WhatsAppMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = WhatsAppMessage
@@ -19,9 +31,14 @@ class WhatsAppMessageSerializer(serializers.ModelSerializer):
 
 class LeadSerializer(serializers.ModelSerializer):
     activities = LeadActivitySerializer(many=True, read_only=True)
+    interactions = LeadInteractionSerializer(many=True, read_only=True)
+    tasks = TaskSerializer(many=True, read_only=True)
     agent_name = serializers.CharField(source="agent.get_full_name", read_only=True)
     property_title = serializers.CharField(
         source="property.title", read_only=True, allow_null=True
+    )
+    property_image = serializers.CharField(
+        source="property.main_image", read_only=True, allow_null=True
     )
 
     class Meta:
@@ -66,6 +83,7 @@ class ConversationSerializer(serializers.ModelSerializer):
             "property_image",
             "client",
             "agent",
+            "lead",
             "last_message",
             "unread_count",
             "other_user",

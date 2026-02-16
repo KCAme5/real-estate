@@ -8,6 +8,8 @@ export interface Lead {
     phone: string;
     source: 'website' | 'whatsapp' | 'referral' | 'walk_in' | 'phone';
     status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost';
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    score: number;
     budget_min?: number;
     budget_max?: number;
     preferred_locations: string[];
@@ -25,8 +27,42 @@ export interface Lead {
     created_at: string;
     updated_at: string;
     activities?: LeadActivity[];
+    interactions?: LeadInteraction[];
+    tasks?: Task[];
     agent_name?: string;
     property_title?: string;
+    property_image?: string;
+}
+
+export interface LeadInteraction {
+    id: number;
+    lead: number;
+    interaction_type: 'page_view' | 'property_click' | 'search' | 'inquiry' | 'download' | 'callback';
+    property_id?: number;
+    metadata?: any;
+    timestamp: string;
+}
+
+export interface Task {
+    id: number;
+    lead: number;
+    agent: number;
+    title: string;
+    description: string;
+    due_date: string;
+    is_completed: boolean;
+    priority: 'low' | 'medium' | 'high';
+    created_at: string;
+}
+
+export interface CRMStats {
+    total_leads: number;
+    new_leads: number;
+    qualified_leads: number;
+    closed_won: number;
+    avg_score: number;
+    status_distribution: { status: string; count: number }[];
+    recent_tasks: Task[];
 }
 
 export interface LeadActivity {
@@ -62,6 +98,7 @@ export interface Conversation {
     property_image: string | null;
     client: number;
     agent: number;
+    lead?: number;
     last_message: Message | null;
     unread_count: number;
     other_user: {
@@ -98,7 +135,6 @@ export const leadsAPI = {
     getLeads: (params?: { status?: string; agent?: number }) =>
         apiClient.get('/leads/', { params }),
 
-    // Alias for consistency with other APIs
     getAll: (params?: { status?: string; agent?: number }) =>
         apiClient.get('/leads/', { params }),
 
@@ -114,12 +150,29 @@ export const leadsAPI = {
     getAgentLeads: () =>
         apiClient.get('/leads/agent-leads/'),
 
+    getCRMStats: () =>
+        apiClient.get('/leads/stats/'),
+
+    // Lead Interactions
+    trackInteraction: (leadId: number, type: LeadInteraction['interaction_type'], propertyId?: number, metadata?: any) =>
+        apiClient.post(`/leads/${leadId}/interactions/`, { lead: leadId, interaction_type: type, property: propertyId, metadata }),
+
     // Lead Activities
     getLeadActivities: (leadId: number) =>
         apiClient.get(`/leads/${leadId}/activities/`),
 
-    createLeadActivity: (data: CreateLeadActivityData) =>
-        apiClient.post('/leads/activities/', data),
+    createLeadActivity: (leadId: number, data: CreateLeadActivityData) =>
+        apiClient.post(`/leads/${leadId}/activities/`, data),
+
+    // Tasks
+    getTasks: () =>
+        apiClient.get('/leads/tasks/'),
+
+    createTask: (data: Partial<Task>) =>
+        apiClient.post('/leads/tasks/', data),
+
+    updateTask: (id: number, data: Partial<Task>) =>
+        apiClient.patch(`/leads/tasks/${id}/`, data),
 
     // Conversations
     getConversations: async () => {

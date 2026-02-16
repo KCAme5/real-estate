@@ -18,6 +18,7 @@ import { leadsAPI } from "@/lib/api/leads";
 import { bookingsAPI } from "@/lib/api/bookings";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from '@/components/ui/toast';
+import { CRMTracker } from "@/hooks/useCRM";
 
 const Map = dynamic(() => import('@/components/ui/Map'), {
     ssr: false,
@@ -257,6 +258,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
     return (
         <div className="min-h-screen bg-slate-950">
+            {property && <CRMTracker propertyId={property.id} />}
             {/* 1. Sticky Property Header (Hidden until scroll) */}
             <div className={`fixed top-0 left-0 right-0 z-[60] bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 transition-all duration-500 transform ${showStickyHeader ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
                 <div className="container mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">

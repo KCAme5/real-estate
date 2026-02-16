@@ -1,33 +1,100 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import PermissionDenied
+from django.db.models import Count, Q
 from .models import *
 from .serializers import *
 
 
 class LeadListView(generics.ListCreateAPIView):
     serializer_class = LeadSerializer
-    permission_classes = [permissions.AllowAny]  # Allow anyone to create a lead
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated and self.request.user.user_type in [
-            "agent",
-            "admin",
-        ]:
-            return Lead.objects.all()
-        return Lead.objects.none()  # Regular users can't see all leads
-
-    def perform_create(self, serializer):
-        serializer.save()
-
-
-class LeadCreateView(generics.CreateAPIView):
-    serializer_class = LeadSerializer
     permission_classes = [permissions.AllowAny]
 
+    def get_queryset(self):
+        queryset = Lead.objects.all().order_by("-score", "-created_at")
+        
+        # Filtering for Kanban or Agent view
+        if self.request.user.is_authenticated:
+            if self.request.user.user_type == "agent":
+                queryset = queryset.filter(agent=self.request.user)
+            
+            status_param = self.request.query_params.get("status")
+            if status_param:
+                queryset = queryset.filter(status=status_param)
+                
+            return queryset
+            
+        return Lead.objects.none()
+
     def perform_create(self, serializer):
-        serializer.save()
+        # Auto-assign logic: find agent with least leads if not provided
+        agent = serializer.validated_data.get("agent")
+        if not agent:
+            # Simple round-robin or least-assigned logic
+            available_agents = User.objects.filter(user_type="agent").annotate(
+                lead_count=Count("assigned_leads")
+            ).order_by("lead_count")
+            if available_agents.exists():
+                agent = available_agents.first()
+        
+        lead = serializer.save(agent=agent)
+        lead.update_score()
+
+
+class LeadInteractionListView(generics.ListCreateAPIView):
+    serializer_class = LeadInteractionSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return LeadInteraction.objects.filter(lead_id=self.kwargs["pk"])
+
+    def perform_create(self, serializer):
+        lead_id = self.request.data.get("lead")
+        lead = get_object_or_404(Lead, id=lead_id)
+        serializer.save(lead=lead)
+        # Trigger score update
+        lead.update_score()
+
+
+class TaskListView(generics.ListCreateAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(agent=self.request.user).order_by("due_date")
+
+    def perform_create(self, serializer):
+        serializer.save(agent=self.request.user)
+
+
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TaskSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(agent=self.request.user)
+
+
+class CRMStatsView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        if request.user.user_type not in ["agent", "admin"]:
+            return Response({"error": "Unauthorized"}, status=403)
+            
+        leads = Lead.objects.filter(agent=request.user) if request.user.user_type == "agent" else Lead.objects.all()
+        
+        stats = {
+            "total_leads": leads.count(),
+            "new_leads": leads.filter(status="new").count(),
+            "qualified_leads": leads.filter(status="qualified").count(),
+            "closed_won": leads.filter(status="closed_won").count(),
+            "avg_score": leads.aggregate(models.Avg("score"))["score__avg"] or 0,
+            "status_distribution": leads.values("status").annotate(count=Count("id")),
+            "recent_tasks": TaskSerializer(Task.objects.filter(agent=request.user, is_completed=False)[:5], many=True).data
+        }
+        return Response(stats)
 
 
 class LeadDetailView(generics.RetrieveUpdateAPIView):
@@ -39,6 +106,10 @@ class LeadDetailView(generics.RetrieveUpdateAPIView):
             return Lead.objects.all()
         return Lead.objects.none()
 
+    def perform_update(self, serializer):
+        lead = serializer.save()
+        lead.update_score()
+
 
 class LeadActivityView(generics.ListCreateAPIView):
     serializer_class = LeadActivitySerializer
@@ -48,7 +119,9 @@ class LeadActivityView(generics.ListCreateAPIView):
         return LeadActivity.objects.filter(lead_id=self.kwargs["pk"])
 
     def perform_create(self, serializer):
-        serializer.save(agent=self.request.user)
+        lead = get_object_or_404(Lead, id=self.kwargs["pk"])
+        serializer.save(agent=self.request.user, lead=lead)
+        lead.update_score()
 
 
 class AgentLeadListView(generics.ListAPIView):
@@ -65,7 +138,7 @@ class ConversationListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Conversation.objects.filter(models.Q(client=user) | models.Q(agent=user))
+        return Conversation.objects.filter(Q(client=user) | Q(agent=user))
 
     def create(self, request, *args, **kwargs):
         property_id = request.data.get("property")
@@ -89,7 +162,9 @@ class ConversationListView(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user)
+        # Link to lead if exists
+        lead = Lead.objects.filter(user=self.request.user).first()
+        serializer.save(client=self.request.user, lead=lead)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -103,7 +178,7 @@ class ConversationDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Conversation.objects.filter(models.Q(client=user) | models.Q(agent=user))
+        return Conversation.objects.filter(Q(client=user) | Q(agent=user))
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -148,7 +223,7 @@ class ConversationDeleteView(generics.DestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Conversation.objects.filter(models.Q(client=user) | models.Q(agent=user))
+        return Conversation.objects.filter(Q(client=user) | Q(agent=user))
 
     def perform_destroy(self, instance):
         # Also delete all messages in this conversation

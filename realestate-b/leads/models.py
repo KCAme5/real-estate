@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from properties.models import Property
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -25,15 +26,30 @@ class Lead(models.Model):
         ("phone", "Phone Call"),
     )
 
+    PRIORITY_CHOICES = (
+        ("low", "Low"),
+        ("medium", "Medium"),
+        ("high", "High"),
+        ("urgent", "Urgent"),
+    )
+
     # Lead Information
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
+    
+    # User linkage (if the lead registers)
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="as_lead"
+    )
 
     # Lead Details
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default="website")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default="low")
+    score = models.IntegerField(default=0)
+    
     budget_min = models.DecimalField(
         max_digits=12, decimal_places=2, null=True, blank=True
     )
@@ -50,7 +66,7 @@ class Lead(models.Model):
 
     # Assignment
     agent = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="leads"
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_leads"
     )
 
     # Notes
@@ -61,7 +77,53 @@ class Lead(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name} ({self.score})"
+
+    def update_score(self):
+        """
+        Recalculate lead score based on interactions.
+        Scoring Rules:
+        - View Property: 5 pts
+        - WhatsApp Message: 10 pts
+        - Specific Inquiry: 20 pts
+        - Note added by agent: 2 pts
+        - Status progress: Multiplier
+        """
+        total = 0
+        total += self.interactions.count() * 5
+        total += self.whatsapp_messages.count() * 10
+        total += self.activities.filter(activity_type="property_viewing").count() * 15
+        
+        # Add multipliers for status
+        if self.status == "qualified":
+            total += 50
+        elif self.status == "proposal":
+            total += 100
+        elif self.status == "negotiation":
+            total += 200
+            
+        self.score = total
+        self.save()
+
+
+class LeadInteraction(models.Model):
+    INTERACTION_TYPES = (
+        ("page_view", "Page View"),
+        ("property_click", "Property Click"),
+        ("search", "Search Performed"),
+        ("inquiry", "Property Inquiry"),
+        ("download", "Brochure Download"),
+        ("callback", "Requested Callback"),
+    )
+
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="interactions")
+    interaction_type = models.CharField(max_length=20, choices=INTERACTION_TYPES)
+    property = models.ForeignKey(Property, on_delete=models.SET_NULL, null=True, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.interaction_type} by {self.lead}"
 
 
 class LeadActivity(models.Model):
@@ -87,6 +149,24 @@ class LeadActivity(models.Model):
         return f"{self.activity_type} for {self.lead}"
 
 
+class Task(models.Model):
+    lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name="tasks")
+    agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name="crm_tasks")
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    due_date = models.DateTimeField()
+    is_completed = models.BooleanField(default=False)
+    priority = models.CharField(
+        max_length=10, 
+        choices=(("low", "Low"), ("medium", "Medium"), ("high", "High")),
+        default="medium"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Task for {self.lead.first_name}: {self.title}"
+
+
 class WhatsAppMessage(models.Model):
     lead = models.ForeignKey(
         Lead, on_delete=models.CASCADE, related_name="whatsapp_messages"
@@ -105,6 +185,9 @@ class WhatsAppMessage(models.Model):
 
 
 class Conversation(models.Model):
+    lead = models.ForeignKey(
+        Lead, on_delete=models.SET_NULL, null=True, blank=True, related_name="conversations"
+    )
     property = models.ForeignKey(
         Property, on_delete=models.CASCADE, related_name="conversations", null=True, blank=True
     )
@@ -122,7 +205,8 @@ class Conversation(models.Model):
         ordering = ["-updated_at"]
 
     def __str__(self):
-        return f"Conversation about {self.property.title}"
+        title = self.property.title if self.property else "General"
+        return f"Conversation about {title} with {self.client.username}"
 
 
 class Message(models.Model):
