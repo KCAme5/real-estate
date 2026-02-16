@@ -14,8 +14,11 @@ export const metadata: Metadata = {
   description: 'Premium real estate solutions connecting Kenyans and the diaspora with exceptional properties and investment opportunities across Kenya.',
   keywords: 'real estate, Kenya properties, diaspora, luxury homes, investment properties',
   icons: {
-    icon: '/KenyaPrime.png',
-    shortcut: '/KenyaPrime.png',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/KenyaPrime.png' }
+    ],
+    shortcut: '/favicon.svg',
     apple: '/KenyaPrime.png',
   }
 };

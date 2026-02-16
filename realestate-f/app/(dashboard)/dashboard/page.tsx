@@ -9,6 +9,7 @@ import { PropertyCardsContainer } from '@/components/dashboard/PropertyCard';
 import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { Search, Calendar, MessageSquare, Settings, Upload, ArrowRight, Sparkles, MapPin } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { propertyAPI } from '@/lib/api/properties';
 import { bookingsAPI, Booking } from '@/lib/api/bookings';
