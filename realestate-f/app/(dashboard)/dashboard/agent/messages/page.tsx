@@ -678,6 +678,8 @@ function AgentMessagesContent() {
                                 </section>
                             </div>
                         </div>
+                    )}
+                </div>
             </NeonFrame>
         </div>
     );

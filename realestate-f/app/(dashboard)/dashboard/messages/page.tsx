@@ -661,6 +661,8 @@ function MessagesContent() {
                                 </section>
                             </div>
                         </div>
+                    )}
+                </div>
             </NeonFrame>
         </div>
     );
