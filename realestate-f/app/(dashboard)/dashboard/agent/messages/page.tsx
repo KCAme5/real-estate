@@ -1,19 +1,41 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { leadsAPI, Conversation, Message } from '@/lib/api/leads';
 import { messagesAPI } from '@/lib/api/messages';
 import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
-import { Send, User as UserIcon, Home, CheckCircle2, Search, ArrowLeft, MoreVertical, Paperclip, Smile, MessageSquare, Edit3, Bell, Trash2 } from 'lucide-react';
+import {
+    Send,
+    User as UserIcon,
+    Home,
+    CheckCircle2,
+    Search,
+    MoreVertical,
+    Paperclip,
+    Smile,
+    MessageSquare,
+    Trash2,
+    Phone,
+    Video,
+    FileText,
+    Download,
+    Calendar,
+    Star,
+    ExternalLink,
+    Clock,
+    Zap,
+    Plus,
+    MoreHorizontal
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
 
-function AgentMessagesContent() {
+export default function AgentMessagesPage() {
     const { user } = useAuth();
-    const { success, error, info } = useToast();
+    const { success, error: showError } = useToast();
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
     const recipientId = searchParams.get('recipientId');
@@ -27,7 +49,7 @@ function AgentMessagesContent() {
     const [sending, setSending] = useState(false);
     const [typingUsers, setTypingUsers] = useState<Map<number, string>>(new Map());
     const [isTyping, setIsTyping] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -38,44 +60,15 @@ function AgentMessagesContent() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Handle typing timeout
-    const handleTypingStart = () => {
-        if (!isTyping && activeConversation) {
-            setIsTyping(true);
-            sendTypingIndicator(activeConversation.id, true);
-        }
-
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
-        }
-
-        typingTimeoutRef.current = setTimeout(() => {
-            if (isTyping && activeConversation) {
-                setIsTyping(false);
-                sendTypingIndicator(activeConversation.id, false);
-            }
-        }, 1000);
-    };
-
-    const handleTypingStop = () => {
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
-        }
-        if (isTyping && activeConversation) {
-            setIsTyping(false);
-            sendTypingIndicator(activeConversation.id, false);
-        }
-    };
-
     // WebSocket message handler
     useEffect(() => {
         const unsubscribe = subscribe((message) => {
             switch (message.type) {
                 case 'message':
                     const messageData = message.data as Message;
-                    if (activeConversation && 'conversation' in messageData && messageData.conversation === activeConversation.id) {
+                    if (activeConversation && messageData.conversation === activeConversation.id) {
                         setMessages(prev => [...prev, messageData]);
-                        scrollToBottom();
+                        setTimeout(scrollToBottom, 100);
 
                         if (messageData.sender !== user?.id) {
                             markMessagesAsRead(activeConversation.id);
@@ -155,13 +148,11 @@ function AgentMessagesContent() {
             }
         }
 
-        // Auto-create if recipient provided but no conversation found
         if (!loading && targetRecipient && !isNaN(targetRecipient)) {
             const creationKey = `${targetRecipient}-${targetProperty}`;
             if (attemptedCreationRef.current === creationKey) return;
 
             if (!activeConversation) {
-                console.log('Agent: No existing conversation found for recipient, creating one...');
                 attemptedCreationRef.current = creationKey;
                 handleCreateConversation(targetRecipient, targetProperty || undefined);
             }
@@ -188,12 +179,6 @@ function AgentMessagesContent() {
             setLoading(false);
         }
     };
-
-    // Calculate total unread count
-    useEffect(() => {
-        const total = conversations.reduce((sum, conv) => sum + conv.unread_count, 0);
-        setUnreadCount(total);
-    }, [conversations]);
 
     const fetchConversations = async (showLoading = true) => {
         try {
@@ -225,282 +210,412 @@ function AgentMessagesContent() {
 
         try {
             setSending(true);
+            const content = newMessage.trim();
+            setNewMessage('');
 
             sendMessage({
                 type: 'message',
                 conversation_id: activeConversation.id,
-                content: newMessage
+                content: content
             });
 
-            await leadsAPI.sendMessage(activeConversation.id, newMessage);
-
-            setNewMessage('');
+            await leadsAPI.sendMessage(activeConversation.id, content);
             handleTypingStop();
             setTimeout(scrollToBottom, 100);
         } catch (error) {
             console.error('Failed to send message:', error);
-            error('Failed to send message', 'Please try again');
+            showError('Failed to send message', 'Please try again');
         } finally {
             setSending(false);
         }
     };
 
-    const handleDeleteConversation = async (conversationId: number) => {
-        if (!confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
-            return;
+    const handleTypingStart = () => {
+        if (!isTyping && activeConversation) {
+            setIsTyping(true);
+            sendTypingIndicator(activeConversation.id, true);
         }
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(handleTypingStop, 2000);
+    };
 
-        try {
-            await messagesAPI.deleteConversation(conversationId);
-
-            setConversations(prev => prev.filter(conv => conv.id !== conversationId));
-
-            if (activeConversation?.id === conversationId) {
-                setActiveConversation(null);
-                setMessages([]);
-            }
-
-            success('Conversation deleted', 'The conversation has been permanently deleted');
-        } catch (error) {
-            console.error('Failed to delete conversation:', error);
-            error('Failed to delete conversation', 'Please try again');
+    const handleTypingStop = () => {
+        if (isTyping && activeConversation) {
+            setIsTyping(false);
+            sendTypingIndicator(activeConversation.id, false);
         }
     };
 
-    const handleDeleteMessage = async (messageId: number) => {
-        if (!confirm('Are you sure you want to delete this message?')) {
-            return;
-        }
+    const filteredConversations = useMemo(() => {
+        return conversations.filter(c =>
+            c.other_user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.property_title?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [conversations, searchQuery]);
 
-        try {
-            await messagesAPI.deleteMessage(activeConversation!.id, messageId);
+    const formatTime = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffInSecs = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-            setMessages(prev => prev.filter(msg => msg.id !== messageId));
-
-            success('Message deleted', 'The message has been permanently deleted');
-        } catch (error) {
-            console.error('Failed to delete message:', error);
-            error('Failed to delete message', 'Please try again');
-        }
+        if (diffInSecs < 60) return 'Just now';
+        if (diffInSecs < 3600) return `${Math.floor(diffInSecs / 60)}m ago`;
+        if (diffInSecs < 86400) return `${Math.floor(diffInSecs / 3600)}h ago`;
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     };
 
-    if (loading && !conversations.length) {
+    if (loading && conversations.length === 0) {
         return (
-            <div className="flex h-[80vh] items-center justify-center">
-                <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+            <div className="flex h-screen items-center justify-center bg-[#020617]">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
 
     return (
-        <div className="h-[calc(100vh-120px)] flex flex-col md:flex-row bg-background border border-border rounded-[2rem] overflow-hidden shadow-2xl m-4 md:m-8">
-            {/* Sidebar: Conversation List */}
-            <div className={`w-full md:w-80 lg:w-96 border-r border-border flex flex-col ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
-                <div className="p-6 border-b border-border space-y-4">
+        <div className="flex h-screen bg-[#020617] text-white overflow-hidden">
+            {/* Column 1: Conversations List */}
+            <div className={`w-full md:w-80 lg:w-[320px] border-r border-slate-800/50 flex flex-col bg-[#0B0E14] ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
+                <div className="p-6 space-y-6">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold tracking-tight">Messages</h2>
-                        {unreadCount > 0 && (
-                            <div className="flex items-center gap-2 bg-primary text-primary-foreground px-3 py-1 rounded-full">
-                                <Bell size={14} />
-                                <span className="text-xs font-bold">{unreadCount}</span>
-                            </div>
-                        )}
+                        <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
+                        <button className="p-2 bg-slate-800/50 text-blue-400 rounded-xl hover:bg-slate-800 transition-colors">
+                            <Zap size={18} fill="currentColor" />
+                        </button>
                     </div>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors" size={16} />
                         <input
                             type="text"
                             placeholder="Search conversations..."
-                            className="w-full bg-muted/50 border-none rounded-2xl py-3 pl-10 pr-4 text-sm focus:ring-2 ring-primary/20 transition-all outline-none"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-slate-900 border border-slate-800 rounded-2xl py-3 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600"
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto no-scrollbar">
-                    {conversations.length === 0 ? (
-                        <div className="p-10 text-center space-y-4 opacity-50">
-                            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
-                                <MessageSquare className="text-muted-foreground" size={32} />
-                            </div>
-                            <p className="text-sm font-medium">No conversations yet</p>
-                        </div>
-                    ) : (
-                        conversations.map((conv) => (
-                            <div key={conv.id} className={`w-full p-6 flex gap-4 transition-all border-b border-border/50 hover:bg-muted/30 text-left relative group ${activeConversation?.id === conv.id ? 'bg-primary/5 ring-1 ring-inset ring-primary/10' : ''}`}>
-                                <button
-                                    onClick={() => {
-                                        setActiveConversation(conv);
-                                        fetchMessages(conv.id);
-                                    }}
-                                    className="flex-1 flex gap-4"
-                                >
-                                    <div className="relative flex-shrink-0">
-                                        <div className="w-14 h-14 rounded-2xl bg-muted overflow-hidden border border-border/50">
-                                            {conv.property_image ? (
-                                                <Image src={conv.property_image} alt={conv.property_title} fill className="object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-primary/10">
-                                                    <Home className="text-primary" size={24} />
-                                                </div>
-                                            )}
+                <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
+                    {filteredConversations.map((conv) => (
+                        <button
+                            key={conv.id}
+                            onClick={() => {
+                                setActiveConversation(conv);
+                                fetchMessages(conv.id);
+                            }}
+                            className={`w-full px-6 py-5 flex gap-4 border-b border-slate-800/30 transition-all hover:bg-slate-800/30 group relative ${activeConversation?.id === conv.id ? 'bg-blue-600/10' : ''}`}
+                        >
+                            {activeConversation?.id === conv.id && (
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                            )}
+
+                            <div className="relative shrink-0">
+                                <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg">
+                                    {conv.property_image ? (
+                                        <img src={conv.property_image} alt={conv.other_user.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                                            <UserIcon className="text-slate-500" size={24} />
                                         </div>
+                                    )}
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0B0E14]" />
+                            </div>
+
+                            <div className="flex-1 min-w-0 text-left">
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="font-bold text-sm text-slate-200 truncate group-hover:text-white transition-colors">
+                                        {conv.other_user.name}
+                                    </h3>
+                                    <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap">
+                                        {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
+                                    </span>
+                                </div>
+
+                                <p className="text-xs text-slate-400 italic truncate mb-2 leading-relaxed">
+                                    "{conv.last_message?.content || 'Started a conversation'}"
+                                </p>
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded-md">
+                                        <Home size={10} className="text-blue-400" />
+                                        <span className="text-[9px] font-black uppercase tracking-tighter text-slate-400 truncate max-w-[100px]">
+                                            {conv.property_title || 'General Inquiry'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="px-1.5 py-0.5 bg-red-500/10 text-red-500 text-[8px] font-black uppercase tracking-widest rounded-md border border-red-500/20">HOT</span>
                                         {conv.unread_count > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-[10px] font-black text-white rounded-full flex items-center justify-center border-2 border-background">
+                                            <span className="w-5 h-5 bg-blue-600 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#0B0E14] text-white shadow-lg">
                                                 {conv.unread_count}
                                             </span>
                                         )}
                                     </div>
-                                    <div className="flex-1 min-w-0 space-y-1">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="font-bold text-sm truncate">{conv.other_user.name}</h3>
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(conv.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                        </div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-primary/70 truncate">{conv.property_title}</p>
-                                        <p className="text-xs text-muted-foreground truncate font-medium">
-                                            {conv.last_message?.content || 'Started a conversation'}
-                                        </p>
-                                    </div>
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteConversation(conv.id)}
-                                    className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                    title="Delete conversation"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                                </div>
                             </div>
-                        ))
-                    )}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Chat Area */}
-            <div className={`flex-1 flex flex-col bg-muted/10 ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
+            {/* Column 2: Chat View */}
+            <div className={`flex-1 flex flex-col bg-[#05070A] ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
                 {activeConversation ? (
                     <>
                         {/* Chat Header */}
-                        <div className="p-6 bg-background border-b border-border flex items-center justify-between">
+                        <div className="px-8 py-5 border-b border-slate-800/50 flex items-center justify-between bg-[#0B0E14]/50 backdrop-blur-md">
                             <div className="flex items-center gap-4">
-                                <button onClick={() => setActiveConversation(null)} className="md:hidden p-2 hover:bg-muted rounded-xl">
-                                    <ArrowLeft size={20} />
-                                </button>
-                                <div className="w-12 h-12 rounded-2xl bg-muted overflow-hidden flex items-center justify-center border border-border/50">
-                                    <UserIcon className="text-muted-foreground" size={20} />
+                                <div className="relative">
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-800 overflow-hidden border border-slate-700/50">
+                                        <UserIcon className="text-slate-500 m-3" size={24} />
+                                    </div>
+                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#05070A]" />
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-lg leading-tight">{activeConversation.other_user.name}</h3>
+                                <div className="flex flex-col">
                                     <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Online</span>
+                                        <h3 className="font-bold text-lg text-white leading-tight">{activeConversation.other_user.name}</h3>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#25D366]">ACTIVE NOW</span>
+                                        <span className="text-slate-700 mx-1">•</span>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 truncate max-w-[200px]">
+                                            INTERESTED IN {activeConversation.property_title}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Link href={`/properties/${activeConversation.property}`} className="p-3 bg-muted/50 hover:bg-muted text-foreground rounded-2xl transition-all border border-border/50">
-                                    <Home size={18} />
-                                </Link>
-                                <button className="p-3 bg-muted/50 hover:bg-muted text-foreground rounded-2xl transition-all border border-border/50">
-                                    <MoreVertical size={18} />
+
+                            <div className="flex items-center gap-3">
+                                <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
+                                    <Phone size={18} />
+                                </button>
+                                <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
+                                    <Video size={18} />
+                                </button>
+                                <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
+                                    <MoreHorizontal size={18} />
                                 </button>
                             </div>
                         </div>
 
-                        {/* Messages List */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
+                        {/* Messages Area */}
+                        <div className="flex-1 overflow-y-auto p-8 space-y-10 no-scrollbar relative">
+                            {/* Texture Overlay */}
+                            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+
                             {messages.map((msg, idx) => {
                                 const isMe = msg.sender === user?.id;
                                 return (
-                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group`}>
-                                        <div className={`max-w-[80%] space-y-2 ${isMe ? 'text-right' : 'text-left'} relative`}>
-                                            {isMe && (
-                                                <button
-                                                    onClick={() => handleDeleteMessage(msg.id)}
-                                                    className="absolute -top-2 -right-2 p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                                                    title="Delete message"
-                                                >
-                                                    <Trash2 size={12} />
-                                                </button>
-                                            )}
-                                            <div className={`inline-block px-6 py-4 rounded-[2rem] text-sm font-medium shadow-sm ${isMe ? 'bg-primary text-primary-foreground rounded-tr-none' : 'bg-background border border-border rounded-tl-none'}`}>
+                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                                        <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
+                                            <div className={`relative px-6 py-4 rounded-[1.8rem] text-sm font-medium shadow-2xl ${isMe
+                                                    ? 'bg-blue-600 text-white rounded-tr-none'
+                                                    : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
+                                                }`}>
+                                                {/* Chat Bubble Tail */}
+                                                <div className={`absolute top-0 w-4 h-4 ${isMe
+                                                        ? 'right-[-8px] text-blue-600'
+                                                        : 'left-[-8px] text-slate-900/80'
+                                                    }`}>
+                                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d={isMe ? "M0 0 L20 0 L0 20 Z" : "M20 0 L0 0 L20 20 Z"} />
+                                                    </svg>
+                                                </div>
+
                                                 {msg.content}
                                             </div>
-                                            <div className="flex items-center justify-end gap-2 px-2">
-                                                <span className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                                {isMe && msg.is_read && <CheckCircle2 size={12} className="text-secondary" />}
+                                            <div className="flex items-center gap-2 mt-2 px-1">
+                                                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                                {isMe && (
+                                                    <div className="flex">
+                                                        <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} />
+                                                        <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} style={{ marginLeft: '-6px' }} />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 );
                             })}
 
-                            {/* Typing Indicator */}
-                            {typingUsers.has(activeConversation?.id || 0) && (
-                                <div className="flex justify-start">
-                                    <div className="max-w-[80%] space-y-2 text-left">
-                                        <div className="inline-block px-6 py-4 rounded-[2rem] text-sm font-medium shadow-sm bg-background border border-border rounded-tl-none">
-                                            <div className="flex items-center gap-2">
-                                                <Edit3 size={16} className="text-muted-foreground animate-pulse" />
-                                                <span className="text-muted-foreground italic">
-                                                    {typingUsers.get(activeConversation?.id || 0)} is typing...
-                                                </span>
-                                            </div>
+                            {/* Example Attachment Design */}
+                            <div className="flex justify-end group">
+                                <div className="flex flex-col items-end max-w-[75%]">
+                                    <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-[2rem] rounded-tr-none flex items-center gap-4 bg-slate-900/80 backdrop-blur-sm shadow-xl">
+                                        <div className="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center">
+                                            <FileText size={20} />
+                                        </div>
+                                        <div className="flex-1 min-w-0 pr-4">
+                                            <h4 className="text-sm font-bold text-slate-200 truncate">FloorPlan_Westlands_B4.pdf</h4>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">PDF DOCUMENT • 2.4 MB</p>
+                                        </div>
+                                        <button className="p-2.5 bg-slate-800 text-slate-400 hover:text-white rounded-xl transition-colors">
+                                            <Download size={16} />
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-2 px-1">
+                                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">11:05 AM</span>
+                                        <div className="flex">
+                                            <CheckCircle2 size={12} className="text-blue-400" />
+                                            <CheckCircle2 size={12} className="text-blue-400" style={{ marginLeft: '-6px' }} />
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
 
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Chat Input */}
-                        <div className="p-6 bg-background border-t border-border">
-                            <form onSubmit={handleSendMessage} className="flex items-center gap-4 bg-muted/30 p-2 rounded-[2.5rem] border border-border/50 focus-within:ring-2 ring-primary/10 transition-all">
-                                <button type="button" className="p-3 text-muted-foreground hover:text-primary rounded-full transition-colors">
-                                    <Paperclip size={20} />
-                                </button>
-                                <input
-                                    ref={inputRef}
-                                    value={newMessage}
-                                    onChange={(e) => {
-                                        setNewMessage(e.target.value);
-                                        if (e.target.value.trim()) {
+                        {/* Quick Actions & Input */}
+                        <div className="p-8 bg-[#0B0E14] border-t border-slate-800/50 space-y-6">
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    'SCHEDULE VIEWING', 'SEND BROCHURE', 'ASK FOR PHONE', 'PRICING DETAILS'
+                                ].map(action => (
+                                    <button
+                                        key={action}
+                                        className="px-5 py-2.5 bg-slate-800/40 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-800/80 text-[10px] font-black tracking-widest text-slate-400 hover:text-white rounded-xl transition-all"
+                                    >
+                                        {action}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-4 group">
+                                <div className="flex-1 flex items-center gap-4 bg-slate-900/50 border border-slate-800 rounded-[2.5rem] px-6 py-2 focus-within:ring-2 ring-blue-500/20 transition-all">
+                                    <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
+                                        <Paperclip size={20} />
+                                    </button>
+                                    <input
+                                        ref={inputRef}
+                                        value={newMessage}
+                                        onChange={(e) => {
+                                            setNewMessage(e.target.value);
                                             handleTypingStart();
-                                        } else {
-                                            handleTypingStop();
-                                        }
-                                    }}
-                                    onBlur={handleTypingStop}
-                                    placeholder="Type your message here..."
-                                    className="flex-1 bg-transparent border-none outline-none py-2 text-sm font-medium"
-                                />
-                                <button type="button" className="p-3 text-muted-foreground hover:text-primary rounded-full transition-colors hidden sm:block">
-                                    <Smile size={20} />
-                                </button>
+                                        }}
+                                        placeholder="Type your message..."
+                                        className="flex-1 bg-transparent border-none outline-none py-4 text-sm font-medium text-white placeholder:text-slate-600"
+                                    />
+                                    <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
+                                        <Smile size={20} />
+                                    </button>
+                                </div>
                                 <button
                                     type="submit"
                                     disabled={!newMessage.trim() || sending}
-                                    className="bg-primary text-primary-foreground p-3 rounded-full shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                                    className="p-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
                                 >
-                                    <Send size={20} />
+                                    <Send size={24} />
                                 </button>
                             </form>
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-6">
-                        <div className="w-32 h-32 bg-primary/5 rounded-[4rem] flex items-center justify-center border border-primary/10">
-                            <MessageSquare className="text-primary opacity-40" size={48} />
+                    <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-8">
+                        <div className="w-32 h-32 bg-slate-900/50 rounded-[4rem] flex items-center justify-center border border-slate-800 relative">
+                            <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-full" />
+                            <MessageSquare className="text-blue-500 opacity-40 relative z-10" size={48} />
                         </div>
-                        <div className="space-y-2">
-                            <h3 className="text-2xl font-bold tracking-tight">Agent Messages</h3>
-                            <p className="text-muted-foreground font-medium max-w-xs mx-auto">View and respond to client inquiries about your properties in real-time.</p>
+                        <div className="space-y-3">
+                            <h3 className="text-3xl font-black text-white tracking-tight">Agent Communications</h3>
+                            <p className="text-slate-500 font-medium max-w-sm mx-auto leading-relaxed">
+                                Select a conversation to start managing your leads and closing more deals through our premium messaging suite.
+                            </p>
                         </div>
-                        <Link href="/properties" className="px-8 py-3 bg-primary text-primary-foreground rounded-full text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-105 transition-all">
-                            Browse Properties
-                        </Link>
                     </div>
                 )}
             </div>
+
+            {/* Column 3: Lead Info Section */}
+            {activeConversation && (
+                <div className="hidden lg:flex w-[340px] border-l border-slate-800/50 flex flex-col bg-[#0B0E14] p-8 overflow-y-auto no-scrollbar pb-20">
+                    <div className="flex flex-col items-center text-center space-y-6">
+                        <div className="relative">
+                            <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1">
+                                {activeConversation.property_image ? (
+                                    <img src={activeConversation.property_image} className="w-full h-full object-cover rounded-[2.2rem]" />
+                                ) : (
+                                    <div className="w-full h-full bg-slate-900 flex items-center justify-center rounded-[2.2rem]">
+                                        <UserIcon className="text-slate-700" size={48} />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#0B0E14] rounded-2xl p-1 border border-slate-800">
+                                <div className="w-full h-full bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                                    <Star size={18} fill="white" className="text-white" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h2 className="text-2xl font-black text-white tracking-tight">{activeConversation.other_user.name}</h2>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">VIP PREMIUM LEAD</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 w-full">
+                            <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl space-y-1">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">LEAD SCORE</p>
+                                <p className="text-xl font-black text-blue-400">92%</p>
+                            </div>
+                            <div className="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl space-y-1">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">INQUIRIES</p>
+                                <p className="text-xl font-black text-white">4</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-12 space-y-8">
+                        <section className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Home size={16} className="text-blue-400" />
+                                <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500">PRIMARY INTEREST</h4>
+                            </div>
+
+                            <Link href={`/properties/${activeConversation.property}`} className="block group">
+                                <div className="relative h-48 rounded-[2rem] overflow-hidden border border-slate-800">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent z-10" />
+                                    {activeConversation.property_image ? (
+                                        <img src={activeConversation.property_image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    ) : (
+                                        <div className="w-full h-full bg-slate-900" />
+                                    )}
+                                    <div className="absolute bottom-6 inset-x-6 z-20 space-y-1">
+                                        <p className="text-xs font-bold text-white truncate">{activeConversation.property_title}</p>
+                                        <p className="text-[10px] font-black text-blue-400 tracking-widest">
+                                            $120,000
+                                        </p>
+                                    </div>
+                                </div>
+                            </Link>
+                        </section>
+
+                        <section className="space-y-4">
+                            <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500">LEAD ACTIONS</h4>
+                            <div className="space-y-3">
+                                {[
+                                    { icon: Calendar, label: 'Schedule Tour', color: 'blue' },
+                                    { icon: FileText, label: 'Add Internal Note', color: 'slate' },
+                                    { icon: Clock, label: 'Mark as Dormant', color: 'red' }
+                                ].map((action, i) => (
+                                    <button
+                                        key={i}
+                                        className="w-full flex items-center gap-4 p-4 bg-slate-900/30 border border-slate-800 rounded-2xl hover:bg-slate-800 hover:border-slate-700 transition-all group"
+                                    >
+                                        <div className={`p-2 rounded-xl bg-${action.color}-500/10 text-${action.color}-400 group-hover:bg-${action.color}-500/20 group-hover:scale-110 transition-all`}>
+                                            <action.icon size={18} />
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{action.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
