@@ -7,9 +7,11 @@ import { apiClient } from '@/lib/api/client';
 // Helper function to set cookies
 const setCookie = (name: string, value: string, options?: { maxAge?: number }) => {
     if (typeof window === 'undefined') return;
-    const cookieValue = `${name}=${value};path=/`;
     const maxAge = options?.maxAge || 7 * 24 * 60 * 60; // 7 days default
-    document.cookie = `${cookieValue};max-age=${maxAge};`;
+    // Add SameSite=Lax to allow cookies to be sent during navigation
+    // Add Secure flag for HTTPS environments
+    const secureFlag = window.location.protocol === 'https:' ? ';Secure' : '';
+    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax${secureFlag}`;
 };
 
 interface User {
