@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { leadsAPI, Conversation, Message } from '@/lib/api/leads';
@@ -192,7 +192,7 @@ function MessagesContent() {
         try {
             setLoading(true);
             setShowAgentsList(false);
-            
+
             // Check if conversation already exists
             const existingConv = conversations.find(c => Number(c.agent) === agentId);
             if (existingConv) {
@@ -320,14 +320,14 @@ function MessagesContent() {
                 <div className="p-4 border-b border-[#1E3A5F]">
                     <div className="flex items-center justify-between mb-4">
                         <h1 className="text-2xl font-semibold">Chats</h1>
-                        <button 
+                        <button
                             onClick={() => setShowAgentsList(true)}
                             className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
                         >
                             <Plus size={20} />
                         </button>
                     </div>
-                    
+
                     {/* Search */}
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -402,8 +402,8 @@ function MessagesContent() {
                         {/* Chat Header */}
                         <div className="px-6 py-4 border-b border-[#1E3A5F] flex items-center justify-between bg-[#0B192F]">
                             <div className="flex items-center gap-3">
-                                <button 
-                                    onClick={() => setActiveConversation(null)} 
+                                <button
+                                    onClick={() => setActiveConversation(null)}
                                     className="md:hidden p-2 hover:bg-[#1E3A5F] rounded-full"
                                 >
                                     <X size={20} />
@@ -455,7 +455,7 @@ function MessagesContent() {
                         </div>
 
                         {/* Messages Area */}
-                        <div 
+                        <div
                             className="flex-1 overflow-y-auto p-4"
                             style={{
                                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E3A5F' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -466,10 +466,10 @@ function MessagesContent() {
                                 return (
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}>
                                         <div className={`max-w-[70%] ${isMe ? 'order-2' : 'order-1'}`}>
-                                            <div className={`px-4 py-2 rounded-2xl text-sm ${isMe 
-                                                ? 'bg-blue-600 text-white rounded-br-none' 
+                                            <div className={`px-4 py-2 rounded-2xl text-sm ${isMe
+                                                ? 'bg-blue-600 text-white rounded-br-none'
                                                 : 'bg-[#1E3A5F] text-white rounded-bl-none'
-                                            }`}>
+                                                }`}>
                                                 {msg.content}
                                             </div>
                                             <div className={`flex items-center gap-1 mt-1 px-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
@@ -532,14 +532,14 @@ function MessagesContent() {
                     <div className="bg-[#0B192F] rounded-lg w-full max-w-md max-h-[80vh] overflow-hidden">
                         <div className="p-4 border-b border-[#1E3A5F] flex items-center justify-between">
                             <h2 className="text-lg font-semibold">Verified Agents</h2>
-                            <button 
+                            <button
                                 onClick={() => setShowAgentsList(false)}
                                 className="p-1 hover:bg-[#1E3A5F] rounded-full"
                             >
                                 <X size={20} />
                             </button>
                         </div>
-                        
+
                         <div className="overflow-y-auto max-h-[60vh]">
                             {loadingAgents ? (
                                 <div className="p-8 text-center">
@@ -585,5 +585,13 @@ function MessagesContent() {
 }
 
 export default function MessagesPage() {
-    return <MessagesContent />;
+    return (
+        <Suspense fallback={
+            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <MessagesContent />
+        </Suspense>
+    );
 }
