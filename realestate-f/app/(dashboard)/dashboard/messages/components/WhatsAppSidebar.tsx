@@ -49,7 +49,7 @@ const WhatsAppSidebar: React.FC<WhatsAppSidebarProps> = ({
             <div className="p-3 sm:p-4" style={{ backgroundColor: colors.DARK_GRAY, borderBottom: `1px solid ${colors.MEDIUM_GRAY}` }}>
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-linear-to-br from-green-400 to-green-600 flex items-center justify-center">
                             <UserIcon size={16} className="text-white" />
                         </div>
                         <div>
@@ -96,7 +96,7 @@ const WhatsAppSidebar: React.FC<WhatsAppSidebarProps> = ({
                             onClick={() => onSelectConversation(conv)}
                         >
                             <div className="relative">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center overflow-hidden">
+                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center overflow-hidden">
                                     {conv.other_user.avatar ? (
                                         <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full rounded-full object-cover" />
                                     ) : (

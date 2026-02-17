@@ -4,27 +4,94 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { leadsAPI, Conversation, Message } from '@/lib/api/leads';
+import { agentsAPI } from '@/lib/api/agents';
+import { Agent } from '@/types/agent';
 import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
 import {
     Send,
     User as UserIcon,
+    Home,
     CheckCircle2,
     Search,
     MoreHorizontal,
     Paperclip,
+    Smile,
+    MessageSquare,
     Phone,
     Video,
-    Info,
-    X,
+    FileText,
+    Download,
+    Calendar,
     Star,
+    ExternalLink,
+    Clock,
+    Zap,
+    MapPin,
+    ArrowLeft,
+    Plus,
+    X,
+    Info
 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
 
-function AgentMessagesContent() {
+const NeonFrame = ({ children }: { children: React.ReactNode }) => (
+    <div className="neon-frame-wrapper w-full h-full max-h-full">
+        <style jsx global>{`
+            @keyframes rotate-neon {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .neon-frame-wrapper {
+                position: relative;
+                padding: 3px;
+                overflow: hidden;
+                border-radius: 2.6rem;
+                background: #0B0E14;
+            }
+            .neon-frame-wrapper::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(
+                    transparent,
+                    #22c55e, 
+                    transparent 20%,
+                    transparent 50%,
+                    #22c55e,
+                    transparent 70%
+                );
+                animation: rotate-neon 8s linear infinite;
+                z-index: 0;
+            }
+            .neon-frame-content {
+                position: relative;
+                z-index: 2;
+                background: #020617;
+                border-radius: 2.5rem;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+        `}</style>
+        <div className="neon-frame-content">
+            {children}
+        </div>
+    </div>
+);
+
+
+function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
+    const recipientId = searchParams.get('recipientId');
+    const propertyId = searchParams.get('propertyId');
 
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
@@ -35,6 +102,9 @@ function AgentMessagesContent() {
     const [typingUsers, setTypingUsers] = useState<Map<number, string>>(new Map());
     const [isTyping, setIsTyping] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAgentsList, setShowAgentsList] = useState(false);
+    const [verifiedAgents, setVerifiedAgents] = useState<Agent[]>([]);
+    const [loadingAgents, setLoadingAgents] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -43,6 +113,20 @@ function AgentMessagesContent() {
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Fetch verified agents
+    const fetchVerifiedAgents = async () => {
+        try {
+            setLoadingAgents(true);
+            const res = await agentsAPI.getAll();
+            const agents = res.results || res;
+            setVerifiedAgents(agents.filter((agent: Agent) => agent.is_verified));
+        } catch (error) {
+            console.error('Failed to fetch agents:', error);
+        } finally {
+            setLoadingAgents(false);
+        }
     };
 
     // WebSocket message handler
@@ -92,6 +176,7 @@ function AgentMessagesContent() {
     // Initial fetch and polling
     useEffect(() => {
         fetchConversations();
+        fetchVerifiedAgents();
         const interval = setInterval(() => {
             fetchConversations(false);
             if (activeConversation) {
@@ -101,19 +186,102 @@ function AgentMessagesContent() {
         return () => clearInterval(interval);
     }, [activeConversation?.id]);
 
+    const attemptedCreationRef = useRef<string | null>(null);
+
     // Handle auto-selection
     useEffect(() => {
         const targetId = conversationIdParam ? parseInt(conversationIdParam) : null;
+        const targetRecipient = recipientId ? parseInt(recipientId) : null;
+        const targetProperty = propertyId ? parseInt(propertyId) : null;
 
-        if (conversations.length > 0 && targetId && !isNaN(targetId)) {
-            const selected = conversations.find((c: Conversation) => Number(c.id) === targetId);
-            if (selected && (!activeConversation || activeConversation.id !== selected.id)) {
-                setActiveConversation(selected);
-                fetchMessages(selected.id);
-                setTimeout(() => inputRef.current?.focus(), 300);
+        if (conversations.length > 0) {
+            let selected: Conversation | undefined;
+
+            if (targetId && !isNaN(targetId)) {
+                selected = conversations.find((c: Conversation) => Number(c.id) === targetId);
+            }
+
+            if (!selected && targetRecipient && !isNaN(targetRecipient)) {
+                selected = conversations.find((c: Conversation) =>
+                    (Number(c.agent) === targetRecipient || Number(c.client) === targetRecipient) &&
+                    (!targetProperty || Number(c.property) === targetProperty)
+                );
+            }
+
+            if (selected) {
+                if (!activeConversation || activeConversation.id !== selected.id) {
+                    setActiveConversation(selected);
+                    fetchMessages(selected.id);
+                    setTimeout(() => inputRef.current?.focus(), 300);
+                }
+                return;
             }
         }
-    }, [conversations, conversationIdParam, activeConversation?.id]);
+
+        if (!loading && targetRecipient && !isNaN(targetRecipient)) {
+            const creationKey = `${targetRecipient}-${targetProperty}`;
+            if (attemptedCreationRef.current === creationKey) return;
+
+            if (!activeConversation) {
+                attemptedCreationRef.current = creationKey;
+                handleCreateConversation(targetRecipient, targetProperty || undefined);
+            }
+        }
+    }, [conversations, conversationIdParam, recipientId, propertyId, activeConversation?.id, loading]);
+
+    const handleCreateConversation = async (recipientId: number, propertyId?: number) => {
+        try {
+            setLoading(true);
+            const res = await leadsAPI.createConversation(propertyId, recipientId);
+            const newConv = res.data || res;
+
+            setConversations(prev => {
+                const exists = prev.find(c => c.id === newConv.id);
+                if (exists) return prev;
+                return [newConv, ...prev];
+            });
+
+            setActiveConversation(newConv);
+            fetchMessages(newConv.id);
+        } catch (error) {
+            console.error('Failed to create conversation:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleStartAgentChat = async (agentId: number) => {
+        try {
+            setLoading(true);
+            setShowAgentsList(false);
+
+            // Check if conversation already exists
+            const existingConv = conversations.find(c => Number(c.agent) === agentId);
+            if (existingConv) {
+                setActiveConversation(existingConv);
+                fetchMessages(existingConv.id);
+                return;
+            }
+
+            // Create new conversation with agent
+            const res = await leadsAPI.createAgentConversation(agentId);
+            const newConv = res.data || res;
+
+            setConversations(prev => {
+                const exists = prev.find(c => c.id === newConv.id);
+                if (exists) return prev;
+                return [newConv, ...prev];
+            });
+
+            setActiveConversation(newConv);
+            fetchMessages(newConv.id);
+        } catch (error) {
+            console.error('Failed to start agent chat:', error);
+            showError('Failed to start chat', 'Please try again');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchConversations = async (showLoading = true) => {
         try {
@@ -213,15 +381,21 @@ function AgentMessagesContent() {
                 {/* Header */}
                 <div className="p-4 border-b border-[#1E3A5F]">
                     <div className="flex items-center justify-between mb-4">
-                        <h1 className="text-2xl font-semibold">Client Messages</h1>
+                        <h1 className="text-2xl font-semibold">Chats</h1>
+                        <button
+                            onClick={() => setShowAgentsList(true)}
+                            className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+                        >
+                            <Plus size={20} />
+                        </button>
                     </div>
-                    
+
                     {/* Search */}
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input
                             type="text"
-                            placeholder="Search clients..."
+                            placeholder="Search conversations..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-[#1E3A5F] border border-[#2D4A7C] rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-gray-400"
@@ -257,8 +431,11 @@ function AgentMessagesContent() {
 
                             <div className="flex-1 min-w-0 text-left">
                                 <div className="flex justify-between items-start mb-1">
-                                    <h3 className="font-semibold text-white truncate">
+                                    <h3 className="font-semibold text-white truncate flex items-center gap-1">
                                         {conv.other_user.name}
+                                        {conv.other_user.is_verified && (
+                                            <CheckCircle2 size={16} className="text-blue-400" fill="currentColor" />
+                                        )}
                                     </h3>
                                     <span className="text-xs text-gray-400 whitespace-nowrap">
                                         {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
@@ -268,12 +445,6 @@ function AgentMessagesContent() {
                                 <p className="text-sm text-gray-400 truncate">
                                     {conv.last_message?.content || 'No messages yet'}
                                 </p>
-                                
-                                {conv.property_title && (
-                                    <p className="text-xs text-blue-400 truncate mt-1">
-                                        Re: {conv.property_title}
-                                    </p>
-                                )}
                             </div>
 
                             {conv.unread_count > 0 && (
@@ -293,8 +464,8 @@ function AgentMessagesContent() {
                         {/* Chat Header */}
                         <div className="px-6 py-4 border-b border-[#1E3A5F] flex items-center justify-between bg-[#0B192F]">
                             <div className="flex items-center gap-3">
-                                <button 
-                                    onClick={() => setActiveConversation(null)} 
+                                <button
+                                    onClick={() => setActiveConversation(null)}
                                     className="md:hidden p-2 hover:bg-[#1E3A5F] rounded-full"
                                 >
                                     <X size={20} />
@@ -318,6 +489,9 @@ function AgentMessagesContent() {
                                         <h3 className="font-semibold text-white">
                                             {activeConversation.other_user.name}
                                         </h3>
+                                        {activeConversation.other_user.is_verified && (
+                                            <CheckCircle2 size={14} className="text-blue-400" fill="currentColor" />
+                                        )}
                                     </div>
                                     <p className="text-xs text-gray-400">
                                         {activeConversation.other_user.is_online ? 'ONLINE' : 'OFFLINE'}
@@ -343,7 +517,7 @@ function AgentMessagesContent() {
                         </div>
 
                         {/* Messages Area */}
-                        <div 
+                        <div
                             className="flex-1 overflow-y-auto p-4"
                             style={{
                                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E3A5F' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -354,10 +528,10 @@ function AgentMessagesContent() {
                                 return (
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}>
                                         <div className={`max-w-[70%] ${isMe ? 'order-2' : 'order-1'}`}>
-                                            <div className={`px-4 py-2 rounded-2xl text-sm ${isMe 
-                                                ? 'bg-blue-600 text-white rounded-br-none' 
+                                            <div className={`px-4 py-2 rounded-2xl text-sm ${isMe
+                                                ? 'bg-blue-600 text-white rounded-br-none'
                                                 : 'bg-[#1E3A5F] text-white rounded-bl-none'
-                                            }`}>
+                                                }`}>
                                                 {msg.content}
                                             </div>
                                             <div className={`flex items-center gap-1 mt-1 px-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
@@ -388,7 +562,7 @@ function AgentMessagesContent() {
                                         setNewMessage(e.target.value);
                                         handleTypingStart();
                                     }}
-                                    placeholder="Type your message..."
+                                    placeholder="Ask a question about this listing..."
                                     className="flex-1 bg-[#1E3A5F] border border-[#2D4A7C] rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400"
                                 />
                                 <button
@@ -397,26 +571,45 @@ function AgentMessagesContent() {
                                     className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-50"
                                 >
                                     <Send size={18} />
-                                </button>
-                            </form>
-                        </div>
-                    </>
-                ) : (
-                    <div className="flex-1 flex items-center justify-center">
-                        <div className="text-center">
-                            <div className="w-20 h-20 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <UserIcon className="text-blue-500" size={40} />
-                            </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">Select a conversation</h3>
-                            <p className="text-gray-400">Choose a client conversation from the list to start messaging</p>
+                                    ) : (
+                    verifiedAgents.map((agent) => (
+                                    <button
+                                        key={agent.id}
+                                        onClick={() => handleStartAgentChat(agent.id)}
+                                        className="w-full p-4 border-b border-[#1E3A5F] hover:bg-[#1E3A5F]/50 transition-colors flex items-center gap-3"
+                                    >
+                                        <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
+                                            {agent.user_avatar ? (
+                                                <img src={agent.user_avatar} alt={agent.user_name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <UserIcon className="text-gray-400" size={24} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 text-left">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-semibold text-white">{agent.user_name}</h3>
+                                                <CheckCircle2 size={14} className="text-blue-400" fill="currentColor" />
+                                            </div>
+                                            <p className="text-sm text-gray-400">{agent.specialties?.join(', ') || 'Real Estate Agent'}</p>
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <Star size={12} className="text-yellow-400" fill="currentColor" />
+                                                <span className="text-xs text-gray-400">{agent.average_rating}</span>
+                                                <span className="text-xs text-gray-400">• {agent.years_of_experience} years exp.</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    ))
+                            )}
+                                </div>
                         </div>
                     </div>
-                )}
+            )}
             </div>
-        </div>
-    );
+            );
 }
 
-export default function AgentMessagesPage() {
-    return <AgentMessagesContent />;
+            export default function MessagesPage() {
+    return <MessagesContent />;
 }

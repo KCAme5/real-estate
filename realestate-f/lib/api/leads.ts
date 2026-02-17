@@ -93,9 +93,9 @@ export interface Message {
 
 export interface Conversation {
     id: number;
-    property: number;
-    property_title: string;
-    property_image: string | null;
+    property?: number;
+    property_title?: string;
+    property_image?: string | null;
     client: number;
     agent: number;
     lead?: number;
@@ -113,6 +113,8 @@ export interface Conversation {
         name: string;
         type: string;
         avatar?: string | null;
+        is_verified?: boolean;
+        is_online?: boolean;
     };
     updated_at: string;
 }
@@ -191,6 +193,13 @@ export const leadsAPI = {
         return apiClient.post('/leads/conversations/', {
             property: propertyId || null,
             agent: agentId
+        });
+    },
+
+    createAgentConversation: async (agentId: number) => {
+        return apiClient.post('/leads/conversations/', {
+            agent: agentId,
+            property: null
         });
     },
 

@@ -4,81 +4,24 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useSearchParams } from 'next/navigation';
 import { leadsAPI, Conversation, Message } from '@/lib/api/leads';
+import { agentsAPI } from '@/lib/api/agents';
+import { Agent } from '@/types/agent';
 import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
 import {
     Send,
     User as UserIcon,
-    Home,
     CheckCircle2,
     Search,
     MoreHorizontal,
     Paperclip,
-    Smile,
-    MessageSquare,
     Phone,
     Video,
-    FileText,
-    Download,
-    Calendar,
+    Info,
+    Plus,
+    X,
     Star,
-    ExternalLink,
-    Clock,
-    Zap,
-    MapPin,
-    ArrowLeft
 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
-
-const NeonFrame = ({ children }: { children: React.ReactNode }) => (
-    <div className="neon-frame-wrapper w-full h-full max-h-full">
-        <style jsx global>{`
-            @keyframes rotate-neon {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-            .neon-frame-wrapper {
-                position: relative;
-                padding: 3px;
-                overflow: hidden;
-                border-radius: 2.6rem;
-                background: #0B0E14;
-            }
-            .neon-frame-wrapper::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: conic-gradient(
-                    transparent,
-                    #22c55e, 
-                    transparent 20%,
-                    transparent 50%,
-                    #22c55e,
-                    transparent 70%
-                );
-                animation: rotate-neon 8s linear infinite;
-                z-index: 0;
-            }
-            .neon-frame-content {
-                position: relative;
-                z-index: 2;
-                background: #020617;
-                border-radius: 2.5rem;
-                height: 100%;
-                width: 100%;
-                overflow: hidden;
-            }
-        `}</style>
-        <div className="neon-frame-content">
-            {children}
-        </div>
-    </div>
-);
-
 
 function MessagesContent() {
     const { user } = useAuth();
@@ -97,6 +40,9 @@ function MessagesContent() {
     const [typingUsers, setTypingUsers] = useState<Map<number, string>>(new Map());
     const [isTyping, setIsTyping] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [showAgentsList, setShowAgentsList] = useState(false);
+    const [verifiedAgents, setVerifiedAgents] = useState<Agent[]>([]);
+    const [loadingAgents, setLoadingAgents] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -105,6 +51,20 @@ function MessagesContent() {
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Fetch verified agents
+    const fetchVerifiedAgents = async () => {
+        try {
+            setLoadingAgents(true);
+            const res = await agentsAPI.getAll();
+            const agents = res.results || res;
+            setVerifiedAgents(agents.filter((agent: Agent) => agent.is_verified));
+        } catch (error) {
+            console.error('Failed to fetch agents:', error);
+        } finally {
+            setLoadingAgents(false);
+        }
     };
 
     // WebSocket message handler
@@ -154,6 +114,7 @@ function MessagesContent() {
     // Initial fetch and polling
     useEffect(() => {
         fetchConversations();
+        fetchVerifiedAgents();
         const interval = setInterval(() => {
             fetchConversations(false);
             if (activeConversation) {
@@ -227,6 +188,39 @@ function MessagesContent() {
         }
     };
 
+    const handleStartAgentChat = async (agentId: number) => {
+        try {
+            setLoading(true);
+            setShowAgentsList(false);
+            
+            // Check if conversation already exists
+            const existingConv = conversations.find(c => Number(c.agent) === agentId);
+            if (existingConv) {
+                setActiveConversation(existingConv);
+                fetchMessages(existingConv.id);
+                return;
+            }
+
+            // Create new conversation with agent
+            const res = await leadsAPI.createAgentConversation(agentId);
+            const newConv = res.data || res;
+
+            setConversations(prev => {
+                const exists = prev.find(c => c.id === newConv.id);
+                if (exists) return prev;
+                return [newConv, ...prev];
+            });
+
+            setActiveConversation(newConv);
+            fetchMessages(newConv.id);
+        } catch (error) {
+            console.error('Failed to start agent chat:', error);
+            showError('Failed to start chat', 'Please try again');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const fetchConversations = async (showLoading = true) => {
         try {
             if (showLoading && conversations.length === 0) setLoading(true);
@@ -295,8 +289,7 @@ function MessagesContent() {
 
     const filteredConversations = useMemo(() => {
         return conversations.filter(c =>
-            c.other_user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            c.property_title?.toLowerCase().includes(searchQuery.toLowerCase())
+            c.other_user.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [conversations, searchQuery]);
 
@@ -313,371 +306,284 @@ function MessagesContent() {
 
     if (loading && conversations.length === 0) {
         return (
-            <div className="flex h-screen items-center justify-center bg-[#020617]">
+            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
                 <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
         );
     }
 
     return (
-        <div className="flex h-screen bg-[#020617] text-white overflow-hidden p-6 lg:p-10">
-            <NeonFrame>
-                <div className="flex w-full h-full overflow-hidden">
-                    {/* Column 1: Conversations List */}
-                    <div className={`w-full md:w-80 lg:w-[320px] border-r border-slate-800/50 flex flex-col bg-[#0B0E14] ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
-                        <div className="p-6 space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h1 className="text-2xl font-bold tracking-tight">Messages</h1>
-                                <button className="p-2 bg-slate-800/50 text-blue-400 rounded-xl hover:bg-slate-800 transition-colors">
-                                    <Zap size={18} fill="currentColor" />
-                                </button>
-                            </div>
+        <div className="flex h-screen bg-[#0B192F] text-white overflow-hidden">
+            {/* Left Sidebar - Chats List */}
+            <div className={`w-full md:w-96 border-r border-[#1E3A5F] flex flex-col bg-[#0B192F] ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
+                {/* Header */}
+                <div className="p-4 border-b border-[#1E3A5F]">
+                    <div className="flex items-center justify-between mb-4">
+                        <h1 className="text-2xl font-semibold">Chats</h1>
+                        <button 
+                            onClick={() => setShowAgentsList(true)}
+                            className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"
+                        >
+                            <Plus size={20} />
+                        </button>
+                    </div>
+                    
+                    {/* Search */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search conversations..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-[#1E3A5F] border border-[#2D4A7C] rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-gray-400"
+                        />
+                    </div>
+                </div>
 
-                            <div className="relative group">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 transition-colors" size={16} />
-                                <input
-                                    type="text"
-                                    placeholder="Search chats..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-slate-900 border border-slate-800 rounded-2xl py-3 pl-10 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all placeholder:text-slate-600"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
-                            {filteredConversations.map((conv) => (
-                                <button
-                                    key={conv.id}
-                                    onClick={() => {
-                                        setActiveConversation(conv);
-                                        fetchMessages(conv.id);
-                                    }}
-                                    className={`w-full px-6 py-5 flex gap-4 border-b border-slate-800/30 transition-all hover:bg-slate-800/30 group relative ${activeConversation?.id === conv.id ? 'bg-blue-600/10' : ''}`}
-                                >
-                                    {activeConversation?.id === conv.id && (
-                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
+                {/* Conversations List */}
+                <div className="flex-1 overflow-y-auto">
+                    {filteredConversations.map((conv) => (
+                        <button
+                            key={conv.id}
+                            onClick={() => {
+                                setActiveConversation(conv);
+                                fetchMessages(conv.id);
+                            }}
+                            className={`w-full px-4 py-3 flex gap-3 border-b border-[#1E3A5F] transition-all hover:bg-[#1E3A5F]/50 ${activeConversation?.id === conv.id ? 'bg-[#1E3A5F]' : ''}`}
+                        >
+                            <div className="relative shrink-0">
+                                <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
+                                    {conv.other_user.avatar ? (
+                                        <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <UserIcon className="text-gray-400" size={24} />
+                                        </div>
                                     )}
-
-                                    <div className="relative shrink-0">
-                                        <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700/50 shadow-lg relative">
-                                            {conv.other_user.avatar ? (
-                                                <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-slate-800">
-                                                    <UserIcon className="text-slate-500" size={24} />
-                                                </div>
-                                            )}
-                                            {/* Property Badge */}
-                                            {conv.property_image && (
-                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden shadow-xl z-20">
-                                                    <img src={conv.property_image} className="w-full h-full object-cover opacity-80" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="absolute top-0 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B0E14] z-30" />
-                                    </div>
-
-                                    <div className="flex-1 min-w-0 text-left">
-                                        <div className="flex justify-between items-start mb-1">
-                                            <h3 className="font-bold text-sm text-slate-200 truncate group-hover:text-white transition-colors">
-                                                {conv.property_title || 'General Inquiry'}
-                                            </h3>
-                                            <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap">
-                                                {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
-                                            </span>
-                                        </div>
-
-                                        <p className="text-xs text-slate-400 font-medium truncate mb-2 leading-relaxed">
-                                            Agent: {conv.other_user.name}
-                                        </p>
-
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-slate-900 border border-slate-800 rounded-md">
-                                                <Home size={10} className="text-blue-400" />
-                                                <span className="text-[9px] font-black uppercase tracking-tighter text-slate-400 truncate max-w-[100px]">
-                                                    {conv.property_title || 'General Inquiry'}
-                                                </span>
-                                            </div>
-                                            {conv.unread_count > 0 && (
-                                                <span className="w-5 h-5 bg-blue-600 text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#0B0E14] text-white shadow-lg">
-                                                    {conv.unread_count}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Column 2: Chat View */}
-                    <div className={`flex-1 flex flex-col bg-[#05070A] ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
-                        {activeConversation ? (
-                            <>
-                                {/* Chat Header */}
-                                <div className="px-8 py-5 border-b border-slate-800/50 flex items-center justify-between bg-[#0B0E14]/50 backdrop-blur-md">
-                                    <div className="flex items-center gap-4">
-                                        <button onClick={() => setActiveConversation(null)} className="md:hidden p-2 hover:bg-slate-800 rounded-xl">
-                                            <ArrowLeft size={18} />
-                                        </button>
-                                        <div className="relative">
-                                            <div className="w-12 h-12 rounded-2xl bg-slate-800 overflow-hidden border border-slate-700/50">
-                                                {activeConversation.other_user.avatar ? (
-                                                    <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <UserIcon className="text-slate-500 m-3" size={24} />
-                                                )}
-                                            </div>
-                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#05070A]" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-bold text-lg text-white leading-tight">{activeConversation.other_user.name}</h3>
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#25D366]">AGENT ONLINE</span>
-                                                <span className="text-slate-700 mx-1">•</span>
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-500 truncate max-w-[200px]">
-                                                    INQUIRY ABOUT {activeConversation.property_title}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
-                                            <Phone size={18} />
-                                        </button>
-                                        <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
-                                            <Video size={18} />
-                                        </button>
-                                        <button className="p-3 bg-slate-800/30 text-slate-400 hover:text-white hover:bg-slate-800 rounded-2xl transition-all border border-slate-800/50">
-                                            <MoreHorizontal size={18} />
-                                        </button>
-                                    </div>
                                 </div>
-
-                                {/* Messages Area */}
-                                <div className="flex-1 overflow-y-auto p-8 space-y-10 no-scrollbar relative">
-                                    {/* Texture Overlay */}
-                                    <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
-
-                                    {messages.map((msg, idx) => {
-                                        const isMe = msg.sender === user?.id;
-                                        return (
-                                            <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} group animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                                                <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%]`}>
-                                                    <div className={`relative px-6 py-4 rounded-[1.8rem] text-sm font-medium shadow-2xl ${isMe
-                                                        ? 'bg-blue-600 text-white rounded-tr-none'
-                                                        : 'bg-slate-900/80 backdrop-blur-sm border border-slate-800 text-slate-200 rounded-tl-none'
-                                                        }`}>
-                                                        {/* Chat Bubble Tail */}
-                                                        <div className={`absolute top-0 w-4 h-4 ${isMe
-                                                            ? 'right-[-8px] text-blue-600'
-                                                            : 'left-[-8px] text-slate-900/80'
-                                                            }`}>
-                                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                                                <path d={isMe ? "M0 0 L20 0 L0 20 Z" : "M20 0 L0 0 L20 20 Z"} />
-                                                            </svg>
-                                                        </div>
-
-                                                        {msg.content}
-                                                    </div>
-                                                    <div className="flex items-center gap-2 mt-2 px-1">
-                                                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                                                            {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
-                                                        {isMe && (
-                                                            <div className="flex">
-                                                                <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} />
-                                                                <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-slate-600'} style={{ marginLeft: '-6px' }} />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-
-                                    <div ref={messagesEndRef} />
-                                </div>
-
-                                {/* Quick Actions & Input */}
-                                <div className="p-8 bg-[#0B0E14] border-t border-slate-800/50 space-y-6">
-                                    <div className="flex flex-wrap gap-2">
-                                        {[
-                                            'BOOK VIEWING', 'GET BROCHURE', 'PRICING INFO', 'RESERVE UNIT'
-                                        ].map(action => (
-                                            <button
-                                                key={action}
-                                                className="px-5 py-2.5 bg-slate-800/40 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-800/80 text-[10px] font-black tracking-widest text-slate-400 hover:text-white rounded-xl transition-all"
-                                            >
-                                                {action}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    <form onSubmit={handleSendMessage} className="flex items-center gap-4 group">
-                                        <div className="flex-1 flex items-center gap-4 bg-slate-900/50 border border-slate-800 rounded-[2.5rem] px-6 py-2 focus-within:ring-2 ring-blue-500/20 transition-all">
-                                            <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
-                                                <Paperclip size={20} />
-                                            </button>
-                                            <input
-                                                ref={inputRef}
-                                                value={newMessage}
-                                                onChange={(e) => {
-                                                    setNewMessage(e.target.value);
-                                                    handleTypingStart();
-                                                }}
-                                                placeholder="Message your agent..."
-                                                className="flex-1 bg-transparent border-none outline-none py-4 text-sm font-medium text-white placeholder:text-slate-600"
-                                            />
-                                            <button type="button" className="p-2 text-slate-500 hover:text-blue-400 transition-colors">
-                                                <Smile size={20} />
-                                            </button>
-                                        </div>
-                                        <button
-                                            type="submit"
-                                            disabled={!newMessage.trim() || sending}
-                                            className="p-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-lg shadow-blue-600/20 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
-                                        >
-                                            <Send size={24} />
-                                        </button>
-                                    </form>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center p-20 text-center space-y-8">
-                                <div className="w-32 h-32 bg-slate-900/50 rounded-[4rem] flex items-center justify-center border border-slate-800 relative">
-                                    <div className="absolute inset-0 bg-blue-600/20 blur-2xl rounded-full" />
-                                    <MessageSquare className="text-blue-500 opacity-40 relative z-10" size={48} />
-                                </div>
-                                <div className="space-y-3">
-                                    <h3 className="text-3xl font-black text-white tracking-tight">Your Communications</h3>
-                                    <p className="text-slate-500 font-medium max-w-sm mx-auto leading-relaxed">
-                                        Connect with top-tier agents and get all the information you need about your dream properties.
-                                    </p>
-                                </div>
+                                {conv.other_user.is_online && (
+                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0B192F]" />
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Column 3: Property & Agent Info */}
-                    {activeConversation && (
-                        <div className="hidden lg:flex w-[340px] border-l border-slate-800/50 flex flex-col bg-[#0B0E14] p-8 overflow-y-auto no-scrollbar pb-20">
-                            <div className="flex flex-col items-center text-center space-y-6">
+                            <div className="flex-1 min-w-0 text-left">
+                                <div className="flex justify-between items-start mb-1">
+                                    <h3 className="font-semibold text-white truncate flex items-center gap-1">
+                                        {conv.other_user.name}
+                                        {conv.other_user.is_verified && (
+                                            <CheckCircle2 size={16} className="text-blue-400" fill="currentColor" />
+                                        )}
+                                    </h3>
+                                    <span className="text-xs text-gray-400 whitespace-nowrap">
+                                        {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
+                                    </span>
+                                </div>
+
+                                <p className="text-sm text-gray-400 truncate">
+                                    {conv.last_message?.content || 'No messages yet'}
+                                </p>
+                            </div>
+
+                            {conv.unread_count > 0 && (
+                                <span className="w-5 h-5 bg-blue-600 text-xs font-semibold rounded-full flex items-center justify-center">
+                                    {conv.unread_count}
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Main Chat Area */}
+            <div className={`flex-1 flex flex-col ${!activeConversation ? 'hidden md:flex' : 'flex'}`}>
+                {activeConversation ? (
+                    <>
+                        {/* Chat Header */}
+                        <div className="px-6 py-4 border-b border-[#1E3A5F] flex items-center justify-between bg-[#0B192F]">
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    onClick={() => setActiveConversation(null)} 
+                                    className="md:hidden p-2 hover:bg-[#1E3A5F] rounded-full"
+                                >
+                                    <X size={20} />
+                                </button>
                                 <div className="relative">
-                                    <div className="w-32 h-32 rounded-[2.5rem] bg-slate-800 overflow-hidden border-2 border-slate-800 shadow-2xl p-1 relative">
-                                        {activeConversation.property_image ? (
-                                            <img src={activeConversation.property_image} className="w-full h-full object-cover rounded-[2.2rem]" />
+                                    <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
+                                        {activeConversation.other_user.avatar ? (
+                                            <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full bg-slate-900 flex items-center justify-center rounded-[2.2rem]">
-                                                <Home size={48} className="text-slate-700" />
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <UserIcon className="text-gray-400" size={20} />
                                             </div>
                                         )}
                                     </div>
-                                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-[#0B0E14] rounded-2xl p-1 border border-slate-800">
-                                        <div className="w-full h-full bg-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                            <Zap size={18} fill="white" className="text-white" />
-                                        </div>
-                                    </div>
+                                    {activeConversation.other_user.is_online && (
+                                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#0B192F]" />
+                                    )}
                                 </div>
-
                                 <div>
-                                    <h2 className="text-xl font-black text-white tracking-tight leading-tight mb-2">
-                                        {activeConversation.property_title}
-                                    </h2>
-                                    <div className="flex items-center justify-center gap-2 text-slate-500">
-                                        <MapPin size={12} className="text-blue-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest truncate max-w-[200px]">Nairobi, Kenya</span>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-semibold text-white">
+                                            {activeConversation.other_user.name}
+                                        </h3>
+                                        {activeConversation.other_user.is_verified && (
+                                            <CheckCircle2 size={14} className="text-blue-400" fill="currentColor" />
+                                        )}
                                     </div>
-                                </div>
-
-                                <div className="w-full bg-slate-900/50 border border-slate-800 p-6 rounded-[2rem] text-left space-y-4">
-                                    <div className="flex items-center justify-between border-b border-slate-800/50 pb-4">
-                                        <div className="space-y-1">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">STATUS</p>
-                                            <p className="text-xs font-bold text-white uppercase">For Sale</p>
-                                        </div>
-                                        <div className="text-right space-y-1">
-                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">PRICE</p>
-                                            <p className="text-sm font-black text-blue-400">Kes 45,000,000</p>
-                                        </div>
-                                    </div>
-                                    <Link href={`/properties/${activeConversation.property}`} className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all group">
-                                        View Details
-                                        <ExternalLink size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                    </Link>
+                                    <p className="text-xs text-gray-400">
+                                        {activeConversation.other_user.is_online ? 'ONLINE' : 'OFFLINE'}
+                                        {activeConversation.property_title && ` • Re: ${activeConversation.property_title}`}
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="mt-12 space-y-8">
-                                <section className="space-y-5">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-[1px] bg-blue-500/30" />
-                                        <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500 whitespace-nowrap">YOUR AGENT</h4>
-                                        <div className="flex-1 h-[1px] bg-slate-800" />
-                                    </div>
-
-                                    <div className="flex items-center gap-4 group">
-                                        <div className="w-14 h-14 bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 group-hover:border-blue-500/50 transition-colors">
-                                            {activeConversation.other_user.avatar ? (
-                                                <img src={activeConversation.other_user.avatar} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <UserIcon className="text-slate-500 m-4" size={24} />
-                                            )}
-                                        </div>
-                                        <div className="flex-1">
-                                            <h5 className="text-sm font-bold text-white mb-0.5">{activeConversation.other_user.name}</h5>
-                                            <p className="text-[10px] font-black text-slate-500 tracking-widest uppercase">Verified Expert</p>
-                                        </div>
-                                        <button className="p-2.5 bg-slate-900 border border-slate-800 text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
-                                            <Phone size={14} />
-                                        </button>
-                                    </div>
-                                </section>
-
-                                <section className="space-y-4">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[.25em] text-slate-500">NEXT STEPS</h4>
-                                    <div className="space-y-3">
-                                        {[
-                                            { icon: Calendar, label: 'Schedule Viewing', color: 'blue' },
-                                            { icon: FileText, label: 'Get Sales Agreement', color: 'emerald' },
-                                            { icon: Star, label: 'Add to Favorites', color: 'amber' }
-                                        ].map((action, i) => (
-                                            <button
-                                                key={i}
-                                                className="w-full flex items-center gap-4 p-4 bg-slate-900/30 border border-slate-800 rounded-2xl hover:bg-slate-800 hover:border-slate-700 transition-all group"
-                                            >
-                                                <div className={`p-2 rounded-xl bg-slate-800 text-slate-400 group-hover:scale-110 transition-all`}>
-                                                    <action.icon size={18} />
-                                                </div>
-                                                <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{action.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </section>
+                            <div className="flex items-center gap-2">
+                                <button className="p-2 hover:bg-[#1E3A5F] rounded-full transition-colors">
+                                    <Phone size={18} />
+                                </button>
+                                <button className="p-2 hover:bg-[#1E3A5F] rounded-full transition-colors">
+                                    <Video size={18} />
+                                </button>
+                                <button className="p-2 hover:bg-[#1E3A5F] rounded-full transition-colors">
+                                    <Info size={18} />
+                                </button>
+                                <button className="p-2 hover:bg-[#1E3A5F] rounded-full transition-colors">
+                                    <MoreHorizontal size={18} />
+                                </button>
                             </div>
                         </div>
-                    )}
+
+                        {/* Messages Area */}
+                        <div 
+                            className="flex-1 overflow-y-auto p-4"
+                            style={{
+                                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E3A5F' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                            }}
+                        >
+                            {messages.map((msg) => {
+                                const isMe = msg.sender === user?.id;
+                                return (
+                                    <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}>
+                                        <div className={`max-w-[70%] ${isMe ? 'order-2' : 'order-1'}`}>
+                                            <div className={`px-4 py-2 rounded-2xl text-sm ${isMe 
+                                                ? 'bg-blue-600 text-white rounded-br-none' 
+                                                : 'bg-[#1E3A5F] text-white rounded-bl-none'
+                                            }`}>
+                                                {msg.content}
+                                            </div>
+                                            <div className={`flex items-center gap-1 mt-1 px-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                                <span className="text-xs text-gray-400">
+                                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                                {isMe && (
+                                                    <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-gray-400'} />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            <div ref={messagesEndRef} />
+                        </div>
+
+                        {/* Message Input */}
+                        <div className="p-4 border-t border-[#1E3A5F] bg-[#0B192F]">
+                            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                                <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors">
+                                    <Paperclip size={20} />
+                                </button>
+                                <input
+                                    ref={inputRef}
+                                    value={newMessage}
+                                    onChange={(e) => {
+                                        setNewMessage(e.target.value);
+                                        handleTypingStart();
+                                    }}
+                                    placeholder="Ask a question about this listing..."
+                                    className="flex-1 bg-[#1E3A5F] border border-[#2D4A7C] rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!newMessage.trim() || sending}
+                                    className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors disabled:opacity-50"
+                                >
+                                    <Send size={18} />
+                                </button>
+                            </form>
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex-1 flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="w-20 h-20 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <UserIcon className="text-blue-500" size={40} />
+                            </div>
+                            <h3 className="text-xl font-semibold text-white mb-2">Select a chat to start messaging</h3>
+                            <p className="text-gray-400">Choose a conversation from list or start a new one</p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Agents List Modal */}
+            {showAgentsList && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#0B192F] rounded-lg w-full max-w-md max-h-[80vh] overflow-hidden">
+                        <div className="p-4 border-b border-[#1E3A5F] flex items-center justify-between">
+                            <h2 className="text-lg font-semibold">Verified Agents</h2>
+                            <button 
+                                onClick={() => setShowAgentsList(false)}
+                                className="p-1 hover:bg-[#1E3A5F] rounded-full"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <div className="overflow-y-auto max-h-[60vh]">
+                            {loadingAgents ? (
+                                <div className="p-8 text-center">
+                                    <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                </div>
+                            ) : (
+                                verifiedAgents.map((agent) => (
+                                    <button
+                                        key={agent.id}
+                                        onClick={() => handleStartAgentChat(agent.id)}
+                                        className="w-full p-4 border-b border-[#1E3A5F] hover:bg-[#1E3A5F]/50 transition-colors flex items-center gap-3"
+                                    >
+                                        <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
+                                            {agent.user_avatar ? (
+                                                <img src={agent.user_avatar} alt={agent.user_name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <UserIcon className="text-gray-400" size={24} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 text-left">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-semibold text-white">{agent.user_name}</h3>
+                                                <CheckCircle2 size={14} className="text-blue-400" fill="currentColor" />
+                                            </div>
+                                            <p className="text-sm text-gray-400">{agent.specialties?.join(', ') || 'Real Estate Agent'}</p>
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <Star size={12} className="text-yellow-400" fill="currentColor" />
+                                                <span className="text-xs text-gray-400">{agent.average_rating}</span>
+                                                <span className="text-xs text-gray-400">• {agent.years_of_experience} years exp.</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </NeonFrame>
+            )}
         </div>
     );
 }
 
-import { Suspense } from 'react';
-
 export default function MessagesPage() {
-    return (
-        <Suspense fallback={
-            <div className="flex h-screen items-center justify-center bg-[#020617]">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        }>
-            <MessagesContent />
-        </Suspense>
-    );
+    return <MessagesContent />;
 }
