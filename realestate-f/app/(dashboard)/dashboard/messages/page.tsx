@@ -26,6 +26,12 @@ import { useToast } from '@/components/ui/toast';
 function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
     const recipientId = searchParams.get('recipientId');
@@ -48,6 +54,15 @@ function MessagesContent() {
     const inputRef = useRef<HTMLInputElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const { sendMessage, subscribe, sendTypingIndicator, markMessagesAsRead } = useWebSocket();
+
+    // Don't render until mounted on client
+    if (!mounted) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
