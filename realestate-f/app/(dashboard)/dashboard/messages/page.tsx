@@ -10,27 +10,89 @@ import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
 import {
     Send,
     User as UserIcon,
+    Home,
     CheckCircle2,
     Search,
     MoreHorizontal,
     Paperclip,
+    Smile,
+    MessageSquare,
     Phone,
     Video,
-    Info,
+    FileText,
+    Download,
+    Calendar,
+    Star,
+    ExternalLink,
+    Clock,
+    Zap,
+    MapPin,
+    ArrowLeft,
     Plus,
     X,
-    Star,
+    Info
 } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
+
+const NeonFrame = ({ children }: { children: React.ReactNode }) => (
+    <div className="neon-frame-wrapper w-full h-full max-h-full">
+        <style jsx global>{`
+            @keyframes rotate-neon {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .neon-frame-wrapper {
+                position: relative;
+                padding: 3px;
+                overflow: hidden;
+                border-radius: 2.6rem;
+                background: #0B0E14;
+            }
+            .neon-frame-wrapper::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(
+                    transparent,
+                    #22c55e, 
+                    transparent 20%,
+                    transparent 50%,
+                    #22c55e,
+                    transparent 70%
+                );
+                animation: rotate-neon 8s linear infinite;
+                z-index: 0;
+            }
+            .neon-frame-content {
+                position: relative;
+                z-index: 2;
+                background: #020617;
+                border-radius: 2.5rem;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+        `}</style>
+        <div className="neon-frame-content">
+            {children}
+        </div>
+    </div>
+);
+
 
 function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
-    const [mounted, setMounted] = useState(false);
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
     const recipientId = searchParams.get('recipientId');
     const propertyId = searchParams.get('propertyId');
+
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -43,25 +105,12 @@ function MessagesContent() {
     const [showAgentsList, setShowAgentsList] = useState(false);
     const [verifiedAgents, setVerifiedAgents] = useState<Agent[]>([]);
     const [loadingAgents, setLoadingAgents] = useState(false);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const attemptedCreationRef = useRef<string | null>(null);
     const { sendMessage, subscribe, sendTypingIndicator, markMessagesAsRead } = useWebSocket();
-
-    // All effects must be declared before any conditional returns
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // Don't render until mounted on client (after all hooks are declared)
-    if (!mounted) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
