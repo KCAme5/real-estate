@@ -88,7 +88,6 @@ export const useWebSocket = () => {
 
       wsRef.current.onclose = (event) => {
         if (!event.wasClean) {
-          console.log('WebSocket disconnected (expected if backend has no WS support)');
 
           if (isAuthenticated && reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             reconnectAttemptsRef.current += 1;

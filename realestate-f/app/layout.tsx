@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { ToastProvider } from '@/components/ui/toast';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], preload: false });
 
 export const metadata: Metadata = {
   title: 'KenyaPrime Properties | Luxury Real Estate for Kenyans & Diaspora',

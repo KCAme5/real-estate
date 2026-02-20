@@ -301,10 +301,63 @@ export default function MessagesContent() {
         }
     };
 
-    const filteredConversations = useMemo(() => {
-        return conversations.filter(c =>
-            c.other_user.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+    const groupedConversations = useMemo(() => {
+        const query = searchQuery.toLowerCase();
+        type Grouped = {
+            userId: number;
+            latestConversation: Conversation;
+            conversationCount: number;
+            totalUnread: number;
+        };
+
+        const map = new Map<number, Grouped>();
+
+        conversations.forEach((conv) => {
+            const userId = conv.other_user.id;
+            const lastTime = conv.last_message?.created_at ?? conv.updated_at;
+            const existing = map.get(userId);
+
+            if (!existing) {
+                map.set(userId, {
+                    userId,
+                    latestConversation: conv,
+                    conversationCount: 1,
+                    totalUnread: conv.unread_count,
+                });
+            } else {
+                const existingTime =
+                    existing.latestConversation.last_message?.created_at ??
+                    existing.latestConversation.updated_at;
+
+                if (new Date(lastTime).getTime() > new Date(existingTime).getTime()) {
+                    existing.latestConversation = conv;
+                }
+
+                existing.conversationCount += 1;
+                existing.totalUnread += conv.unread_count;
+            }
+        });
+
+        let groups = Array.from(map.values());
+
+        if (query) {
+            groups = groups.filter((g) =>
+                g.latestConversation.other_user.name.toLowerCase().includes(query)
+            );
+        }
+
+        groups.sort((a, b) => {
+            const aTime =
+                a.latestConversation.last_message?.created_at ??
+                a.latestConversation.updated_at;
+            const bTime =
+                b.latestConversation.last_message?.created_at ??
+                b.latestConversation.updated_at;
+
+            return new Date(bTime).getTime() - new Date(aTime).getTime();
+        });
+
+        return groups;
     }, [conversations, searchQuery]);
 
     const formatTime = (dateStr: string) => {
@@ -384,55 +437,69 @@ export default function MessagesContent() {
 
                 {/* Conversations List */}
                 <div className="flex-1 overflow-y-auto">
-                    {filteredConversations.map((conv) => (
-                        <button
-                            key={conv.id}
-                            onClick={() => {
-                                setActiveConversation(conv);
-                                fetchMessages(conv.id);
-                            }}
-                            className={`w-full px-4 py-3 flex gap-3 border-b border-[#1E3A5F] transition-all hover:bg-[#1E3A5F]/50 ${activeConversation?.id === conv.id ? 'bg-[#1E3A5F]' : ''}`}
-                        >
-                            <div className="relative shrink-0">
-                                <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
-                                    {conv.other_user.avatar ? (
-                                        <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <UserIcon className="text-gray-400" size={24} />
-                                        </div>
+                    {groupedConversations.map((group) => {
+                        const conv = group.latestConversation;
+                        const isActive =
+                            activeConversation &&
+                            activeConversation.other_user.id === group.userId;
+
+                        return (
+                            <button
+                                key={group.userId}
+                                onClick={() => {
+                                    setActiveConversation(conv);
+                                    fetchMessages(conv.id);
+                                }}
+                                className={`w-full px-4 py-3 flex gap-3 border-b border-[#1E3A5F] transition-all hover:bg-[#1E3A5F]/50 ${isActive ? 'bg-[#1E3A5F]' : ''}`}
+                            >
+                                <div className="relative shrink-0">
+                                    <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
+                                        {conv.other_user.avatar ? (
+                                            <img src={conv.other_user.avatar} alt={conv.other_user.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <UserIcon className="text-gray-400" size={24} />
+                                            </div>
+                                        )}
+                                    </div>
+                                    {conv.other_user.is_online && (
+                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0B192F]" />
                                     )}
                                 </div>
-                                {conv.other_user.is_online && (
-                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0B192F]" />
-                                )}
-                            </div>
 
-                            <div className="flex-1 min-w-0 text-left">
-                                <div className="flex justify-between items-start mb-1">
-                                    <h3 className="font-semibold text-white truncate flex items-center gap-1">
-                                        {conv.other_user.name}
-                                        {conv.other_user.is_verified && (
-                                            <CheckCircle2 size={16} className="text-blue-400" fill="currentColor" />
-                                        )}
-                                    </h3>
-                                    <span className="text-xs text-gray-400 whitespace-nowrap">
-                                        {conv.last_message ? formatTime(conv.last_message.created_at) : ''}
-                                    </span>
+                                <div className="flex-1 min-w-0 text-left">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="font-semibold text-white truncate flex items-center gap-1">
+                                            {conv.other_user.name}
+                                            {conv.other_user.is_verified && (
+                                                <CheckCircle2 size={16} className="text-blue-400" fill="currentColor" />
+                                            )}
+                                        </h3>
+                                        <span className="text-xs text-gray-400 whitespace-nowrap">
+                                            {conv.last_message
+                                                ? formatTime(conv.last_message.created_at)
+                                                : formatTime(conv.updated_at)}
+                                        </span>
+                                    </div>
+
+                                    <p className="text-sm text-gray-400 truncate">
+                                        {conv.last_message?.content || 'No messages yet'}
+                                    </p>
+                                    {group.conversationCount > 1 && (
+                                        <p className="mt-1 text-[11px] text-blue-300">
+                                            {group.conversationCount} conversations
+                                        </p>
+                                    )}
                                 </div>
 
-                                <p className="text-sm text-gray-400 truncate">
-                                    {conv.last_message?.content || 'No messages yet'}
-                                </p>
-                            </div>
-
-                            {conv.unread_count > 0 && (
-                                <span className="w-5 h-5 bg-blue-600 text-xs font-semibold rounded-full flex items-center justify-center">
-                                    {conv.unread_count}
-                                </span>
-                            )}
-                        </button>
-                    ))}
+                                {group.totalUnread > 0 && (
+                                    <span className="w-5 h-5 bg-blue-600 text-xs font-semibold rounded-full flex items-center justify-center">
+                                        {group.totalUnread}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -497,7 +564,7 @@ export default function MessagesContent() {
 
                         {/* Messages Area */}
                         <div
-                            className="flex-1 overflow-y-auto p-4"
+                            className="flex-1 overflow-y-auto p-3 sm:p-4"
                             style={{
                                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E3A5F' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
                             }}
@@ -506,7 +573,7 @@ export default function MessagesContent() {
                                 const isMe = msg.sender === user?.id;
                                 return (
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}>
-                                        <div className={`max-w-[70%] ${isMe ? 'order-2' : 'order-1'}`}>
+                                        <div className={`max-w-[85%] sm:max-w-[75%] lg:max-w-[65%] ${isMe ? 'order-2' : 'order-1'}`}>
                                             <div className={`px-4 py-2 rounded-2xl text-sm ${isMe
                                                 ? 'bg-blue-600 text-white rounded-br-none'
                                                 : 'bg-[#1E3A5F] text-white rounded-bl-none'
