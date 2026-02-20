@@ -55,14 +55,10 @@ export default function AgentDashboard() {
         }
     }, [user]);
 
-    // Redirect if not authenticated or not an agent
+    // Only redirect if user type is wrong, not for auth (middleware handles that)
     useEffect(() => {
-        if (!authLoading) {
-            if (!user) {
-                router.push('/login');
-            } else if (user.user_type !== 'agent') {
-                router.push('/dashboard');
-            }
+        if (!authLoading && user && user.user_type !== 'agent') {
+            router.push('/dashboard');
         }
     }, [user, authLoading, router]);
 
