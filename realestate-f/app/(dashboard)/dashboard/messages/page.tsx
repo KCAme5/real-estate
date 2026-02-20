@@ -89,9 +89,9 @@ function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
     const searchParams = useSearchParams();
-    const conversationIdParam = searchParams.get('id');
-    const recipientId = searchParams.get('recipientId');
-    const propertyId = searchParams.get('propertyId');
+    const conversationIdParam = searchParams?.get('id') ?? null;
+    const recipientId = searchParams?.get('recipientId') ?? null;
+    const propertyId = searchParams?.get('propertyId') ?? null;
 
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
