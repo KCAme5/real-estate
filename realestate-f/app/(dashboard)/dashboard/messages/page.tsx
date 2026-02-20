@@ -10,79 +10,18 @@ import { useWebSocket, TypingIndicator } from '@/hooks/useWebSocket';
 import {
     Send,
     User as UserIcon,
-    Home,
     CheckCircle2,
     Search,
     MoreHorizontal,
     Paperclip,
-    Smile,
-    MessageSquare,
     Phone,
     Video,
-    FileText,
-    Download,
-    Calendar,
-    Star,
-    ExternalLink,
-    Clock,
-    Zap,
-    MapPin,
-    ArrowLeft,
     Plus,
     X,
+    Star,
     Info
 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useToast } from '@/components/ui/toast';
-
-const NeonFrame = ({ children }: { children: React.ReactNode }) => (
-    <div className="neon-frame-wrapper w-full h-full max-h-full">
-        <style jsx global>{`
-            @keyframes rotate-neon {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-            .neon-frame-wrapper {
-                position: relative;
-                padding: 3px;
-                overflow: hidden;
-                border-radius: 2.6rem;
-                background: #0B0E14;
-            }
-            .neon-frame-wrapper::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -50%;
-                width: 200%;
-                height: 200%;
-                background: conic-gradient(
-                    transparent,
-                    #22c55e, 
-                    transparent 20%,
-                    transparent 50%,
-                    #22c55e,
-                    transparent 70%
-                );
-                animation: rotate-neon 8s linear infinite;
-                z-index: 0;
-            }
-            .neon-frame-content {
-                position: relative;
-                z-index: 2;
-                background: #020617;
-                border-radius: 2.5rem;
-                height: 100%;
-                width: 100%;
-                overflow: hidden;
-            }
-        `}</style>
-        <div className="neon-frame-content">
-            {children}
-        </div>
-    </div>
-);
 
 
 function MessagesContent() {
