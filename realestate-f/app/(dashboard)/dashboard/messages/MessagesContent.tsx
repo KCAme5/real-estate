@@ -26,6 +26,7 @@ import { useToast } from '@/components/ui/toast';
 export default function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
+    const [mounted, setMounted] = useState(false);
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams?.get('id') ?? null;
     const recipientId = searchParams?.get('recipientId') ?? null;
@@ -50,6 +51,16 @@ export default function MessagesContent() {
     const attemptedCreationRef = useRef<string | null>(null);
     const { sendMessage, subscribe, sendTypingIndicator, markMessagesAsRead } = useWebSocket();
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!mounted) return;
+        if (typeof window === 'undefined') return;
+        console.log('MessagesContent mounted on client');
+    }, [mounted]);
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -68,7 +79,6 @@ export default function MessagesContent() {
         }
     };
 
-    // WebSocket message handler
     useEffect(() => {
         const unsubscribe = subscribe((message) => {
             switch (message.type) {
@@ -112,7 +122,6 @@ export default function MessagesContent() {
         return unsubscribe;
     }, [activeConversation, user?.id, subscribe, markMessagesAsRead]);
 
-    // Initial fetch and polling
     useEffect(() => {
         fetchConversations();
         fetchVerifiedAgents();
@@ -125,7 +134,6 @@ export default function MessagesContent() {
         return () => clearInterval(interval);
     }, [activeConversation?.id]);
 
-    // Handle auto-selection
     useEffect(() => {
         const targetId = conversationIdParam ? parseInt(conversationIdParam) : null;
         const targetRecipient = recipientId ? parseInt(recipientId) : null;
@@ -302,6 +310,14 @@ export default function MessagesContent() {
         if (diffInSecs < 86400) return `${Math.floor(diffInSecs / 3600)}h ago`;
         return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     };
+
+    if (!mounted) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     if (loading && conversations.length === 0) {
         return (
