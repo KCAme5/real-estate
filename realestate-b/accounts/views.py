@@ -83,8 +83,8 @@ def register_user(request):
             key="refresh",
             value=str(refresh),
             httponly=True,
-            samesite="Lax",
-            secure=False,
+            samesite="None",
+            secure=True,
             max_age=7 * 24 * 60 * 60,
             path="/",
         )
@@ -225,8 +225,8 @@ def login_user(request):
             key="refresh",
             value=str(refresh),
             httponly=True,
-            samesite="Lax",
-            secure=False,
+            samesite="None",
+            secure=True,
             max_age=7 * 24 * 60 * 60,
             path="/",
         )
@@ -302,8 +302,8 @@ def refresh_token(request):
                     key="refresh",
                     value=str(new_refresh),
                     httponly=True,
-                    samesite="Lax",
-                    secure=False,
+                    samesite="None",
+                    secure=True,
                     max_age=7 * 24 * 60 * 60,
                     path="/",
                 )
@@ -367,13 +367,13 @@ def logout_user(request):
                     max_age=0,
                     expires="Thu, 01 Jan 1970 00:00:00 GMT",
                     path="/",
-                    samesite="Lax",
+                    samesite="None",
                     httponly=(
                         True
                         if cookie_name in ["refresh", "refresh_token", "access_token"]
                         else False
                     ),
-                    secure=False,
+                    secure=True,
                 )
 
         return response
