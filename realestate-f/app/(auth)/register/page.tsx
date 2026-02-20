@@ -23,6 +23,29 @@ import {
     BriefcaseBusiness
 } from 'lucide-react';
 
+const heroImages = [
+    {
+        url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1920',
+        alt: 'Modern Kenyan family home'
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1984&q=80',
+        alt: 'African family in beautiful home'
+    },
+    {
+        url: 'https://cdn.home-designing.com/wp-content/uploads/2015/09/cool-home-exterior1-1024x576.jpg',
+        alt: 'Luxury villa with pool'
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?ixlib=rb-4.0.3&auto=format&fit=crop&w=2065&q=80',
+        alt: 'Modern apartment building'
+    },
+    {
+        url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+        alt: 'Cozy living room interior'
+    }
+];
+
 type UserType = 'client' | 'agent' | null;
 
 export default function RegistrationPage() {
@@ -34,6 +57,8 @@ export default function RegistrationPage() {
     const { register, loading } = useAuth();
     const router = useRouter();
     const [successMessage, setSuccessMessage] = useState('');
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [imageError, setImageError] = useState<number | null>(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -53,12 +78,18 @@ export default function RegistrationPage() {
         agreeToTerms: false,
     });
 
-    // Update user type when selected
     useEffect(() => {
         if (userType) {
             setFormData(prev => ({ ...prev, user_type: userType }));
         }
     }, [userType]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleUserTypeSelect = (type: UserType) => {
         setUserType(type);
@@ -164,7 +195,6 @@ export default function RegistrationPage() {
         }
     };
 
-    // Benefits based on user type
     const clientBenefits = [
         { icon: <Home className="w-4 h-4" />, text: 'Access thousands of verified properties' },
         { icon: <Building2 className="w-4 h-4" />, text: 'Virtual tours and detailed property insights' },
@@ -180,41 +210,63 @@ export default function RegistrationPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-background via-background to-primary/5 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-                {/* Back to Home */}
-                <div className="mb-8">
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+            <div className="absolute inset-0">
+                {heroImages.map((image, index) => (
+                    <div
+                        key={index}
+                        className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+                    >
+                        {imageError === index ? (
+                            <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+                                <div className="text-center text-slate-100">
+                                    <p className="text-lg">Image not available</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <img
+                                src={image.url}
+                                alt={image.alt}
+                                className="w-full h-full object-cover"
+                                onError={() => setImageError(index)}
+                            />
+                        )}
+                        <div className="absolute inset-0 bg-black/60"></div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="relative z-10 w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
+                <div className="mb-8 flex justify-between items-center text-white">
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
+                        className="inline-flex items-center gap-2 text-slate-200 hover:text-white transition-colors group"
                     >
                         <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
                         <span className="text-sm font-medium">Back to Home</span>
                     </Link>
                 </div>
 
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                <div className="text-center mb-12 text-white">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         Join KenyaPrime Properties
                     </h1>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Start your real estate journey with Kenya's premier property platform
+                    <p className="text-xl text-slate-200 max-w-2xl mx-auto">
+                        Start your real estate journey with Kenya&apos;s premier property platform
                     </p>
                 </div>
 
-                {/* Progress Steps */}
                 <div className="mb-12">
-                    <div className="flex items-center justify-center gap-8">
-                        <div className={`flex items-center gap-3 ${step >= 1 ? 'text-primary' : 'text-muted-foreground'}`}>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                    <div className="flex items-center justify-center gap-8 text-white">
+                        <div className={`flex items-center gap-3 ${step >= 1 ? 'text-emerald-400' : 'text-slate-300'}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800'}`}>
                                 1
                             </div>
                             <span className="font-medium">Choose Account Type</span>
                         </div>
-                        <div className={`h-0.5 w-16 ${step >= 2 ? 'bg-primary' : 'bg-border'}`}></div>
-                        <div className={`flex items-center gap-3 ${step >= 2 ? 'text-primary' : 'text-muted-foreground'}`}>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                        <div className={`h-0.5 w-16 ${step >= 2 ? 'bg-emerald-400' : 'bg-slate-600'}`}></div>
+                        <div className={`flex items-center gap-3 ${step >= 2 ? 'text-emerald-400' : 'text-slate-300'}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800'}`}>
                                 2
                             </div>
                             <span className="font-medium">Create Account</span>
@@ -222,34 +274,32 @@ export default function RegistrationPage() {
                     </div>
                 </div>
 
-                {/* Step 1: User Type Selection */}
                 {step === 1 && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        {/* Client Card */}
                         <div className="group">
                             <div
                                 onClick={() => handleUserTypeSelect('client')}
-                                className="bg-card border-2 border-border hover:border-primary hover:shadow-xl rounded-2xl p-8 cursor-pointer transition-all duration-300 h-full flex flex-col"
+                                className="bg-slate-950/90 border-2 border-white/10 hover:border-emerald-400 hover:shadow-xl rounded-2xl p-8 cursor-pointer transition-all duration-300 h-full flex flex-col backdrop-blur-sm"
                             >
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between mb-6">
-                                        <div className="w-16 h-16 bg-linear-to-br from-primary/20 to-primary/10 text-primary rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <div className="w-16 h-16 bg-linear-to-br from-emerald-500/20 to-emerald-400/10 text-emerald-300 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <User className="w-8 h-8" />
                                         </div>
-                                        <ArrowRight className="w-6 h-6 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                        <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
                                     </div>
 
-                                    <h3 className="text-2xl font-bold text-foreground mb-4">
-                                        I'm a Client
+                                    <h3 className="text-2xl font-bold text-white mb-4">
+                                        I&apos;m a Client
                                     </h3>
-                                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                                    <p className="text-slate-200 mb-6 leading-relaxed">
                                         Looking to buy, rent, or invest in properties. Get access to thousands of verified listings and expert guidance.
                                     </p>
 
                                     <div className="space-y-3">
                                         {clientBenefits.map((benefit, index) => (
-                                            <div key={index} className="flex items-center gap-3 text-foreground">
-                                                <div className="w-5 h-5 bg-primary/10 text-primary rounded flex items-center justify-center">
+                                            <div key={index} className="flex items-center gap-3 text-slate-100">
+                                                <div className="w-5 h-5 bg-emerald-500/10 text-emerald-300 rounded flex items-center justify-center">
                                                     {benefit.icon}
                                                 </div>
                                                 <span className="text-sm">{benefit.text}</span>
@@ -258,39 +308,38 @@ export default function RegistrationPage() {
                                     </div>
                                 </div>
 
-                                <div className="mt-8 pt-6 border-t border-border">
-                                    <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-6 rounded-xl font-semibold transition-all duration-300 group-hover:scale-105">
+                                <div className="mt-8 pt-6 border-t border-white/10">
+                                    <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-3 px-6 rounded-xl font-semibold transition-all duration-300 group-hover:scale-105">
                                         Continue as Client
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Agent Card */}
                         <div className="group">
                             <div
                                 onClick={() => handleUserTypeSelect('agent')}
-                                className="bg-card border-2 border-border hover:border-primary hover:shadow-xl rounded-2xl p-8 cursor-pointer transition-all duration-300 h-full flex flex-col"
+                                className="bg-slate-950/90 border-2 border-white/10 hover:border-emerald-400 hover:shadow-xl rounded-2xl p-8 cursor-pointer transition-all duration-300 h-full flex flex-col backdrop-blur-sm"
                             >
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between mb-6">
-                                        <div className="w-16 h-16 bg-linear-to-br from-primary/20 to-primary/10 text-primary rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <div className="w-16 h-16 bg-linear-to-br from-emerald-500/20 to-emerald-400/10 text-emerald-300 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <Briefcase className="w-8 h-8" />
                                         </div>
-                                        <ArrowRight className="w-6 h-6 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                        <ArrowRight className="w-6 h-6 text-slate-300 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
                                     </div>
 
-                                    <h3 className="text-2xl font-bold text-foreground mb-4">
-                                        I'm an Agent
+                                    <h3 className="text-2xl font-bold text-white mb-4">
+                                        I&apos;m an Agent
                                     </h3>
-                                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                                    <p className="text-slate-200 mb-6 leading-relaxed">
                                         Join our network of professional real estate agents. List properties, connect with buyers, and grow your business.
                                     </p>
 
                                     <div className="space-y-3">
                                         {agentBenefits.map((benefit, index) => (
-                                            <div key={index} className="flex items-center gap-3 text-foreground">
-                                                <div className="w-5 h-5 bg-primary/10 text-primary rounded flex items-center justify-center">
+                                            <div key={index} className="flex items-center gap-3 text-slate-100">
+                                                <div className="w-5 h-5 bg-emerald-500/10 text-emerald-300 rounded flex items-center justify-center">
                                                     {benefit.icon}
                                                 </div>
                                                 <span className="text-sm">{benefit.text}</span>
@@ -299,8 +348,8 @@ export default function RegistrationPage() {
                                     </div>
                                 </div>
 
-                                <div className="mt-8 pt-6 border-t border-border">
-                                    <button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-6 rounded-xl font-semibold transition-all duration-300 group-hover:scale-105">
+                                <div className="mt-8 pt-6 border-t border-white/10">
+                                    <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-3 px-6 rounded-xl font-semibold transition-all duration-300 group-hover:scale-105">
                                         Continue as Agent
                                     </button>
                                 </div>
@@ -309,32 +358,28 @@ export default function RegistrationPage() {
                     </div>
                 )}
 
-                {/* Step 2: Registration Form */}
                 {step === 2 && (
                     <div id="registration-form" className="max-w-2xl mx-auto">
-                        {/* Back Button */}
                         <button
                             onClick={goBack}
-                            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6 group"
+                            className="flex items-center gap-2 text-slate-200 hover:text-white transition-colors mb-6 group"
                         >
                             <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
                             <span className="text-sm font-medium">Change account type</span>
                         </button>
 
-                        {/* Form Container */}
-                        <div className="bg-card border border-border rounded-2xl shadow-xl overflow-hidden">
-                            {/* Form Header */}
-                            <div className="p-6 border-b border-border bg-linear-to-r from-primary/5 via-transparent to-transparent">
+                        <div className="bg-slate-950/90 border border-white/10 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm text-slate-100">
+                            <div className="p-6 border-b border-white/10 bg-slate-900/60">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <h2 className="text-2xl font-bold text-foreground">
+                                        <h2 className="text-2xl font-bold">
                                             Create {userType === 'agent' ? 'Agent' : 'Client'} Account
                                         </h2>
-                                        <p className="text-muted-foreground mt-1">
+                                        <p className="text-slate-300 mt-1">
                                             Fill in your details to get started
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-300 rounded-full text-sm font-medium">
                                         {userType === 'agent' ? (
                                             <Briefcase className="w-4 h-4" />
                                         ) : (
@@ -345,13 +390,16 @@ export default function RegistrationPage() {
                                 </div>
                             </div>
 
-                            {/* Success/Error Messages */}
                             {(error || successMessage) && (
                                 <div className="m-6">
                                     {error && (
-                                        <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl animate-in slide-in-from-top-1 duration-300">
+                                        <div
+                                            className="p-4 bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl"
+                                            role="alert"
+                                            aria-live="assertive"
+                                        >
                                             <div className="flex items-start gap-3">
-                                                <div className="w-6 h-6 rounded-full bg-destructive/20 flex items-center justify-center shrink-0 mt-0.5">
+                                                <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
                                                     <span className="text-sm font-bold">!</span>
                                                 </div>
                                                 <div className="flex-1">
@@ -360,7 +408,7 @@ export default function RegistrationPage() {
                                                 </div>
                                                 <button
                                                     onClick={() => setError('')}
-                                                    className="text-destructive/60 hover:text-destructive"
+                                                    className="text-red-300/80 hover:text-red-200"
                                                 >
                                                     ✕
                                                 </button>
@@ -369,9 +417,13 @@ export default function RegistrationPage() {
                                     )}
 
                                     {successMessage && (
-                                        <div className="p-4 bg-green-500/10 border border-green-500/20 text-green-600 rounded-xl animate-in slide-in-from-top-1 duration-300">
+                                        <div
+                                            className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl"
+                                            role="status"
+                                            aria-live="polite"
+                                        >
                                             <div className="flex items-start gap-3">
-                                                <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                                                <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                     </svg>
@@ -382,7 +434,7 @@ export default function RegistrationPage() {
                                                 </div>
                                                 <button
                                                     onClick={() => setSuccessMessage('')}
-                                                    className="text-green-600/60 hover:text-green-600"
+                                                    className="text-emerald-300/80 hover:text-emerald-200"
                                                 >
                                                     ✕
                                                 </button>
@@ -391,8 +443,8 @@ export default function RegistrationPage() {
                                     )}
                                 </div>
                             )}
-                            {/* Registration Form */}
-                            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+
+                            <form onSubmit={handleSubmit} className="p-6 space-y-6" noValidate>
                                 {/* Basic Information */}
                                 <div className="space-y-6">
                                     <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>

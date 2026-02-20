@@ -219,4 +219,8 @@ export const leadsAPI = {
     sendMessage: async (conversationId: string | number, content: string) => {
         return apiClient.post(`/leads/conversations/${conversationId}/messages/`, { content });
     },
+
+    deleteMessage: async (conversationId: string | number, messageId: string | number) => {
+        return apiClient.delete(`/leads/conversations/${conversationId}/messages/${messageId}/delete/`);
+    },
 };

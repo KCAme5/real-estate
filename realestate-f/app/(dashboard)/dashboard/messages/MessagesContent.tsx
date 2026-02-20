@@ -19,7 +19,8 @@ import {
     Plus,
     X,
     Star,
-    Info
+    Info,
+    Trash2
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 
@@ -44,6 +45,10 @@ export default function MessagesContent() {
     const [showAgentsList, setShowAgentsList] = useState(false);
     const [verifiedAgents, setVerifiedAgents] = useState<Agent[]>([]);
     const [loadingAgents, setLoadingAgents] = useState(false);
+    const [messageSearch, setMessageSearch] = useState('');
+    const [visibleMessageCount, setVisibleMessageCount] = useState(50);
+    const [messageBeingDeleted, setMessageBeingDeleted] = useState<Message | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -181,6 +186,10 @@ export default function MessagesContent() {
         }
     }, [conversations, conversationIdParam, recipientId, propertyId, activeConversation?.id, loading]);
 
+    useEffect(() => {
+        setMessageSearch('');
+    }, [activeConversation?.id]);
+
     const handleCreateConversation = async (recipientId: number, propertyId?: number) => {
         try {
             setLoading(true);
@@ -253,9 +262,17 @@ export default function MessagesContent() {
             const res = await leadsAPI.getMessages(conversationId);
             const data = res.results || res;
             setMessages(data);
+            setVisibleMessageCount((prev) => {
+                const base = 50;
+                const length = Array.isArray(data) ? data.length : 0;
+                if (!length) return base;
+                if (length < base) return length;
+                return prev > length ? length : prev < base ? base : prev;
+            });
             if (showLoading) setTimeout(scrollToBottom, 100);
         } catch (error) {
             console.error('Failed to fetch messages:', error);
+            showError('Failed to load messages', 'Please check your connection and try again');
         }
     };
 
@@ -282,6 +299,22 @@ export default function MessagesContent() {
             showError('Failed to send message', 'Please try again');
         } finally {
             setSending(false);
+        }
+    };
+
+    const handleDeleteMessage = async () => {
+        if (!activeConversation || !messageBeingDeleted) return;
+        try {
+            setDeleting(true);
+            await leadsAPI.deleteMessage(activeConversation.id, messageBeingDeleted.id);
+            setMessages(prev => prev.filter(m => m.id !== messageBeingDeleted.id));
+            setMessageBeingDeleted(null);
+            fetchConversations(false);
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+            showError('Failed to delete message', 'Please try again');
+        } finally {
+            setDeleting(false);
         }
     };
 
@@ -394,6 +427,26 @@ export default function MessagesContent() {
             </div>
         );
     }
+
+    const typingText = useMemo(() => {
+        if (!activeConversation) return '';
+        const name = typingUsers.get(activeConversation.id);
+        if (!name) return '';
+        return `${name} is typing...`;
+    }, [typingUsers, activeConversation?.id]);
+
+    const filteredMessages = useMemo(() => {
+        const total = messages.length;
+        const start = Math.max(0, total - visibleMessageCount);
+        let slice = messages.slice(start);
+        if (messageSearch.trim()) {
+            const q = messageSearch.toLowerCase();
+            slice = slice.filter(m => m.content.toLowerCase().includes(q));
+        }
+        return slice;
+    }, [messages, visibleMessageCount, messageSearch]);
+
+    const canLoadOlder = visibleMessageCount < messages.length;
 
     if (loading && conversations.length === 0) {
         return (
@@ -569,7 +622,35 @@ export default function MessagesContent() {
                                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231E3A5F' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
                             }}
                         >
-                            {messages.map((msg) => {
+                            {filteredMessages.length > 0 && (
+                                <div className="mb-3 flex justify-center">
+                                    <div className="relative w-full max-w-xs">
+                                        <Search
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                                            size={16}
+                                        />
+                                        <input
+                                            type="text"
+                                            value={messageSearch}
+                                            onChange={(e) => setMessageSearch(e.target.value)}
+                                            placeholder="Search in this chat"
+                                            aria-label="Search messages in this chat"
+                                            className="w-full bg-[#1E3A5F] border border-[#2D4A7C] rounded-full py-1.5 pl-9 pr-3 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            {canLoadOlder && (
+                                <div className="flex justify-center mb-3">
+                                    <button
+                                        onClick={() => setVisibleMessageCount(prev => prev + 50)}
+                                        className="px-3 py-1 text-xs rounded-full bg-[#1E3A5F] text-gray-200 hover:bg-[#2D4A7C] transition-colors"
+                                    >
+                                        Load earlier messages
+                                    </button>
+                                </div>
+                            )}
+                            {filteredMessages.map((msg) => {
                                 const isMe = msg.sender === user?.id;
                                 return (
                                     <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}>
@@ -585,7 +666,17 @@ export default function MessagesContent() {
                                                     {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                                 {isMe && (
-                                                    <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-gray-400'} />
+                                                    <>
+                                                        <CheckCircle2 size={12} className={msg.is_read ? 'text-blue-400' : 'text-gray-400'} />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setMessageBeingDeleted(msg)}
+                                                            className="ml-1 text-gray-500 hover:text-red-400 transition-colors"
+                                                            aria-label="Delete message"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    </>
                                                 )}
                                             </div>
                                         </div>
@@ -597,6 +688,12 @@ export default function MessagesContent() {
 
                         {/* Message Input */}
                         <div className="p-4 border-t border-[#1E3A5F] bg-[#0B192F]">
+                            {typingText && (
+                                <div className="px-2 pb-1 text-xs text-emerald-300 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span>{typingText}</span>
+                                </div>
+                            )}
                             <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                                 <button type="button" className="p-2 text-gray-400 hover:text-white transition-colors">
                                     <Paperclip size={20} />
@@ -684,6 +781,45 @@ export default function MessagesContent() {
                                     </button>
                                 ))
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {messageBeingDeleted && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                    <div
+                        className="bg-[#0B192F] border border-[#1E3A5F] rounded-xl p-6 w-full max-w-sm"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="delete-title"
+                        aria-describedby="delete-description"
+                    >
+                        <h2 id="delete-title" className="text-lg font-semibold mb-2 text-white">
+                            Delete message?
+                        </h2>
+                        <p id="delete-description" className="text-sm text-gray-300 mb-4">
+                            This action cannot be undone. The message will be removed for both you and the other participant.
+                        </p>
+                        <div className="bg-[#1E3A5F] rounded-md px-3 py-2 text-sm text-gray-100 mb-4 max-h-24 overflow-y-auto">
+                            {messageBeingDeleted.content}
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setMessageBeingDeleted(null)}
+                                className="px-3 py-1.5 text-sm rounded-md bg-transparent text-gray-200 hover:bg-[#1E3A5F]"
+                                disabled={deleting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteMessage}
+                                className="px-3 py-1.5 text-sm rounded-md bg-red-600 hover:bg-red-500 text-white disabled:opacity-50"
+                                disabled={deleting}
+                            >
+                                {deleting ? 'Deleting...' : 'Delete'}
+                            </button>
                         </div>
                     </div>
                 </div>
