@@ -27,16 +27,10 @@ function MessagesContent() {
     const { user } = useAuth();
     const { success, error: showError } = useToast();
     const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     const searchParams = useSearchParams();
     const conversationIdParam = searchParams.get('id');
     const recipientId = searchParams.get('recipientId');
     const propertyId = searchParams.get('propertyId');
-
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -49,13 +43,18 @@ function MessagesContent() {
     const [showAgentsList, setShowAgentsList] = useState(false);
     const [verifiedAgents, setVerifiedAgents] = useState<Agent[]>([]);
     const [loadingAgents, setLoadingAgents] = useState(false);
-
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const attemptedCreationRef = useRef<string | null>(null);
     const { sendMessage, subscribe, sendTypingIndicator, markMessagesAsRead } = useWebSocket();
 
-    // Don't render until mounted on client
+    // All effects must be declared before any conditional returns
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Don't render until mounted on client (after all hooks are declared)
     if (!mounted) {
         return (
             <div className="flex h-screen items-center justify-center bg-[#0B192F]">
@@ -138,8 +137,6 @@ function MessagesContent() {
         }, 5000);
         return () => clearInterval(interval);
     }, [activeConversation?.id]);
-
-    const attemptedCreationRef = useRef<string | null>(null);
 
     // Handle auto-selection
     useEffect(() => {
