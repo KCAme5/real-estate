@@ -54,13 +54,12 @@ export const useWebSocket = () => {
     }
 
     let wsUrl: string;
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      wsUrl = `${protocol}//${hostname}:8000/ws/chat/`;
-    } else {
-      wsUrl = 'wss://kenyaprime.vercel.app:8000/ws/chat/';
-    }
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+
+    // Derive WebSocket URL from API Base URL
+    // e.g., https://api.example.com/api -> wss://api.example.com/ws/chat/
+    const baseUrl = apiBaseUrl.replace(/^http/, 'ws').replace(/\/api\/?$/, '');
+    wsUrl = `${baseUrl}/ws/chat/`;
 
     try {
       wsRef.current = new WebSocket(wsUrl);

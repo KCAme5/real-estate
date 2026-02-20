@@ -420,13 +420,6 @@ export default function MessagesContent() {
                 ? 'text-amber-400'
                 : 'text-gray-400';
 
-    if (!mounted) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
-                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
 
     const typingText = useMemo(() => {
         if (!activeConversation) return '';
@@ -447,6 +440,14 @@ export default function MessagesContent() {
     }, [messages, visibleMessageCount, messageSearch]);
 
     const canLoadOlder = visibleMessageCount < messages.length;
+
+    if (!mounted) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-[#0B192F]">
+                <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     if (loading && conversations.length === 0) {
         return (
