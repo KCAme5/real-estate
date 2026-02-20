@@ -49,7 +49,14 @@ export default function MessagesContent() {
     const inputRef = useRef<HTMLInputElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const attemptedCreationRef = useRef<string | null>(null);
-    const { sendMessage, subscribe, sendTypingIndicator, markMessagesAsRead } = useWebSocket();
+    const {
+        sendMessage,
+        subscribe,
+        sendTypingIndicator,
+        markMessagesAsRead,
+        connectionState,
+        hasWebSocketFailed,
+    } = useWebSocket();
 
     useEffect(() => {
         setMounted(true);
@@ -311,6 +318,22 @@ export default function MessagesContent() {
         return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     };
 
+    const connectionLabel =
+        connectionState === 'open'
+            ? 'Live chat'
+            : hasWebSocketFailed
+                ? 'Using fallback (refreshes every few seconds)'
+                : connectionState === 'connecting'
+                    ? 'Connecting...'
+                    : 'Chat offline';
+
+    const connectionClassName =
+        connectionState === 'open'
+            ? 'text-emerald-400'
+            : hasWebSocketFailed
+                ? 'text-amber-400'
+                : 'text-gray-400';
+
     if (!mounted) {
         return (
             <div className="flex h-screen items-center justify-center bg-[#0B192F]">
@@ -334,7 +357,10 @@ export default function MessagesContent() {
                 {/* Header */}
                 <div className="p-4 border-b border-[#1E3A5F]">
                     <div className="flex items-center justify-between mb-4">
-                        <h1 className="text-2xl font-semibold">Chats</h1>
+                        <div>
+                            <h1 className="text-2xl font-semibold">Chats</h1>
+                            <p className={`text-xs mt-1 ${connectionClassName}`}>{connectionLabel}</p>
+                        </div>
                         <button
                             onClick={() => setShowAgentsList(true)}
                             className="p-2 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors"

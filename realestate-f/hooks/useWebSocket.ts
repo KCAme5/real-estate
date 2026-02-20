@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Conversation, Message } from '@/lib/api/leads';
 
@@ -21,6 +21,8 @@ export type WebSocketMessage =
   | { type: 'typing'; data: TypingIndicator }
   | { type: 'read_receipt'; data: ReadReceipt };
 
+type ConnectionState = 'idle' | 'connecting' | 'open' | 'closed' | 'failed';
+
 export const useWebSocket = () => {
   const { user, isAuthenticated } = useAuth();
   const wsRef = useRef<WebSocket | null>(null);
@@ -28,18 +30,37 @@ export const useWebSocket = () => {
   const MAX_RECONNECT_ATTEMPTS = 5;
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const messageCallbacksRef = useRef<Set<(message: WebSocketMessage) => void>>(new Set());
+  const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
+  const [hasWebSocketFailed, setHasWebSocketFailed] = useState(false);
+  const hasEverConnectedRef = useRef(false);
 
   const connect = useCallback(() => {
     if (!isAuthenticated || !user) return;
 
-    // Stop trying after max attempts to avoid flooding console/server
-    if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
-      console.log('WebSocket: Max reconnection attempts reached. Falling back to polling.');
+    if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) {
       return;
     }
 
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${wsProtocol}//${window.location.hostname}:8000/ws/chat/`;
+    if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+      setConnectionState('failed');
+      setHasWebSocketFailed(true);
+      return;
+    }
+    setConnectionState('connecting');
+    setHasWebSocketFailed(false);
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    let wsUrl: string;
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${hostname}:8000/ws/chat/`;
+    } else {
+      wsUrl = 'wss://kenyaprime.vercel.app:8000/ws/chat/';
+    }
 
     try {
       wsRef.current = new WebSocket(wsUrl);
@@ -47,7 +68,9 @@ export const useWebSocket = () => {
       wsRef.current.onopen = () => {
         console.log('WebSocket connected');
         reconnectAttemptsRef.current = 0;
-        // Clear any pending reconnect timeout
+        hasEverConnectedRef.current = true;
+        setConnectionState('open');
+
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
@@ -59,36 +82,39 @@ export const useWebSocket = () => {
           const message: WebSocketMessage = JSON.parse(event.data);
           messageCallbacksRef.current.forEach(callback => callback(message));
         } catch (error) {
-          // Subtle log for parsing errors
           console.debug('WebSocket: Error parsing message:', error);
         }
       };
 
       wsRef.current.onclose = (event) => {
-        // Only log close if it wasn't a clean disconnect
         if (!event.wasClean) {
           console.log('WebSocket disconnected (expected if backend has no WS support)');
 
-          // Attempt to reconnect after 5 seconds with exponential backoff or just limit
           if (isAuthenticated && reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             reconnectAttemptsRef.current += 1;
-            const delay = 5000 * reconnectAttemptsRef.current;
+            const attempt = reconnectAttemptsRef.current;
+            const delay = Math.min(30000, 1000 * Math.pow(2, attempt - 1));
 
             reconnectTimeoutRef.current = setTimeout(() => {
               connect();
             }, delay);
+          } else {
+            setConnectionState('failed');
+            setHasWebSocketFailed(true);
           }
+        } else {
+          setConnectionState('closed');
         }
       };
 
       wsRef.current.onerror = () => {
-        // Silencing the error object log as it's often empty and intrusive
-        // We handle the fallout in onclose
+        setHasWebSocketFailed(true);
       };
 
     } catch (error) {
-      // Fallback log
       console.debug('WebSocket: Connection creation failed.');
+      setConnectionState('failed');
+      setHasWebSocketFailed(true);
     }
   }, [isAuthenticated, user]);
 
@@ -102,6 +128,7 @@ export const useWebSocket = () => {
       wsRef.current.close();
       wsRef.current = null;
     }
+    setConnectionState('closed');
   }, []);
 
   const sendMessage = useCallback((data: any) => {
@@ -134,10 +161,13 @@ export const useWebSocket = () => {
     });
   }, [sendMessage]);
 
-  // Auto-connect when authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       connect();
+    } else {
+      disconnect();
+      setConnectionState('idle');
+      setHasWebSocketFailed(false);
     }
 
     return () => {
@@ -151,6 +181,9 @@ export const useWebSocket = () => {
     sendTypingIndicator,
     markMessagesAsRead,
     isConnected: wsRef.current?.readyState === WebSocket.OPEN,
-    disconnect
+    disconnect,
+    connectionState,
+    hasWebSocketFailed,
+    hasEverConnected: hasEverConnectedRef.current
   };
 };
