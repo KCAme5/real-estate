@@ -784,125 +784,121 @@ export default function MessagesContent() {
                         </div>
                     </>
                 ) : (
-                ): (
-                        <div className = "flex-1 flex items-center justify-center p-8 text-center bg-slate-950/20 backdrop-blur-sm">
-                        <div className = "max-w-md animate-in fade-in zoom-in duration-700">
-                            <div className = "w-24 h-24 bg-emerald-600/10 border border-emerald-500/20 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl">
-                                <Send className = "text-emerald-400 rotate-12" size = { 48 } strokeWidth = { 1.5 } />
-            </div>
-            <h3 className="text-3xl font-black text-white mb-4 tracking-tight">Your Communication Hub</h3>
-            <p className="text-slate-400 font-medium leading-relaxed">
-                Connect with agents, inquire about properties, and manage your real estate journey in one premium, real-time space.
-            </p>
-            <button
-                onClick={() => setShowAgentsList(true)}
-                className="mt-8 px-8 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold rounded-2xl transition-all hover:scale-105 active:scale-95"
-            >
-                Start a New Conversation
-            </button>
-        </div>
-                    </div >
-                )
-}
-            </div >
-
-    {/* Agents List Modal */ }
-{
-    showAgentsList && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-[#0B192F] rounded-lg w-full max-w-md max-h-[80vh] overflow-hidden">
-                <div className="p-4 border-b border-[#1E3A5F] flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Verified Agents</h2>
-                    <button
-                        onClick={() => setShowAgentsList(false)}
-                        className="p-1 hover:bg-[#1E3A5F] rounded-full"
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
-
-                <div className="overflow-y-auto max-h-[60vh]">
-                    {loadingAgents ? (
-                        <div className="p-8 text-center">
-                            <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                        </div>
-                    ) : (
-                        verifiedAgents.map((agent) => (
+                    <div className="flex-1 flex items-center justify-center p-8 text-center bg-slate-950/20 backdrop-blur-sm">
+                        <div className="max-w-md animate-in fade-in zoom-in duration-700">
+                            <div className="w-24 h-24 bg-emerald-600/10 border border-emerald-500/20 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl">
+                                <Send className="text-emerald-400 rotate-12" size={48} strokeWidth={1.5} />
+                            </div>
+                            <h3 className="text-3xl font-black text-white mb-4 tracking-tight">Your Communication Hub</h3>
+                            <p className="text-slate-400 font-medium leading-relaxed">
+                                Connect with agents, inquire about properties, and manage your real estate journey in one premium, real-time space.
+                            </p>
                             <button
-                                key={agent.id}
-                                onClick={() => handleStartAgentChat(agent.id)}
-                                className="w-full p-4 border-b border-[#1E3A5F] hover:bg-[#1E3A5F]/50 transition-colors flex items-center gap-3"
+                                onClick={() => setShowAgentsList(true)}
+                                className="mt-8 px-8 py-3.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-bold rounded-2xl transition-all hover:scale-105 active:scale-95"
                             >
-                                <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
-                                    {agent.user_avatar ? (
-                                        <img src={agent.user_avatar} alt={agent.user_name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <UserIcon className="text-gray-400" size={24} />
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <div className="flex items-center gap-2">
-                                        <h3 className="font-semibold text-white">{agent.user_name}</h3>
-                                        <CheckCircle2 size={14} className="text-blue-400" fill="currentColor" />
-                                    </div>
-                                    <p className="text-sm text-gray-400">{agent.specialties?.join(', ') || 'Real Estate Agent'}</p>
-                                    <div className="flex items-center gap-1 mt-1">
-                                        <Star size={12} className="text-yellow-400" fill="currentColor" />
-                                        <span className="text-xs text-gray-400">{agent.average_rating}</span>
-                                        <span className="text-xs text-gray-400">• {agent.years_of_experience} years exp.</span>
-                                    </div>
-                                </div>
+                                Start a New Conversation
                             </button>
-                        ))
-                    )}
-                </div>
+                        </div>
+                    </div>
+                )}
             </div>
-        </div>
-    )
-}
-{
-    messageBeingDeleted && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div
-                className="bg-[#0B192F] border border-[#1E3A5F] rounded-xl p-6 w-full max-w-sm"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="delete-title"
-                aria-describedby="delete-description"
-            >
-                <h2 id="delete-title" className="text-lg font-semibold mb-2 text-white">
-                    Delete message?
-                </h2>
-                <p id="delete-description" className="text-sm text-gray-300 mb-4">
-                    This action cannot be undone. The message will be removed for both you and the other participant.
-                </p>
-                <div className="bg-[#1E3A5F] rounded-md px-3 py-2 text-sm text-gray-100 mb-4 max-h-24 overflow-y-auto">
-                    {messageBeingDeleted.content}
+
+            {/* Agents List Modal */}
+            {showAgentsList && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[#0B192F] rounded-lg w-full max-w-md max-h-[80vh] overflow-hidden">
+                        <div className="p-4 border-b border-[#1E3A5F] flex items-center justify-between">
+                            <h2 className="text-lg font-semibold">Verified Agents</h2>
+                            <button
+                                onClick={() => setShowAgentsList(false)}
+                                className="p-1 hover:bg-[#1E3A5F] rounded-full"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="overflow-y-auto max-h-[60vh]">
+                            {loadingAgents ? (
+                                <div className="p-8 text-center">
+                                    <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                </div>
+                            ) : (
+                                verifiedAgents.map((agent) => (
+                                    <button
+                                        key={agent.id}
+                                        onClick={() => handleStartAgentChat(agent.id)}
+                                        className="w-full p-4 border-b border-[#1E3A5F] hover:bg-[#1E3A5F]/50 transition-colors flex items-center gap-3"
+                                    >
+                                        <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden">
+                                            {agent.user_avatar ? (
+                                                <img src={agent.user_avatar} alt={agent.user_name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <UserIcon className="text-gray-400" size={24} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 text-left">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-semibold text-white">{agent.user_name}</h3>
+                                                <CheckCircle2 size={14} className="text-blue-400" fill="currentColor" />
+                                            </div>
+                                            <p className="text-sm text-gray-400">{agent.specialties?.join(', ') || 'Real Estate Agent'}</p>
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <Star size={12} className="text-yellow-400" fill="currentColor" />
+                                                <span className="text-xs text-gray-400">{agent.average_rating}</span>
+                                                <span className="text-xs text-gray-400">• {agent.years_of_experience} years exp.</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))
+                            )}
+                        </div>
+                    </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                    <button
-                        type="button"
-                        onClick={() => setMessageBeingDeleted(null)}
-                        className="px-3 py-1.5 text-sm rounded-md bg-transparent text-gray-200 hover:bg-[#1E3A5F]"
-                        disabled={deleting}
+            )}
+
+            {/* Delete Message Confirmation Modal */}
+            {messageBeingDeleted && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                    <div
+                        className="bg-[#0B192F] border border-[#1E3A5F] rounded-xl p-6 w-full max-w-sm"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="delete-title"
+                        aria-describedby="delete-description"
                     >
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleDeleteMessage}
-                        className="px-3 py-1.5 text-sm rounded-md bg-red-600 hover:bg-red-500 text-white disabled:opacity-50"
-                        disabled={deleting}
-                    >
-                        {deleting ? 'Deleting...' : 'Delete'}
-                    </button>
+                        <h2 id="delete-title" className="text-lg font-semibold mb-2 text-white">
+                            Delete message?
+                        </h2>
+                        <p id="delete-description" className="text-sm text-gray-300 mb-4">
+                            This action cannot be undone. The message will be removed for both you and the other participant.
+                        </p>
+                        <div className="bg-[#1E3A5F] rounded-md px-3 py-2 text-sm text-gray-100 mb-4 max-h-24 overflow-y-auto">
+                            {messageBeingDeleted.content}
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setMessageBeingDeleted(null)}
+                                className="px-3 py-1.5 text-sm rounded-md bg-transparent text-gray-200 hover:bg-[#1E3A5F]"
+                                disabled={deleting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteMessage}
+                                className="px-3 py-1.5 text-sm rounded-md bg-red-600 hover:bg-red-500 text-white disabled:opacity-50"
+                                disabled={deleting}
+                            >
+                                {deleting ? 'Deleting...' : 'Delete'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
-    )
-}
-        </div >
     );
 }
