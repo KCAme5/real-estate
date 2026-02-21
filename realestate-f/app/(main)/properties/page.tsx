@@ -91,7 +91,7 @@ function PropertiesContent() {
                 <div className="flex flex-col lg:flex-row gap-8 items-start">
 
                     {/* Main Results Area */}
-                    <div className="flex-1 w-full order-2 lg:order-1">
+                    <div className="flex-1 w-full order-1 lg:order-1">
 
                         {loading ? (
                             <div className={viewMode === 'list' ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'}>
@@ -194,7 +194,7 @@ function PropertiesContent() {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="w-full lg:w-96 shrink-0 order-1 lg:order-2 space-y-8 sticky top-36">
+                    <div className="w-full lg:w-96 shrink-0 order-2 lg:order-2 space-y-8 lg:sticky lg:top-36">
                         <PropertiesSidebar />
                     </div>
 
