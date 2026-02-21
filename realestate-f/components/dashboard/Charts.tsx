@@ -66,34 +66,45 @@ export function PropertyPerformanceChart({ properties }: { properties?: any[] })
 
 export function AgentStatsCards({ stats }: { stats?: any }) {
     const statsData = [
-        { label: 'Total Properties', value: stats?.total_properties || '0', trend: 'up', color: 'primary' },
-        { label: 'Active Leads', value: stats?.total_leads || '0', trend: 'up', color: 'secondary' },
-        { label: 'Property Views', value: stats?.property_views || '0', trend: 'up', color: 'accent' },
-        { label: 'Active Listings', value: stats?.active_properties || '0', trend: 'up', color: 'info' },
-        { label: 'New Leads (30d)', value: stats?.new_leads || '0', trend: 'up', color: 'success' },
-        { label: 'Sold Properties', value: stats?.sold_properties || '0', trend: 'up', color: 'primary' },
+        { label: 'Total Properties', value: stats?.total_properties || '0', color: 'primary' },
+        { label: 'Active Leads', value: stats?.total_leads || '0', color: 'success' },
+        { label: 'Property Views', value: stats?.property_views || '0', color: 'info' },
+        { label: 'Active Listings', value: stats?.active_properties || '0', color: 'warning' },
+        { label: 'New Leads (30d)', value: stats?.new_leads || '0', color: 'success' },
+        { label: 'Sold Properties', value: stats?.sold_properties || '0', color: 'error' },
     ];
 
-    const colorClasses = {
-        primary: 'bg-primary/10 text-primary border-primary/20',
-        secondary: 'bg-secondary/10 text-secondary border-secondary/20',
-        accent: 'bg-accent/10 text-accent border-accent/20',
-        info: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-        success: 'bg-green-500/10 text-green-500 border-green-500/20',
+    const colorGradients = {
+        primary: 'from-blue-600/20 via-blue-600/5 to-transparent border-blue-500/20 text-blue-400',
+        success: 'from-emerald-600/20 via-emerald-600/5 to-transparent border-emerald-500/20 text-emerald-400',
+        info: 'from-sky-600/20 via-sky-600/5 to-transparent border-sky-500/20 text-sky-400',
+        warning: 'from-amber-600/20 via-amber-600/5 to-transparent border-amber-500/20 text-amber-400',
+        error: 'from-rose-600/20 via-rose-600/5 to-transparent border-rose-500/20 text-rose-400',
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {statsData.map((stat, index) => (
-                <div key={index} className="group bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                    <div className="flex items-start justify-between mb-4">
-                        <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">{stat.label}</p>
-                        <div className={`p-2 rounded-lg ${(colorClasses as any)[stat.color]} group-hover:scale-110 transition-transform`}>
-                            <TrendingUp size={16} />
+                <div key={index} className="group relative overflow-hidden bg-slate-900/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-800 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500">
+                    <div className={`absolute inset-0 bg-linear-to-br ${(colorGradients as any)[stat.color]} opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+
+                    <div className="relative z-10 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{stat.label}</p>
+                            <div className={`p-1.5 rounded-lg bg-slate-950 border border-slate-800 group-hover:border-blue-500/30 transition-colors`}>
+                                <TrendingUp size={12} className={(colorGradients as any)[stat.color].split(' ').pop()} />
+                            </div>
+                        </div>
+                        <div className="flex items-baseline gap-1">
+                            <p className="text-2xl font-black text-white tracking-tight tabular-nums group-hover:text-blue-400 transition-colors duration-300">
+                                {stat.value}
+                            </p>
                         </div>
                     </div>
-                    <div className="flex items-end gap-2">
-                        <p className="text-4xl font-black text-foreground tracking-tight tabular-nums">{stat.value}</p>
+
+                    {/* Subtle progress bar for premium feel */}
+                    <div className="mt-4 relative h-0.5 w-full bg-slate-800/50 rounded-full overflow-hidden">
+                        <div className="absolute inset-y-0 left-0 bg-blue-500 w-1/2 opacity-30 rounded-full group-hover:w-3/4 transition-all duration-700" />
                     </div>
                 </div>
             ))}

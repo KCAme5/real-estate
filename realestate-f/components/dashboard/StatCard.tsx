@@ -12,35 +12,36 @@ interface StatCardProps {
 
 export function StatCard({ label, value, icon, color = 'primary' }: StatCardProps) {
     const colorMap = {
-        primary: 'from-primary/10 to-primary/5 text-primary border-primary/10',
-        success: 'from-secondary/10 to-secondary/5 text-secondary border-secondary/10',
-        warning: 'from-accent/10 to-accent/5 text-accent border-accent/10',
-        error: 'from-destructive/10 to-destructive/5 text-destructive border-destructive/10',
-        info: 'from-blue-500/10 to-blue-500/5 text-blue-500 border-blue-500/10',
+        primary: 'from-blue-600/20 via-blue-600/5 to-transparent text-blue-400 border-blue-500/20',
+        success: 'from-emerald-600/20 via-emerald-600/5 to-transparent text-emerald-400 border-emerald-500/20',
+        warning: 'from-amber-600/20 via-amber-600/5 to-transparent text-amber-400 border-amber-500/20',
+        error: 'from-rose-600/20 via-rose-600/5 to-transparent text-rose-400 border-rose-500/20',
+        info: 'from-sky-600/20 via-sky-600/5 to-transparent text-sky-400 border-sky-500/20',
     };
 
     return (
-        <div className="group bg-card p-6 rounded-2xl border border-border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+        <div className={`group relative overflow-hidden bg-slate-900/50 backdrop-blur-xl p-5 rounded-2xl border border-slate-800 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-500`}>
+            {/* Subtle Gradient Background */}
+            <div className={`absolute inset-0 bg-linear-to-br ${colorMap[color]} opacity-30 group-hover:opacity-50 transition-opacity duration-500`} />
+
+            <div className="relative z-10 flex items-start justify-between">
+                <div className="space-y-1.5">
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{label}</p>
                     <div className="flex items-baseline gap-1">
-                        <p className="text-3xl font-bold text-foreground tabular-nums">{value}</p>
+                        <p className="text-2xl font-black text-white tracking-tight tabular-nums group-hover:text-blue-400 transition-colors duration-300">{value}</p>
                     </div>
                 </div>
-                <div className={`p-3 rounded-xl bg-linear-to-br ${colorMap[color]} group-hover:scale-110 transition-transform duration-300`}>
-                    {icon}
+                <div className={`p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 group-hover:text-blue-400 group-hover:border-blue-500/30 group-hover:scale-110 transition-all duration-500`}>
+                    {React.cloneElement(icon as React.ReactElement, { size: 18 })}
                 </div>
             </div>
 
-            {/* Added a small trend indicator or detail for premium feel */}
-            <div className="mt-4 flex items-center gap-2">
-                <div className="h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
-                    <div
-                        className={`h-full bg-current opacity-30 rounded-full transition-all duration-1000`}
-                        style={{ width: '65%', color: `var(--color-${color})` }}
-                    />
-                </div>
+            {/* Premium Mini-chart decoration */}
+            <div className="mt-4 relative h-1 w-full bg-slate-800/50 rounded-full overflow-hidden">
+                <div
+                    className={`absolute inset-y-0 left-0 bg-linear-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-1000 ease-out`}
+                    style={{ width: '70%' }}
+                />
             </div>
         </div>
     );

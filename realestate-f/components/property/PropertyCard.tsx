@@ -68,7 +68,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                 <Link href={`/properties/${property.slug}`} className="absolute inset-0 z-10" />
 
                 {/* Left Side - Image */}
-                <div className="relative w-full md:w-2/5 h-48 md:h-full overflow-hidden">
+                <div className="relative w-full md:w-2/5 h-40 md:h-full overflow-hidden">
                     {!imageLoaded && !imageError && (
                         <div className="absolute inset-0 bg-slate-800 animate-pulse" />
                     )}
@@ -93,7 +93,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                 </div>
 
                 {/* Right Side - Content */}
-                <div className="relative p-6 flex flex-col justify-between w-full md:w-3/5 bg-slate-900">
+                <div className="relative p-4 md:p-6 flex flex-col justify-between w-full md:w-3/5 bg-slate-900">
                     <button
                         onClick={handleSave}
                         disabled={saving}
@@ -201,7 +201,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
             </button>
 
             {/* Hover Content Section - Appears from bottom */}
-            <div className="absolute inset-x-0 bottom-0 z-20 p-6 flex flex-col space-y-4 translate-y-2 transition-all duration-300">
+            <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 flex flex-col space-y-3 sm:space-y-4 translate-y-2 transition-all duration-300">
                 <div className="space-y-1">
                     <h3 className="text-xl font-semibold text-white leading-tight group-hover:text-emerald-400 transition-colors">
                         {property.title}

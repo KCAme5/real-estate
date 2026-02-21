@@ -116,9 +116,17 @@ function PropertiesContent() {
                                 </div>
                             </div>
                         ) : properties.length > 0 ? (
-                            <div className={viewMode === 'list' ? 'flex flex-col gap-6' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'}>
-                                {properties.map((property) => (
-                                    <PropertyCard key={property.id} property={property} viewMode={viewMode === 'list' ? 'list' : 'grid'} />
+                            <div className={`
+                                ${properties.length > 5 ? 'flex flex-nowrap overflow-x-auto lg:grid pb-6 lg:pb-0 scroll-smooth md:snap-x snap-mandatory gap-4 lg:gap-8' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8'}
+                                ${viewMode === 'list' ? 'flex-col lg:flex' : ''}
+                            `}>
+                                {properties.map((prop: any) => (
+                                    <div key={prop.id} className={`${properties.length > 5 ? 'min-w-[280px] md:min-w-[340px] snap-center lg:min-w-0 h-full' : ''}`}>
+                                        <PropertyCard
+                                            property={prop}
+                                            viewMode={viewMode}
+                                        />
+                                    </div>
                                 ))}
                             </div>
                         ) : (

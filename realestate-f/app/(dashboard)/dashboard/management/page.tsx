@@ -90,53 +90,59 @@ export default function ManagementDashboard() {
                 </div>
 
                 {/* Overview Cards */}
-                <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 lg:gap-6">
+                <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     {[
                         {
                             label: 'Total Revenue',
                             value: `KES ${analytics.overview.total_revenue.toLocaleString()}`,
                             icon: DollarSign,
-                            color: 'success',
+                            color: 'from-emerald-600/20 via-emerald-600/5 text-emerald-400 border-emerald-500/20',
                         },
                         {
                             label: 'Total Properties',
                             value: analytics.overview.total_properties,
                             icon: Home,
-                            color: 'primary',
+                            color: 'from-blue-600/20 via-blue-600/5 text-blue-400 border-blue-500/20',
                         },
                         {
                             label: 'Verified Properties',
                             value: analytics.overview.verified_properties,
                             icon: CheckCircle,
-                            color: 'success',
+                            color: 'from-cyan-600/20 via-cyan-600/5 text-cyan-400 border-cyan-500/20',
                         },
                         {
                             label: 'Total Agents',
                             value: analytics.overview.total_agents,
                             icon: UserCheck,
-                            color: 'accent',
+                            color: 'from-violet-600/20 via-violet-600/5 text-violet-400 border-violet-500/20',
                         },
                         {
                             label: 'Total Clients',
                             value: analytics.overview.total_clients,
                             icon: Users,
-                            color: 'secondary',
+                            color: 'from-indigo-600/20 via-indigo-600/5 text-indigo-400 border-indigo-500/20',
                         },
                         {
                             label: 'Total Leads',
                             value: analytics.overview.total_leads,
                             icon: TrendingUp,
-                            color: 'warning',
+                            color: 'from-amber-600/20 via-amber-600/5 text-amber-400 border-amber-500/20',
                         }
                     ].map((stat, index) => (
-                        <div key={index} className="bg-card border border-border rounded-2xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all group">
-                            <div className="flex items-center justify-between mb-2 md:mb-3">
-                                <div className={`w-8 h-8 md:w-10 md:h-10 bg-${stat.color}/10 text-${stat.color} rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
-                                    <stat.icon className="w-4 h-4 md:w-5 md:h-5" />
+                        <div key={index} className="group relative overflow-hidden bg-slate-900/40 backdrop-blur-xl p-5 rounded-2xl border border-slate-800 shadow-sm hover:shadow-2xl transition-all duration-500">
+                            <div className={`absolute inset-0 bg-linear-to-br ${stat.color} opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+
+                            <div className="relative z-10 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{stat.label}</p>
+                                    <div className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 group-hover:border-blue-500/30 transition-colors">
+                                        <stat.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-400" />
+                                    </div>
                                 </div>
+                                <h3 className="text-xl font-black text-white tracking-tight truncate group-hover:text-blue-400 transition-colors">
+                                    {stat.value}
+                                </h3>
                             </div>
-                            <h3 className="text-sm md:text-lg lg:text-xl font-bold text-foreground mb-0.5 md:mb-1 truncate">{stat.value}</h3>
-                            <p className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-wider md:tracking-widest truncate">{stat.label}</p>
                         </div>
                     ))}
                 </section>
