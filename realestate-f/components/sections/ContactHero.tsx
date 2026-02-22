@@ -1,16 +1,26 @@
 export default function ContactHero() {
     return (
-        <section className="pt-32 pb-20 bg-linear-to-br from-primary/5 via-background to-background">
-            <div className="container mx-auto px-4">
+        <section className="relative pt-32 pb-24 overflow-hidden min-h-[50vh] flex items-center">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+                <img
+                    src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1920"
+                    alt="Contact Us Background"
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/65"></div>
+            </div>
+
+            <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center max-w-3xl mx-auto">
-                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                         Get in Touch
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-                        Contact <span className="text-primary">KenyaPrime</span>
+                    <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+                        Contact <span className="text-emerald-400">KenyaPrime</span>
                     </h1>
-                    <p className="text-xl text-muted-foreground mb-8">
+                    <p className="text-xl text-gray-300 mb-8 leading-relaxed">
                         We're here to help you with your real estate journey. Whether you're looking to buy, sell, or just have questions, our team is ready to assist you.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">

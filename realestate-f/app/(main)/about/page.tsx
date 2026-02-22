@@ -64,20 +64,28 @@ export default function AboutPage() {
 
     return (
         <main className="min-h-screen bg-background">
-            {/* Hero Section */}
-            <section className="relative overflow-hidden bg-linear-to-br from-primary via-primary/90 to-secondary">
-                <div className="absolute inset-0 bg-black/20 dark:bg-black/40" />
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <section className="relative min-h-[60vh] flex items-center overflow-hidden">
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                    <img
+                        src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1920"
+                        alt="About Us Background"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/65"></div>
+                </div>
+
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="max-w-4xl mx-auto text-center py-16 lg:py-24">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 backdrop-blur-sm rounded-full mb-6">
-                            <Building2 className="w-4 h-4 text-primary-foreground" />
-                            <span className="text-sm font-medium text-primary-foreground">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-full mb-6">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                            <span className="text-sm font-medium text-emerald-100">
                                 About KenyaPrime Properties
                             </span>
                         </div>
-                        <h1 className="text-4xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight">
+                        <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                             Building Dreams,{' '}
-                            <span className="text-secondary">Creating Homes</span>
+                            <span className="text-emerald-400">Creating Homes</span>
                         </h1>
                         <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
                             For over a decade, we've been helping individuals and families find their perfect spaces,
@@ -86,13 +94,13 @@ export default function AboutPage() {
                         <div className="flex flex-wrap justify-center gap-4">
                             <Link
                                 href="/contact"
-                                className="px-8 py-3 bg-background text-primary hover:bg-muted font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
+                                className="px-8 py-3 bg-emerald-600 text-white hover:bg-emerald-500 font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 flex items-center gap-2"
                             >
                                 Contact Us <ArrowRight className="w-4 h-4" />
                             </Link>
                             <Link
                                 href="/properties"
-                                className="px-8 py-3 bg-transparent border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 font-semibold rounded-xl transition-colors"
+                                className="px-8 py-3 bg-transparent border-2 border-white/20 text-white hover:bg-white/10 font-semibold rounded-xl transition-colors backdrop-blur-sm"
                             >
                                 Browse Properties
                             </Link>
