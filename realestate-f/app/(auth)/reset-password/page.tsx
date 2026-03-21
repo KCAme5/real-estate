@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, Eye, EyeOff, ArrowRight, Home, ShieldCheck, ArrowLeft } from 'lucide-react';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -227,5 +227,32 @@ export default function ResetPasswordPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={
+            <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+                <div className="relative z-10 w-full max-w-md px-4 py-12">
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center gap-3 mb-8">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl"></div>
+                                <div className="relative bg-linear-to-br from-emerald-500 to-emerald-400 text-slate-950 w-14 h-14 rounded-full flex items-center justify-center shadow-lg">
+                                    <Home className="w-7 h-7" />
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold text-white">Reset Password</div>
+                                <div className="text-slate-200 mt-1">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }>
+            <ResetPasswordForm />
+        </Suspense>
     );
 }
