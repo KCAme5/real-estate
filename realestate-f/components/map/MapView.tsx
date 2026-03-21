@@ -130,11 +130,10 @@ export default function MapView() {
 
         const map = L.map(mapRef.current).setView([-1.2921, 36.8219], 12);
 
-        // Add Carto dark tile layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 20,
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
         }).addTo(map);
 
         // Initialize marker cluster group
@@ -166,7 +165,9 @@ export default function MapView() {
         clusterGroupRef.current.clearLayers();
 
         let filteredProperties = properties.filter(
-            (p) => p.latitude !== null && p.longitude !== null
+            (p) => p.latitude !== null && p.longitude !== null &&
+                   p.latitude !== undefined && p.longitude !== undefined &&
+                   !isNaN(Number(p.latitude)) && !isNaN(Number(p.longitude))
         );
 
         // Apply search filter
@@ -188,8 +189,14 @@ export default function MapView() {
         }
 
         filteredProperties.forEach((property) => {
+            const lat = Number(property.latitude);
+            const lng = Number(property.longitude);
+            
+            // Skip if coordinates are invalid
+            if (isNaN(lat) || isNaN(lng)) return;
+            
             const marker = L.marker(
-                [property.latitude as number, property.longitude as number],
+                [lat, lng],
                 { icon: getMarkerIcon(property.property_type, property.is_featured) }
             );
 
@@ -244,10 +251,14 @@ export default function MapView() {
 
         // Fit map to show all markers
         if (filteredProperties.length > 0) {
-            const bounds = L.latLngBounds(
-                filteredProperties.map((p) => [p.latitude as number, p.longitude as number])
-            );
-            mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
+            const validCoords = filteredProperties
+                .map((p) => [Number(p.latitude), Number(p.longitude)] as [number, number])
+                .filter(([lat, lng]) => !isNaN(lat) && !isNaN(lng));
+            
+            if (validCoords.length > 0) {
+                const bounds = L.latLngBounds(validCoords);
+                mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
+            }
         }
     }, [properties, searchQuery, filterType]);
 
