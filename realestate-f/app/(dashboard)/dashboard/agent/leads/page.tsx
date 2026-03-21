@@ -566,7 +566,7 @@ export default function CRMPage() {
                         </div>
 
                         <button
-                            onClick={() => router.push('/dashboard/leads/new')}
+                            onClick={() => router.push('/dashboard/agentleads/new')}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-black text-white transition-all active:scale-95 shadow-lg"
                             style={{ background: 'linear-gradient(135deg,#1D4ED8,#3B82F6)', boxShadow: '0 4px 16px rgba(59,130,246,0.35)' }}
                         >
