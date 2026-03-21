@@ -39,6 +39,7 @@ export default function Header() {
 
     const navLinks = [
         { name: "Properties", href: "/properties" },
+        { name: "Map", href: "/map" },
         { name: "Agents", href: "/agents" },
         { name: "About", href: "/about" },
         { name: "Contact", href: "/contact" },

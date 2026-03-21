@@ -14,6 +14,7 @@ export default function Footer() {
         services: [
             { name: 'Buy Property', href: '/properties' },
             { name: 'Rent Property', href: '/properties?type=rent' },
+            { name: 'Property Map', href: '/map' },
             { name: 'Diaspora Services', href: '/diaspora' },
             { name: 'Property Management', href: '/management' }
         ],
