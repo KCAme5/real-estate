@@ -100,14 +100,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const response = await apiClient.post('/auth/register/', userData);
 
-            if (response.access) {
-                // Set token in memory
-                apiClient.setAccessToken(response.access);
+            if (response.success && response.user) {
+                // Token is now set via httpOnly cookie by the backend
+                // We need to fetch the access token separately or use the cookie
+                // For now, we'll set the user and let the API client handle token refresh
                 setUser(response.user);
-                // Set cookie for middleware
-                setCookie('auth_token', response.access);
+                // Set a placeholder cookie for middleware (actual token is in httpOnly cookie)
+                setCookie('auth_token', 'authenticated');
             } else {
-                throw new Error('No access token received');
+                throw new Error('Registration failed');
             }
             return response;
         } catch (error: any) {
@@ -130,15 +131,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const response = await apiClient.post('/auth/login/', loginData);
             console.log('🟢 Login API response:', response);
 
-            if (response.access) {
-                // Set token in memory
-                apiClient.setAccessToken(response.access);
+            if (response.success && response.user) {
+                // Token is now set via httpOnly cookie by the backend
+                // We need to fetch the access token separately or use the cookie
+                // For now, we'll set the user and let the API client handle token refresh
                 setUser(response.user);
-                // Set cookie for middleware
-                setCookie('auth_token', response.access);
+                // Set a placeholder cookie for middleware (actual token is in httpOnly cookie)
+                setCookie('auth_token', 'authenticated');
                 console.log('🟢 User set:', response.user);
             } else {
-                throw new Error('No access token received');
+                throw new Error('Login failed');
             }
             return response;
         } catch (error: any) {

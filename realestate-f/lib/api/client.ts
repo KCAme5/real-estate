@@ -52,14 +52,9 @@ class ApiClient {
                         credentials: 'include',
                     });
                     if (refreshResp.ok) {
-                        const refreshData = await refreshResp.json();
-                        if (refreshData.access) {
-                            this.setAccessToken(refreshData.access);
-                            (config.headers as any)['Authorization'] = `Bearer ${refreshData.access}`;
-                            response = await fetch(url, config);
-                        } else {
-                            throw new Error('No access token in refresh response');
-                        }
+                        // Token is now set via httpOnly cookie by the backend
+                        // Retry the original request with the new cookie
+                        response = await fetch(url, config);
                     } else {
                         if (this.onLogout) this.onLogout();
                         throw new Error('Session expired');

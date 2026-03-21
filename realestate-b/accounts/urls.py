@@ -1,5 +1,6 @@
 # accounts/urls.py
 from django.urls import path
+from django.conf import settings
 from . import views
 
 urlpatterns = [
@@ -18,14 +19,6 @@ urlpatterns = [
     path("preferences/", views.UserPreferencesView.as_view(), name="user-preferences"),
     path("refresh/", views.refresh_token, name="token-refresh"),
     path("logout/", views.logout_user, name="logout"),
-    # Debug endpoints
-    path("debug/auth-status/", views.debug_auth_status, name="debug-auth-status"),
-    path(
-        "debug/create-test-user/",
-        views.debug_create_test_user,
-        name="debug-create-test-user",
-    ),
-    path("debug/validate-cors/", views.debug_validate_cors, name="debug-validate-cors"),
     path(
         "management-agents/",
         views.ManagementAgentListView.as_view(),
@@ -37,3 +30,15 @@ urlpatterns = [
         name="management-agent-detail",
     ),
 ]
+
+# Only include debug endpoints in debug mode
+if settings.DEBUG:
+    urlpatterns += [
+        path("debug/auth-status/", views.debug_auth_status, name="debug-auth-status"),
+        path(
+            "debug/create-test-user/",
+            views.debug_create_test_user,
+            name="debug-create-test-user",
+        ),
+        path("debug/validate-cors/", views.debug_validate_cors, name="debug-validate-cors"),
+    ]

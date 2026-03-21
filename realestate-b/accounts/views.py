@@ -8,6 +8,9 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from .models import CustomUser, UserProfile, UserPreferences
 from leads.models import Lead, Conversation
@@ -72,7 +75,6 @@ def register_user(request):
         response_data = {
             "success": True,
             "user": UserSerializer(user).data,
-            "access": access_token,
             "message": "Registration successful! Welcome to KenyaPrime Properties.",
         }
 
@@ -83,7 +85,7 @@ def register_user(request):
             key="refresh",
             value=str(refresh),
             httponly=True,
-            samesite="None",
+            samesite="Lax",
             secure=True,
             max_age=7 * 24 * 60 * 60,
             path="/",
@@ -134,7 +136,7 @@ def format_errors_for_display(errors):
 @permission_classes([permissions.AllowAny])
 def login_user(request):
     """
-    Login user
+    Login user with rate limiting
     """
     # Get credentials from request
     username_or_email = request.data.get("username") or request.data.get("email")
@@ -149,6 +151,25 @@ def login_user(request):
                 "message": "Username/email and password are required.",
             },
             status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Rate limiting: Check for too many failed attempts
+    # Use IP address and username/email as the cache key
+    client_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
+    rate_limit_key = f"login_attempts:{client_ip}:{username_or_email}"
+    
+    # Get current attempt count
+    attempts = cache.get(rate_limit_key, 0)
+    
+    # Check if rate limited (max 5 attempts per 15 minutes)
+    if attempts >= 5:
+        return Response(
+            {
+                "success": False,
+                "error": "Too many login attempts",
+                "message": "Too many failed login attempts. Please try again in 15 minutes.",
+            },
+            status=status.HTTP_429_TOO_MANY_REQUESTS,
         )
 
     try:
@@ -178,7 +199,7 @@ def login_user(request):
                 {
                     "success": False,
                     "error": "Invalid credentials",
-                    "message": "No user found with these credentials.",
+                    "message": "Invalid username/email or password.",
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
@@ -196,14 +217,20 @@ def login_user(request):
 
         # Verify password
         if not user.check_password(password):
+            # Increment failed attempt counter
+            cache.set(rate_limit_key, attempts + 1, 900)  # 15 minutes = 900 seconds
+            
             return Response(
                 {
                     "success": False,
                     "error": "Invalid credentials",
-                    "message": "Invalid password.",
+                    "message": "Invalid username/email or password.",
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
+        
+        # Clear failed attempt counter on successful login
+        cache.delete(rate_limit_key)
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
@@ -213,8 +240,6 @@ def login_user(request):
         response_data = {
             "success": True,
             "user": UserSerializer(user).data,
-            "access": access_token,
-            "refresh": str(refresh),
             "message": "Login successful!",
         }
 
@@ -225,7 +250,7 @@ def login_user(request):
             key="refresh",
             value=str(refresh),
             httponly=True,
-            samesite="None",
+            samesite="Lax",
             secure=True,
             max_age=7 * 24 * 60 * 60,
             path="/",
@@ -250,18 +275,14 @@ def refresh_token(request):
     """
     Refresh access token using refresh token from cookie
     """
-    # Try to get refresh token from multiple sources
+    # Try to get refresh token from cookies
     refresh_token = None
 
-    # 1. Check cookies first (preferred)
+    # Check cookies first (preferred)
     if "refresh" in request.COOKIES:
         refresh_token = request.COOKIES.get("refresh")
     elif "refresh_token" in request.COOKIES:
         refresh_token = request.COOKIES.get("refresh_token")
-
-    # 2. Check request body (fallback for debugging)
-    if not refresh_token and request.data.get("refresh"):
-        refresh_token = request.data.get("refresh")
 
     if not refresh_token:
         return Response(
@@ -290,8 +311,6 @@ def refresh_token(request):
 
                 response_data = {
                     "success": True,
-                    "access": new_access,
-                    "refresh": str(new_refresh),
                     "message": "Token refreshed successfully",
                 }
 
@@ -302,7 +321,7 @@ def refresh_token(request):
                     key="refresh",
                     value=str(new_refresh),
                     httponly=True,
-                    samesite="None",
+                    samesite="Lax",
                     secure=True,
                     max_age=7 * 24 * 60 * 60,
                     path="/",
@@ -367,7 +386,7 @@ def logout_user(request):
                     max_age=0,
                     expires="Thu, 01 Jan 1970 00:00:00 GMT",
                     path="/",
-                    samesite="None",
+                    samesite="Lax",
                     httponly=(
                         True
                         if cookie_name in ["refresh", "refresh_token", "access_token"]
@@ -635,7 +654,6 @@ class UserPreferencesView(generics.RetrieveUpdateAPIView):
         preferences, created = UserPreferences.objects.get_or_create(
             user=self.request.user
         )
-        return preferences
         return preferences
 
 
