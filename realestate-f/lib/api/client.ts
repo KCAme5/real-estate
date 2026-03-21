@@ -21,31 +21,31 @@ class ApiClient {
         this.onLogout = handler;
     }
 
-    private async request(endpoint: string, options: RequestInit = {}) {
+    private async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
         const url = `${API_BASE_URL}${endpoint}`;
 
         const isForm = options.body && (options.body as any) instanceof FormData;
         const headers: Record<string, string> = {
-            ...(this.accessToken && { 'Authorization': `Bearer ${this.accessToken}` }),
+            ...(this.accessToken && { Authorization: `Bearer ${this.accessToken}` }),
             ...(options.headers as Record<string, string>),
         };
 
-        // When sending FormData the browser will set Content-Type including boundary.
         if (!isForm) headers['Content-Type'] = 'application/json';
 
         const config: RequestInit = {
             headers,
-            // Include credentials so refresh cookie is sent to the backend
             credentials: 'include',
             ...options,
-        } as RequestInit;
+        };
 
         try {
             let response = await fetch(url, config);
 
-            // If unauthorized, try to refresh access token using refresh cookie
-            // BUT, don't try to refresh if we're already trying to login or register
-            if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/register')) {
+            if (
+                response.status === 401 &&
+                !endpoint.includes('/auth/login') &&
+                !endpoint.includes('/auth/register')
+            ) {
                 try {
                     const refreshResp = await fetch(`${API_BASE_URL}/auth/refresh/`, {
                         method: 'POST',
@@ -55,53 +55,41 @@ class ApiClient {
                         const refreshData = await refreshResp.json();
                         if (refreshData.access) {
                             this.setAccessToken(refreshData.access);
-                            // retry original request with new token
                             (config.headers as any)['Authorization'] = `Bearer ${refreshData.access}`;
                             response = await fetch(url, config);
                         } else {
                             throw new Error('No access token in refresh response');
                         }
                     } else {
-                        // Refresh failed, trigger logout
                         if (this.onLogout) this.onLogout();
                         throw new Error('Session expired');
                     }
                 } catch (e) {
-                    // Refresh failed completely
                     if (this.onLogout) this.onLogout();
                     throw e;
                 }
             }
 
             if (!response.ok) {
-                // Try to parse error message from response
                 let errorMessage = `API Error: ${response.status} ${response.statusText}`;
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.detail || errorData.message || errorMessage;
                 } catch {
-                    // If response is not JSON, use default message
+                    // non-JSON error body — use default message
                 }
-
-                const error: ApiError = {
-                    message: errorMessage,
-                    status: response.status,
-                };
+                const error: ApiError = { message: errorMessage, status: response.status };
                 throw error;
             }
 
-            // Handle empty responses
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
-                return await response.json();
+                return (await response.json()) as T;
             }
 
-            return null;
+            return null as T;
         } catch (error: any) {
-            if (error.status) {
-                throw error; // Already formatted API error
-            }
-            // Network error or other issues
+            if (error.status !== undefined) throw error;
             throw {
                 message: error.message || 'Network error: Unable to connect to server',
                 status: 0,
@@ -109,7 +97,10 @@ class ApiClient {
         }
     }
 
-    async get(endpoint: string, options: RequestInit & { params?: Record<string, any> } = {}) {
+    async get<T = any>(
+        endpoint: string,
+        options: RequestInit & { params?: Record<string, any> } = {},
+    ): Promise<T> {
         let url = endpoint;
         if (options.params) {
             const searchParams = new URLSearchParams();
@@ -119,44 +110,38 @@ class ApiClient {
                 }
             });
             const queryString = searchParams.toString();
-            if (queryString) {
-                url += (url.includes('?') ? '&' : '?') + queryString;
-            }
+            if (queryString) url += (url.includes('?') ? '&' : '?') + queryString;
             delete options.params;
         }
-
-        return this.request(url, {
-            method: 'GET',
-            ...options
-        });
+        return this.request<T>(url, { method: 'GET', ...options });
     }
 
-    async post(endpoint: string, data: any) {
-        const isForm = data && data instanceof FormData;
-        return this.request(endpoint, {
+    async post<T = any>(endpoint: string, data?: any): Promise<T> {
+        const isForm = data instanceof FormData;
+        return this.request<T>(endpoint, {
             method: 'POST',
             body: isForm ? data : JSON.stringify(data),
         });
     }
 
-    async put(endpoint: string, data: any) {
-        const isForm = data && data instanceof FormData;
-        return this.request(endpoint, {
+    async put<T = any>(endpoint: string, data?: any): Promise<T> {
+        const isForm = data instanceof FormData;
+        return this.request<T>(endpoint, {
             method: 'PUT',
             body: isForm ? data : JSON.stringify(data),
         });
     }
 
-    async patch(endpoint: string, data: any) {
-        const isForm = data && data instanceof FormData;
-        return this.request(endpoint, {
+    async patch<T = any>(endpoint: string, data?: any): Promise<T> {
+        const isForm = data instanceof FormData;
+        return this.request<T>(endpoint, {
             method: 'PATCH',
             body: isForm ? data : JSON.stringify(data),
         });
     }
 
-    async delete(endpoint: string) {
-        return this.request(endpoint, { method: 'DELETE' });
+    async delete<T = any>(endpoint: string): Promise<T> {
+        return this.request<T>(endpoint, { method: 'DELETE' });
     }
 }
 
