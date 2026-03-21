@@ -11,16 +11,16 @@ import { ToastProvider } from '@/components/ui/toast';
 const inter = Inter({ subsets: ['latin'], preload: false });
 
 export const metadata: Metadata = {
-  title: 'KenyaPrime Properties | Luxury Real Estate for Kenyans & Diaspora',
+  title: 'Tugai Realtors | Luxury Real Estate for Kenyans & Diaspora',
   description: 'Premium real estate solutions connecting Kenyans and the diaspora with exceptional properties and investment opportunities across Kenya.',
   keywords: 'real estate, Kenya properties, diaspora, luxury homes, investment properties',
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/KenyaPrime.png' }
+      { url: '/screen.png' }
     ],
     shortcut: '/favicon.svg',
-    apple: '/KenyaPrime.png',
+    apple: '/screen.png',
   }
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout({
           attribute="class"
           forcedTheme="dark"
           disableTransitionOnChange
-          storageKey="kenyaprime-theme"
+          storageKey="tugai-theme"
         >
           <AuthProvider>
             <QueryProvider>

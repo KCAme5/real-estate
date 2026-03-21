@@ -79,9 +79,9 @@ export default function Footer() {
                     {/* Brand Column */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center gap-3 mb-6 group">
-                            <img src="/KenyaPrime.png" alt="KenyaPrime Logo" className="h-28 w-auto object-contain" />
+                            <img src="/tugairealtors.png" alt="Tugai Realtors Logo" className="h-28 w-auto object-contain" />
                             <div>
-                                <div className="text-2xl font-bold text-base-content">KenyaPrime</div>
+                                <div className="text-2xl font-bold text-base-content">Tugai Realtors</div>
                                 <div className="text-secondary text-sm -mt-1">Properties</div>
                             </div>
                         </Link>
@@ -161,7 +161,7 @@ export default function Footer() {
                 <div className="container mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="text-base-content/70 text-sm">
-                            © {currentYear} KenyaPrime Properties. All rights reserved.
+                            © {currentYear} Tugai Realtors Properties. All rights reserved.
                         </div>
 
                         <div className="flex items-center gap-6 text-sm text-base-content/70">

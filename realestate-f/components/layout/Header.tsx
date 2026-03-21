@@ -121,8 +121,8 @@ export default function Header() {
                     <Link href="/" className="flex items-center gap-3 group">
                         <div className="relative w-24 h-24 lg:w-20 lg:h-20 transition-transform duration-300 group-hover:scale-105">
                             <Image
-                                src="/KenyaPrime.png"
-                                alt="KenyaPrime Logo"
+                                src="/tugairealtors.png"
+                                alt="Tugai Realtors Logo"
                                 fill
                                 className="object-contain"
                                 priority
@@ -131,7 +131,7 @@ export default function Header() {
                         </div>
                         <div className="hidden sm:block">
                             <div className="text-xl lg:text-2xl font-bold text-foreground transition-colors group-hover:text-primary leading-none">
-                                KenyaPrime
+                                Tugai Realtors
                             </div>
                             <div className="text-sm text-primary font-medium tracking-wide">
                                 Properties
