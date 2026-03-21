@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { leadsAPI, CreateLeadData } from '@/lib/api/leads';
-import { propertiesAPI } from '@/lib/api/properties';
+import { propertyAPI } from '@/lib/api/properties';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import { useToast } from '@/components/ui/toast';
 import {
@@ -49,20 +49,20 @@ const INITIAL: FormData = {
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 const SOURCE_OPTIONS: { value: CreateLeadData['source']; label: string }[] = [
-    { value: 'website',        label: 'Website' },
-    { value: 'contact_form',   label: 'Contact Form' },
-    { value: 'book_viewing',   label: 'Book Viewing' },
+    { value: 'website', label: 'Website' },
+    { value: 'contact_form', label: 'Contact Form' },
+    { value: 'book_viewing', label: 'Book Viewing' },
     { value: 'saved_property', label: 'Saved Property' },
-    { value: 'whatsapp',       label: 'WhatsApp' },
-    { value: 'referral',       label: 'Referral' },
-    { value: 'walk_in',        label: 'Walk-in' },
-    { value: 'phone',          label: 'Phone Call' },
+    { value: 'whatsapp', label: 'WhatsApp' },
+    { value: 'referral', label: 'Referral' },
+    { value: 'walk_in', label: 'Walk-in' },
+    { value: 'phone', label: 'Phone Call' },
 ];
 
 const PRIORITY_OPTIONS = [
-    { value: 'low',    label: 'Low',    color: '#64748B' },
+    { value: 'low', label: 'Low', color: '#64748B' },
     { value: 'medium', label: 'Medium', color: '#3B82F6' },
-    { value: 'high',   label: 'High',   color: '#F97316' },
+    { value: 'high', label: 'High', color: '#F97316' },
     { value: 'urgent', label: 'Urgent', color: '#F43F5E' },
 ] as const;
 
@@ -76,9 +76,9 @@ const KE_LOCATIONS = [
 ];
 
 const STEPS = [
-    { id: 1, label: 'Contact',     desc: 'Who is this lead?' },
+    { id: 1, label: 'Contact', desc: 'Who is this lead?' },
     { id: 2, label: 'Preferences', desc: 'What are they looking for?' },
-    { id: 3, label: 'Notes',       desc: 'Any extra context?' },
+    { id: 3, label: 'Notes', desc: 'Any extra context?' },
 ] as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -151,8 +151,8 @@ function StepBar({ current }: { current: Step }) {
     return (
         <div className="flex items-center gap-0">
             {STEPS.map((step, i) => {
-                const done    = current > step.id;
-                const active  = current === step.id;
+                const done = current > step.id;
+                const active = current === step.id;
                 return (
                     <div key={step.id} className="flex items-center">
                         <div className="flex items-center gap-2.5">
@@ -160,8 +160,8 @@ function StepBar({ current }: { current: Step }) {
                                 className={`
                                     w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black
                                     transition-all duration-300
-                                    ${done   ? 'bg-blue-600 text-white'                                    : ''}
-                                    ${active ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/40'       : ''}
+                                    ${done ? 'bg-blue-600 text-white' : ''}
+                                    ${active ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/40' : ''}
                                     ${!done && !active ? 'bg-slate-800 text-slate-600 border border-slate-700' : ''}
                                 `}
                             >
@@ -187,11 +187,11 @@ function StepBar({ current }: { current: Step }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function NewLeadPage() {
-    const router                    = useRouter();
+    const router = useRouter();
     const { success, error: showError } = useToast();
-    const [step, setStep]           = useState<Step>(1);
-    const [form, setForm]           = useState<FormData>(INITIAL);
-    const [errors, setErrors]       = useState<Partial<Record<keyof FormData, string>>>({});
+    const [step, setStep] = useState<Step>(1);
+    const [form, setForm] = useState<FormData>(INITIAL);
+    const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
     const [submitting, setSubmitting] = useState(false);
     const [properties, setProperties] = useState<{ id: number; title: string }[]>([]);
     const [locationInput, setLocationInput] = useState('');
@@ -200,7 +200,7 @@ export default function NewLeadPage() {
         // Load properties for the property selector
         propertiesAPI.getAll({ limit: 100 })
             .then((res: any) => setProperties(res.results ?? res ?? []))
-            .catch(() => {});
+            .catch(() => { });
     }, []);
 
     const set = (key: keyof FormData, value: any) => {
@@ -214,10 +214,10 @@ export default function NewLeadPage() {
         const errs: typeof errors = {};
         if (s === 1) {
             if (!form.first_name.trim()) errs.first_name = 'Required';
-            if (!form.last_name.trim())  errs.last_name  = 'Required';
-            if (!form.email.trim())      errs.email      = 'Required';
+            if (!form.last_name.trim()) errs.last_name = 'Required';
+            if (!form.email.trim()) errs.email = 'Required';
             else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Invalid email';
-            if (!form.phone.trim())      errs.phone      = 'Required';
+            if (!form.phone.trim()) errs.phone = 'Required';
         }
         if (s === 2) {
             if (form.budget_min && form.budget_max) {
@@ -244,18 +244,18 @@ export default function NewLeadPage() {
         setSubmitting(true);
         try {
             const payload: CreateLeadData = {
-                first_name:          form.first_name.trim(),
-                last_name:           form.last_name.trim(),
-                email:               form.email.trim(),
-                phone:               form.phone.trim(),
-                source:              form.source,
-                priority:            form.priority,
-                budget_min:          form.budget_min ? Number(form.budget_min) : undefined,
-                budget_max:          form.budget_max ? Number(form.budget_max) : undefined,
+                first_name: form.first_name.trim(),
+                last_name: form.last_name.trim(),
+                email: form.email.trim(),
+                phone: form.phone.trim(),
+                source: form.source,
+                priority: form.priority,
+                budget_min: form.budget_min ? Number(form.budget_min) : undefined,
+                budget_max: form.budget_max ? Number(form.budget_max) : undefined,
                 preferred_locations: form.preferred_locations,
-                property_types:      form.property_types,
-                property:            form.property,
-                notes:               form.notes.trim(),
+                property_types: form.property_types,
+                property: form.property,
+                notes: form.notes.trim(),
             };
             const lead = await leadsAPI.createLead(payload);
             success('Lead created', `${form.first_name} ${form.last_name} added to pipeline`);
@@ -563,14 +563,14 @@ export default function NewLeadPage() {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Summary</p>
                                 <div className="space-y-2.5">
                                     {[
-                                        { label: 'Name',      value: `${form.first_name} ${form.last_name}`.trim() },
-                                        { label: 'Email',     value: form.email },
-                                        { label: 'Phone',     value: form.phone },
-                                        { label: 'Source',    value: SOURCE_OPTIONS.find(s => s.value === form.source)?.label },
-                                        { label: 'Priority',  value: PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label },
-                                        { label: 'Budget',    value: form.budget_min || form.budget_max ? `KES ${Number(form.budget_min || 0).toLocaleString()} – ${Number(form.budget_max || 0).toLocaleString()}` : '—' },
+                                        { label: 'Name', value: `${form.first_name} ${form.last_name}`.trim() },
+                                        { label: 'Email', value: form.email },
+                                        { label: 'Phone', value: form.phone },
+                                        { label: 'Source', value: SOURCE_OPTIONS.find(s => s.value === form.source)?.label },
+                                        { label: 'Priority', value: PRIORITY_OPTIONS.find(p => p.value === form.priority)?.label },
+                                        { label: 'Budget', value: form.budget_min || form.budget_max ? `KES ${Number(form.budget_min || 0).toLocaleString()} – ${Number(form.budget_max || 0).toLocaleString()}` : '—' },
                                         { label: 'Locations', value: form.preferred_locations.join(', ') || '—' },
-                                        { label: 'Types',     value: form.property_types.join(', ') || '—' },
+                                        { label: 'Types', value: form.property_types.join(', ') || '—' },
                                     ].map(row => (
                                         <div key={row.label} className="flex items-start justify-between gap-4">
                                             <span className="text-[11px] text-slate-600 font-bold flex-shrink-0">{row.label}</span>
