@@ -11,11 +11,7 @@ import os
 from urllib.parse import parse_qs
 
 from django.core.asgi import get_asgi_application
-from django.contrib.auth.models import AnonymousUser
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "realestate.settings")
 
@@ -48,6 +44,9 @@ class JWTAuthMiddleware:
     async def get_user_from_token(self, scope):
         """Authenticate user from JWT token in query params or headers"""
         from django.contrib.auth import get_user_model
+        from django.contrib.auth.models import AnonymousUser
+        from rest_framework_simplejwt.tokens import AccessToken
+        from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
         from asgiref.sync import sync_to_async
 
         User = get_user_model()
