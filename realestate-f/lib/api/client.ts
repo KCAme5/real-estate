@@ -7,6 +7,7 @@ interface ApiError {
 
 class ApiClient {
     private accessToken: string | null = null;
+    private refreshToken: string | null = null;
     private onLogout: (() => void) | null = null;
     private isRefreshing = false;
     private failedQueue: Array<{
@@ -14,12 +15,42 @@ class ApiClient {
         reject: (reason?: any) => void;
     }> = [];
 
+    constructor() {
+        // Load tokens from localStorage on initialization
+        if (typeof window !== 'undefined') {
+            this.accessToken = localStorage.getItem('accessToken');
+            this.refreshToken = localStorage.getItem('refreshToken');
+        }
+    }
+
     setAccessToken(token: string | null) {
         this.accessToken = token;
+        if (typeof window !== 'undefined') {
+            if (token) {
+                localStorage.setItem('accessToken', token);
+            } else {
+                localStorage.removeItem('accessToken');
+            }
+        }
+    }
+
+    setRefreshToken(token: string | null) {
+        this.refreshToken = token;
+        if (typeof window !== 'undefined') {
+            if (token) {
+                localStorage.setItem('refreshToken', token);
+            } else {
+                localStorage.removeItem('refreshToken');
+            }
+        }
     }
 
     getAccessToken(): string | null {
         return this.accessToken;
+    }
+
+    getRefreshToken(): string | null {
+        return this.refreshToken;
     }
 
     setLogoutHandler(handler: () => void) {
@@ -50,7 +81,6 @@ class ApiClient {
 
         const config: RequestInit = {
             headers,
-            credentials: 'include',
             ...options,
         };
 
@@ -74,15 +104,31 @@ class ApiClient {
                 this.isRefreshing = true;
 
                 try {
+                    // Try to refresh the token
                     const refreshResp = await fetch(`${API_BASE_URL}/auth/refresh/`, {
                         method: 'POST',
-                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            refresh: this.refreshToken,
+                        }),
                     });
+                    
                     if (refreshResp.ok) {
-                        // Token is now set via httpOnly cookie by the backend
-                        // Retry the original request with the new cookie
-                        response = await fetch(url, config);
-                        this.processQueue(null, 'refreshed');
+                        const refreshData = await refreshResp.json();
+                        // Update tokens
+                        this.setAccessToken(refreshData.access);
+                        if (refreshData.refresh) {
+                            this.setRefreshToken(refreshData.refresh);
+                        }
+                        // Retry the original request with the new token
+                        const newHeaders = {
+                            ...headers,
+                            Authorization: `Bearer ${refreshData.access}`,
+                        };
+                        response = await fetch(url, { ...config, headers: newHeaders });
+                        this.processQueue(null, refreshData.access);
                     } else {
                         // Refresh failed, trigger logout
                         this.processQueue(new Error('Session expired'), null);

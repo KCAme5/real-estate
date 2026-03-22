@@ -71,25 +71,16 @@ def register_user(request):
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
-        # Create response
+        # Create response with tokens in body
         response_data = {
             "success": True,
             "user": UserSerializer(user).data,
             "message": "Registration successful! Welcome to KenyaPrime Properties.",
+            "access": access_token,
+            "refresh": str(refresh),
         }
 
         response = Response(response_data, status=status.HTTP_201_CREATED)
-
-        # Set refresh token in httpOnly cookie
-        response.set_cookie(
-            key="refresh",
-            value=str(refresh),
-            httponly=True,
-            samesite="None",
-            secure=True,
-            max_age=7 * 24 * 60 * 60,
-            path="/",
-        )
 
         return response
 
@@ -155,12 +146,14 @@ def login_user(request):
 
     # Rate limiting: Check for too many failed attempts
     # Use IP address and username/email as the cache key
-    client_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
+    client_ip = request.META.get(
+        "HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "")
+    )
     rate_limit_key = f"login_attempts:{client_ip}:{username_or_email}"
-    
+
     # Get current attempt count
     attempts = cache.get(rate_limit_key, 0)
-    
+
     # Check if rate limited (max 5 attempts per 15 minutes)
     if attempts >= 5:
         return Response(
@@ -219,7 +212,7 @@ def login_user(request):
         if not user.check_password(password):
             # Increment failed attempt counter
             cache.set(rate_limit_key, attempts + 1, 900)  # 15 minutes = 900 seconds
-            
+
             return Response(
                 {
                     "success": False,
@@ -228,7 +221,7 @@ def login_user(request):
                 },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-        
+
         # Clear failed attempt counter on successful login
         cache.delete(rate_limit_key)
 
@@ -236,25 +229,16 @@ def login_user(request):
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
 
-        # Create response
+        # Create response with tokens in body
         response_data = {
             "success": True,
             "user": UserSerializer(user).data,
             "message": "Login successful!",
+            "access": access_token,
+            "refresh": str(refresh),
         }
 
         response = Response(response_data)
-
-        # Set refresh token in httpOnly cookie
-        response.set_cookie(
-            key="refresh",
-            value=str(refresh),
-            httponly=True,
-            samesite="None",
-            secure=True,
-            max_age=7 * 24 * 60 * 60,
-            path="/",
-        )
 
         return response
 
@@ -273,16 +257,10 @@ def login_user(request):
 @permission_classes([permissions.AllowAny])
 def refresh_token(request):
     """
-    Refresh access token using refresh token from cookie
+    Refresh access token using refresh token from request body
     """
-    # Try to get refresh token from cookies
-    refresh_token = None
-
-    # Check cookies first (preferred)
-    if "refresh" in request.COOKIES:
-        refresh_token = request.COOKIES.get("refresh")
-    elif "refresh_token" in request.COOKIES:
-        refresh_token = request.COOKIES.get("refresh_token")
+    # Try to get refresh token from request body
+    refresh_token = request.data.get("refresh")
 
     if not refresh_token:
         return Response(
@@ -363,37 +341,11 @@ def refresh_token(request):
 @permission_classes([permissions.AllowAny])
 def logout_user(request):
     """
-    Logout user by clearing the refresh cookie
+    Logout user - tokens are managed on the frontend
     """
     try:
         # Create response
         response = Response({"success": True, "message": "Logged out successfully"})
-
-        # Clear all possible auth cookies
-        cookies_to_clear = [
-            "refresh",
-            "refresh_token",
-            "access_token",
-            "debug_refresh_set",
-            "debug_login_success",
-        ]
-
-        for cookie_name in cookies_to_clear:
-            if cookie_name in request.COOKIES:
-                response.set_cookie(
-                    key=cookie_name,
-                    value="",
-                    max_age=0,
-                    expires="Thu, 01 Jan 1970 00:00:00 GMT",
-                    path="/",
-                    samesite="None",
-                    httponly=(
-                        True
-                        if cookie_name in ["refresh", "refresh_token", "access_token"]
-                        else False
-                    ),
-                    secure=True,
-                )
 
         return response
 
