@@ -5,6 +5,22 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { apiClient } from '@/lib/api/client';
 import { useRouter } from 'next/navigation';
 
+// Helper function to set a cookie
+const setCookie = (name: string, value: string, days: number = 7) => {
+    if (typeof document !== 'undefined') {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+    }
+};
+
+// Helper function to delete a cookie
+const deleteCookie = (name: string) => {
+    if (typeof document !== 'undefined') {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    }
+};
+
 interface User {
     id: number;
     email: string;
@@ -95,6 +111,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Clear localStorage tokens
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
+            // Clear auth cookie
+            deleteCookie('auth_token');
         }
     };
 
@@ -104,10 +122,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const response = await apiClient.post('/auth/register/', userData);
 
             if (response.success && response.user) {
-                // Store tokens in localStorage
+                // Store tokens in localStorage and cookie
                 if (response.access) {
                     localStorage.setItem('accessToken', response.access);
                     apiClient.setAccessToken(response.access);
+                    setCookie('auth_token', response.access);
                 }
                 if (response.refresh) {
                     localStorage.setItem('refreshToken', response.refresh);
@@ -141,19 +160,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('🟢 Login API response:', response);
 
             if (response.success && response.user) {
-                // Store tokens in localStorage
+                // Store tokens in localStorage and cookie
                 if (response.access) {
                     localStorage.setItem('accessToken', response.access);
                     apiClient.setAccessToken(response.access);
+                    setCookie('auth_token', response.access);
                 }
                 if (response.refresh) {
                     localStorage.setItem('refreshToken', response.refresh);
                     apiClient.setRefreshToken(response.refresh);
                 }
-                
+
                 setUser(response.user);
                 console.log('🟢 User set:', response.user);
-                
+
                 // Trigger redirection via useEffect
                 setShouldRedirect(true);
             } else {
