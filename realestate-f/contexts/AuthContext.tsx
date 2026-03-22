@@ -1,17 +1,18 @@
 // contexts/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { apiClient } from '@/lib/api/client';
+import { useRouter } from 'next/navigation';
 
 // Helper function to set cookies
 const setCookie = (name: string, value: string, options?: { maxAge?: number }) => {
     if (typeof window === 'undefined') return;
     const maxAge = options?.maxAge || 7 * 24 * 60 * 60; // 7 days default
-    // Add SameSite=Lax to allow cookies to be sent during navigation
-    // Add Secure flag for HTTPS environments
+    // Add SameSite=None; Secure for cross-site cookie support
+    // This is required for authentication to work across different domains
     const secureFlag = window.location.protocol === 'https:' ? ';Secure' : '';
-    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax${secureFlag}`;
+    document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=None${secureFlag}`;
 };
 
 interface User {
@@ -39,6 +40,13 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    const handleAutoLogout = useCallback(() => {
+        console.log('🔴 Auto-logout triggered due to authentication failure');
+        handleLogoutCleanUp();
+        router.push('/login');
+    }, [router]);
 
     useEffect(() => {
         // Register the logout handler
@@ -57,21 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     console.log('🔵 Found existing token, attempting to restore session...');
                     apiClient.setAccessToken(token);
                     // Fetch user profile to validate token and get user details
-                    // Assuming there's an endpoint /auth/me/ or similar. 
-                    // If not, we might rely on the token being valid and wait for the first request to fail.
-                    // However, to set the `user` state correctly, we likely need to fetch it.
-                    // Based on previous context, usually /auth/user/ or /accounts/users/me/
-                    // Let's try fetching user details. If this endpoint doesn't exist, we might need to adjust.
-                    // Looking at `client.ts` or backend views might be needed if I'm unsure.
-                    // But for now, I'll trust standard implementation or simply set authenticated if I can't fetch.
-                    // BETTER: Reread views.py to find the "get user" endpoint.
-
-                    // Retrying with a known endpoint or just setting loading false if we can't confirm.
-                    // Wait, I recall `accounts/views.py`. Let's assume there's a way. 
-                    // Actually, if I just set the token, the next API call works. 
-                    // But `user` state remains null.
-
-                    // Creating a "restoreUser" function call here
                     const response = await apiClient.get('/auth/user/');
                     setUser(response);
                     console.log('🟢 Session restored:', response);
@@ -84,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
 
         initAuth();
-    }, []);
+    }, [handleAutoLogout]);
 
     const handleLogoutCleanUp = () => {
         apiClient.setAccessToken(null);
@@ -139,6 +132,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 // Set a placeholder cookie for middleware (actual token is in httpOnly cookie)
                 setCookie('auth_token', 'authenticated');
                 console.log('🟢 User set:', response.user);
+                
+                // Redirect based on user type
+                if (response.user.user_type === 'agent') {
+                    router.push('/dashboard/agent');
+                } else if (response.user.user_type === 'management') {
+                    router.push('/dashboard/management');
+                } else {
+                    router.push('/dashboard');
+                }
             } else {
                 throw new Error('Login failed');
             }

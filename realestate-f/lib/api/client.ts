@@ -8,6 +8,11 @@ interface ApiError {
 class ApiClient {
     private accessToken: string | null = null;
     private onLogout: (() => void) | null = null;
+    private isRefreshing = false;
+    private failedQueue: Array<{
+        resolve: (value: any) => void;
+        reject: (reason?: any) => void;
+    }> = [];
 
     setAccessToken(token: string | null) {
         this.accessToken = token;
@@ -19,6 +24,17 @@ class ApiClient {
 
     setLogoutHandler(handler: () => void) {
         this.onLogout = handler;
+    }
+
+    private processQueue(error: any, token: string | null = null) {
+        this.failedQueue.forEach((prom) => {
+            if (error) {
+                prom.reject(error);
+            } else {
+                prom.resolve(token);
+            }
+        });
+        this.failedQueue = [];
     }
 
     private async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -46,6 +62,17 @@ class ApiClient {
                 !endpoint.includes('/auth/login') &&
                 !endpoint.includes('/auth/register')
             ) {
+                if (this.isRefreshing) {
+                    // If already refreshing, queue this request
+                    return new Promise((resolve, reject) => {
+                        this.failedQueue.push({ resolve, reject });
+                    }).then(() => {
+                        return this.request<T>(endpoint, options);
+                    });
+                }
+
+                this.isRefreshing = true;
+
                 try {
                     const refreshResp = await fetch(`${API_BASE_URL}/auth/refresh/`, {
                         method: 'POST',
@@ -55,13 +82,19 @@ class ApiClient {
                         // Token is now set via httpOnly cookie by the backend
                         // Retry the original request with the new cookie
                         response = await fetch(url, config);
+                        this.processQueue(null, 'refreshed');
                     } else {
+                        // Refresh failed, trigger logout
+                        this.processQueue(new Error('Session expired'), null);
                         if (this.onLogout) this.onLogout();
                         throw new Error('Session expired');
                     }
                 } catch (e) {
+                    this.processQueue(e, null);
                     if (this.onLogout) this.onLogout();
                     throw e;
+                } finally {
+                    this.isRefreshing = false;
                 }
             }
 

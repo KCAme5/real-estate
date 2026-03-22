@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import DashboardSidebarClient from '@/components/dashboard/DashboardSidebarClient';
 import { Menu, X, Home, Heart, MessageSquare } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 type DashboardErrorBoundaryState = {
     hasError: boolean;
@@ -56,6 +57,27 @@ export default function DashboardLayout({
 }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, loading, logout } = useAuth();
+
+    // Role-based access control
+    useEffect(() => {
+        if (!loading && user) {
+            const isAgentRoute = pathname.startsWith('/dashboard/agent');
+            const isManagementRoute = pathname.startsWith('/dashboard/management');
+            
+            // Check if user has access to the route
+            if (isAgentRoute && user.user_type !== 'agent') {
+                console.log('🔴 Access denied: User is not an agent');
+                logout();
+                router.push('/login');
+            } else if (isManagementRoute && user.user_type !== 'management') {
+                console.log('🔴 Access denied: User is not management');
+                logout();
+                router.push('/login');
+            }
+        }
+    }, [user, loading, pathname, logout, router]);
 
     const mobileQuickLinks = [
         { href: '/dashboard', label: 'Home', icon: Home },
