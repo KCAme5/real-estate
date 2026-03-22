@@ -26,14 +26,23 @@ export function useCRM() {
             // or we fetch it once on mount
 
             // Fetch lead ID on mount if possible, or use a specific endpoint
+            // Only try to fetch leads if user is an agent (clients don't have access)
+            if (user.user_type !== 'agent') {
+                return; // Skip CRM tracking for non-agent users
+            }
+
             const res = await leadsAPI.getAll(); // This is not ideal
-            const lead = (res.results || res)?.find((l: any) => l.user === user.id);
+            const leads = Array.isArray(res) ? res : (res.results || []);
+            const lead = leads.find((l: any) => l.user === user.id);
 
             if (lead) {
                 await leadsAPI.trackInteraction(lead.id, type, propertyId, metadata);
             }
-        } catch (error) {
-            console.error('Failed to track CRM interaction:', error);
+        } catch (error: any) {
+            // Only log errors that are not permission-related (403)
+            if (error?.status !== 403) {
+                console.error('Failed to track CRM interaction:', error);
+            }
         }
     }, [user]);
 
