@@ -25,7 +25,7 @@ def on_lead_created(sender, instance, created, **kwargs):
     if not instance.agent:
         # Prefer the property's own agent first
         if instance.property and instance.property.agent:
-            agent_user = instance.property.agent.user  # adjust if agent FK differs
+            agent_user = instance.property.agent  # property.agent is already a User FK
             Lead.objects.filter(pk=instance.pk).update(agent=agent_user)
             instance.agent = agent_user
         else:

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from properties.models import Property
+from leads.models import Lead
 
 User = get_user_model()
 
@@ -19,6 +20,9 @@ class Booking(models.Model):
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     agent = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="agent_bookings"
+    )
+    lead = models.ForeignKey(
+        Lead, on_delete=models.SET_NULL, null=True, blank=True, related_name="bookings"
     )
     date = models.DateTimeField()
     duration = models.IntegerField(default=30, help_text="Duration in minutes")

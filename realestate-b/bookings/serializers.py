@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.utils import timezone
 from .models import Booking
+from leads.models import Lead
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -76,10 +77,20 @@ class BookingSerializer(serializers.ModelSerializer):
 class BookingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ["property", "date", "duration", "client_notes"]
+        fields = ["property", "date", "duration", "client_notes", "lead"]
 
     def validate(self, data):
         property_obj = data["property"]
+        lead_obj = data.get("lead")
+        
+        # Validate lead if provided
+        if lead_obj:
+            if not isinstance(lead_obj, int):
+                raise serializers.ValidationError("Lead must be an integer ID.")
+            try:
+                Lead.objects.get(pk=lead_obj)
+            except Lead.DoesNotExist:
+                raise serializers.ValidationError("Lead with provided ID does not exist.")
 
         # Check if the property exists
         if not property_obj:
@@ -94,6 +105,23 @@ class BookingCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Get the current user
         user = self.context["request"].user
+        
+        # If lead is provided, use it; otherwise create a new client
+        lead_obj = validated_data.get("lead")
+        if lead_obj:
+            lead = Lead.objects.get(pk=lead_obj)
+            validated_data["client"] = lead.user
+            validated_data["agent"] = lead.agent
+        else:
+            validated_data["client"] = user
+            
+            # Assign the property owner as the agent
+            property_obj = validated_data["property"]
+            if property_obj.agent:
+                validated_data["agent"] = property_obj.agent
+            else:
+                # Fallback if property has no agent
+                pass
         
         # Assign the current user as the client
         validated_data["client"] = user

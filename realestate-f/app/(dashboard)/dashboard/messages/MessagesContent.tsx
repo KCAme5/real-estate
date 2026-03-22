@@ -23,6 +23,7 @@ import {
     Trash2
 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
+import { propertyAPI } from '@/lib/api/properties';
 
 export default function MessagesContent() {
     const { user } = useAuth();
@@ -193,6 +194,27 @@ export default function MessagesContent() {
     const handleCreateConversation = async (recipientId: number, propertyId?: number) => {
         try {
             setLoading(true);
+            
+            // Create lead first if property is provided
+            if (propertyId && user) {
+                try {
+                    const property = await propertyAPI.getProperty(propertyId.toString());
+                    const leadData = {
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        email: user.email,
+                        phone: user.phone_number || '',
+                        source: 'contact_form' as const,
+                        priority: 'medium' as const,
+                        property: propertyId,
+                    };
+                    await leadsAPI.createLead(leadData);
+                } catch (leadError) {
+                    // Silently fail - don't interrupt user experience
+                    console.error('Error creating lead for conversation:', leadError);
+                }
+            }
+            
             const res = await leadsAPI.createConversation(propertyId, recipientId);
             const newConv = res.data || res;
 
@@ -222,6 +244,25 @@ export default function MessagesContent() {
                 setActiveConversation(existingConv);
                 fetchMessages(existingConv.id);
                 return;
+            }
+
+            // Create lead first if user is available
+            if (user) {
+                try {
+                    const leadData = {
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        email: user.email,
+                        phone: user.phone_number || '',
+                        source: 'contact_form' as const,
+                        priority: 'medium' as const,
+                        property: undefined, // No property for general agent chat
+                    };
+                    await leadsAPI.createLead(leadData);
+                } catch (leadError) {
+                    // Silently fail - don't interrupt user experience
+                    console.error('Error creating lead for agent chat:', leadError);
+                }
             }
 
             // Create new conversation with agent

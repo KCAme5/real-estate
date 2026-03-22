@@ -19,6 +19,7 @@ import { bookingsAPI } from "@/lib/api/bookings";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from '@/components/ui/toast';
 import { CRMTracker } from "@/hooks/useCRM";
+import { useLead } from "@/hooks/useLead";
 
 const Map = dynamic(() => import('@/components/ui/Map'), {
     ssr: false,
@@ -37,6 +38,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
     const { success, error: showError } = useToast();
     const { slug } = use(params);
     const router = useRouter();
+    const { createLeadAndConversation } = useLead();
 
     // State
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -114,13 +116,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
         try {
             setIsStartingChat(true);
-            const res = await leadsAPI.createConversation(property.id, agent?.id);
-            const conversationId = res.id || res.data?.id;
-
-            const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
-            if (conversationId) {
-                router.push(`${baseMessagesPath}?id=${conversationId}`);
+            const result = await createLeadAndConversation(property, 'contact_form', 'medium');
+            
+            if (result && result.conversation) {
+                const conversationId = result.conversation.id || result.conversation.data?.id;
+                const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
+                if (conversationId) {
+                    router.push(`${baseMessagesPath}?id=${conversationId}`);
+                } else {
+                    router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent?.id}`);
+                }
             } else {
+                // Fallback if conversation creation fails
+                const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
                 router.push(`${baseMessagesPath}?propertyId=${property.id}&recipientId=${agent?.id}`);
             }
         } catch (error: any) {
@@ -155,6 +163,32 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                 await propertyAPI.saveProperty(property.id);
                 setIsSaved(true);
                 success("Property Saved!", "Property added to your collection");
+                
+                // Create lead and track interaction for saved property
+                try {
+                    const leadData = {
+                        first_name: user.first_name,
+                        last_name: user.last_name,
+                        email: user.email,
+                        phone: user.phone_number || '',
+                        source: 'saved_property' as const,
+                        priority: 'low' as const,
+                        property: property.id,
+                    };
+                    
+                    const lead = await leadsAPI.createLead(leadData);
+                    
+                    // Track interaction for saved property
+                    await leadsAPI.trackInteraction(
+                        lead.id,
+                        'property_click',
+                        property.id,
+                        { saved: true }
+                    );
+                } catch (leadError) {
+                    // Silently fail - don't interrupt user experience
+                    console.error('Error creating lead for saved property:', leadError);
+                }
             }
         } catch (error) {
             console.error("Error saving property:", error);
@@ -174,6 +208,21 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
         try {
             setIsSubmittingViewing(true);
+            
+            // Create lead first
+            const leadData = {
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                phone: user.phone_number || '',
+                source: 'book_viewing' as const,
+                priority: 'high' as const,
+                property: property.id,
+            };
+            
+            const lead = await leadsAPI.createLead(leadData);
+            
+            // Create booking with the lead ID
             const bookingTimeMap: Record<string, string> = {
                 'Morning (9AM - 12PM)': '09:00:00',
                 'Afternoon (12PM - 4PM)': '14:00:00',
@@ -183,6 +232,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
             await bookingsAPI.create({
                 property: property.id,
+                lead: lead.id,
                 date: dateTimeStr,
                 duration: 30,
                 client_notes: `Phone: ${viewingForm.phone}\n${viewingForm.notes}`
