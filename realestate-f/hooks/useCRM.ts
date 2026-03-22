@@ -26,8 +26,8 @@ export function useCRM() {
             // or we fetch it once on mount
 
             // Fetch lead ID on mount if possible, or use a specific endpoint
-            const res = await leadsAPI.getLeads({ agent: undefined }); // This is not ideal
-            const lead = res.results?.find((l: any) => l.user === user.id);
+            const res = await leadsAPI.getAll(); // This is not ideal
+            const lead = (res.results || res)?.find((l: any) => l.user === user.id);
 
             if (lead) {
                 await leadsAPI.trackInteraction(lead.id, type, propertyId, metadata);
