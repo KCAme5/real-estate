@@ -30,6 +30,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
     const router = useRouter();
 
     const handleAutoLogout = useCallback(() => {
@@ -37,6 +38,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         handleLogoutCleanUp();
         router.push('/login');
     }, [router]);
+
+    // Handle redirection after user is set
+    useEffect(() => {
+        if (shouldRedirect && user) {
+            console.log('🟢 Redirecting user based on type:', user.user_type);
+            const timer = setTimeout(() => {
+                if (user.user_type === 'agent') {
+                    router.push('/dashboard/agent');
+                } else if (user.user_type === 'management') {
+                    router.push('/dashboard/management');
+                } else {
+                    router.push('/dashboard');
+                }
+                setShouldRedirect(false);
+            }, 100); // Small delay to ensure state is fully updated
+
+            return () => clearTimeout(timer);
+        }
+    }, [shouldRedirect, user, router]);
 
     useEffect(() => {
         // Register the logout handler
@@ -94,6 +114,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     apiClient.setRefreshToken(response.refresh);
                 }
                 setUser(response.user);
+                // Trigger redirection via useEffect
+                setShouldRedirect(true);
             } else {
                 throw new Error('Registration failed');
             }
@@ -131,15 +153,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 
                 setUser(response.user);
                 console.log('🟢 User set:', response.user);
-
-                // Redirect based on user type
-                if (response.user.user_type === 'agent') {
-                    router.push('/dashboard/agent');
-                } else if (response.user.user_type === 'management') {
-                    router.push('/dashboard/management');
-                } else {
-                    router.push('/dashboard');
-                }
+                
+                // Trigger redirection via useEffect
+                setShouldRedirect(true);
             } else {
                 throw new Error('Login failed');
             }

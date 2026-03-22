@@ -146,15 +146,7 @@ export default function RegistrationPage() {
 
             // Show success message
             setSuccessMessage('Registration successful! Welcome to KenyaPrime Properties. Redirecting you to dashboard...');
-
-            // Redirect based on user type after a short delay
-            setTimeout(() => {
-                if (formData.user_type === 'agent') {
-                    router.push('/dashboard/agent');
-                } else {
-                    router.push('/dashboard');
-                }
-            }, 2000);
+            // Redirection is handled by AuthContext.register()
         } catch (err: any) {
             console.error('Registration error details:', err);
 
