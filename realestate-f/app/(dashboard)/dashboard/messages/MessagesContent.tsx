@@ -216,7 +216,7 @@ export default function MessagesContent() {
             }
 
             const res = await leadsAPI.createConversation(propertyId, recipientId);
-            const newConv: Conversation = res.data || res;
+            const newConv: Conversation = res;
 
             setConversations(prev => {
                 const exists = prev.find(c => c.id === newConv.id);
@@ -267,7 +267,7 @@ export default function MessagesContent() {
 
             // Create new conversation with agent
             const res = await leadsAPI.createAgentConversation(agentId);
-            const newConv: Conversation = res.data || res;
+            const newConv: Conversation = res;
 
             setConversations(prev => {
                 const exists = prev.find(c => c.id === newConv.id);
