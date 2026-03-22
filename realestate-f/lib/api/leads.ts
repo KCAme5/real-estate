@@ -138,6 +138,8 @@ export interface Conversation {
         name: string;
         type: string;
         avatar?: string | null;
+        is_online?: boolean;
+        is_verified?: boolean;
     };
     is_active: boolean;
     created_at: string;
@@ -266,6 +268,12 @@ export const leadsAPI = {
     createConversation: (propertyId: number | undefined, agentId: number) =>
         apiClient.post<Conversation>('/leads/conversations/', {
             property: propertyId ?? null,
+            agent: agentId,
+        }),
+
+    createAgentConversation: (agentId: number) =>
+        apiClient.post<Conversation>('/leads/conversations/', {
+            property: null,
             agent: agentId,
         }),
 

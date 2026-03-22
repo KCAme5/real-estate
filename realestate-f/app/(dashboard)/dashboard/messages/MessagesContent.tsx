@@ -194,7 +194,7 @@ export default function MessagesContent() {
     const handleCreateConversation = async (recipientId: number, propertyId?: number) => {
         try {
             setLoading(true);
-            
+
             // Create lead first if property is provided
             if (propertyId && user) {
                 try {
@@ -214,9 +214,9 @@ export default function MessagesContent() {
                     console.error('Error creating lead for conversation:', leadError);
                 }
             }
-            
+
             const res = await leadsAPI.createConversation(propertyId, recipientId);
-            const newConv = res.data || res;
+            const newConv: Conversation = res.data || res;
 
             setConversations(prev => {
                 const exists = prev.find(c => c.id === newConv.id);
@@ -267,7 +267,7 @@ export default function MessagesContent() {
 
             // Create new conversation with agent
             const res = await leadsAPI.createAgentConversation(agentId);
-            const newConv = res.data || res;
+            const newConv: Conversation = res.data || res;
 
             setConversations(prev => {
                 const exists = prev.find(c => c.id === newConv.id);
@@ -289,7 +289,7 @@ export default function MessagesContent() {
         try {
             if (showLoading && conversations.length === 0) setLoading(true);
             const res = await leadsAPI.getConversations();
-            const data = res.results || res;
+            const data: Conversation[] = Array.isArray(res) ? res : (res.results || []);
             setConversations(data);
         } catch (error) {
             console.error('Failed to fetch conversations:', error);
@@ -301,7 +301,7 @@ export default function MessagesContent() {
     const fetchMessages = async (conversationId: number, showLoading = true) => {
         try {
             const res = await leadsAPI.getMessages(conversationId);
-            const data = res.results || res;
+            const data: Message[] = Array.isArray(res) ? res : (res.results || []);
             setMessages(data);
             setVisibleMessageCount((prev) => {
                 const base = 50;
