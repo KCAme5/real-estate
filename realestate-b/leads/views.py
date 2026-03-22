@@ -17,6 +17,7 @@ from .models import (
 from .serializers import (
     LeadListSerializer,
     LeadDetailSerializer,
+    LeadWriteSerializer,
     LeadStatusUpdateSerializer,
     LeadActivitySerializer,
     LeadInteractionSerializer,
@@ -61,7 +62,9 @@ class LeadListView(generics.ListCreateAPIView):
         return [IsAgentOrAdmin()]
 
     def get_serializer_class(self):
-        # FIX: use lightweight serializer for list — no nested queries
+        # Use lightweight serializer for list — no nested queries
+        if self.request.method == "POST":
+            return LeadWriteSerializer
         return LeadListSerializer
 
     def get_queryset(self):

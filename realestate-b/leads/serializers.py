@@ -169,6 +169,32 @@ class LeadStatusUpdateSerializer(serializers.ModelSerializer):
         fields = ["status", "notes"]
 
 
+class LeadWriteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating and updating leads via POST/PATCH.
+    Only allows writable fields — no computed/read-only fields.
+    """
+
+    class Meta:
+        model = Lead
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "source",
+            "status",
+            "priority",
+            "budget_min",
+            "budget_max",
+            "preferred_locations",
+            "property_types",
+            "property",
+            "agent",
+            "notes",
+        ]
+
+
 # ─── Messages & Conversations ────────────────────────────────────────────────
 
 

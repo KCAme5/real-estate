@@ -40,7 +40,7 @@ class Lead(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
-    phone = models.CharField(max_length=15)
+    phone = models.CharField(max_length=15, blank=True)
 
     # Linked registered user (optional — guests can be leads too)
     user = models.ForeignKey(
