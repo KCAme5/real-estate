@@ -59,7 +59,15 @@ export const useWebSocket = () => {
     // Derive WebSocket URL from API Base URL
     // e.g., https://api.example.com/api -> wss://api.example.com/ws/chat/
     const baseUrl = apiBaseUrl.replace(/^http/, 'ws').replace(/\/api\/?$/, '');
-    wsUrl = `${baseUrl}/ws/chat/`;
+
+    // Get JWT token from localStorage
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+
+    if (token) {
+      wsUrl = `${baseUrl}/ws/chat/?token=${token}`;
+    } else {
+      wsUrl = `${baseUrl}/ws/chat/`;
+    }
 
     try {
       wsRef.current = new WebSocket(wsUrl);
