@@ -25,6 +25,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
+    "channels",
     "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -79,6 +80,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "realestate.wsgi.application"
+ASGI_APPLICATION = "realestate.asgi.application"
+
+# Channel Layers for WebSocket support
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 DATABASES = {
