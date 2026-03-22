@@ -153,6 +153,14 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
 
+# Cookie settings for cross-site authentication
+# Set SameSite=None; Secure to allow cookies to be sent in cross-site requests
+# This is required for authentication to work across different domains
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = True
+
 # During development we allow cookies for refresh tokens. In production
 # you'll want to tighten cookie settings (Secure, SameSite, domain, etc.).
 
