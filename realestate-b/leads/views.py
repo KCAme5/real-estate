@@ -1,9 +1,12 @@
 from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Avg, Q
 from django.utils import timezone
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .models import (
     Lead,
@@ -100,29 +103,58 @@ class LeadListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         """
         Auto-assign to property's agent first, then least-busy agent.
+        Logs creation for debugging.
         """
         from django.contrib.auth import get_user_model
 
         User = get_user_model()
 
-        agent = serializer.validated_data.get("agent")
-        prop = serializer.validated_data.get("property")
+        try:
+            agent = serializer.validated_data.get("agent")
+            prop = serializer.validated_data.get("property")
 
-        if not agent:
-            if prop and hasattr(prop, "agent") and prop.agent:
-                # Try to get the user from the agent profile
-                agent = getattr(prop.agent, "user", prop.agent)
-            else:
-                least_busy = (
-                    User.objects.filter(user_type="agent")
-                    .annotate(lead_count=Count("assigned_leads"))
-                    .order_by("lead_count")
-                    .first()
-                )
-                agent = least_busy
+            if not agent:
+                if prop and hasattr(prop, "agent") and prop.agent:
+                    agent = getattr(prop.agent, "user", prop.agent)
+                else:
+                    least_busy = (
+                        User.objects.filter(user_type="agent")
+                        .annotate(lead_count=Count("assigned_leads"))
+                        .order_by("lead_count")
+                        .first()
+                    )
+                    agent = least_busy
 
-        lead = serializer.save(agent=agent)
-        lead.update_score()
+            lead = serializer.save(agent=agent)
+            lead.update_score()
+
+            logger.info(
+                f"Lead created: {lead.id} - {lead.first_name} {lead.last_name} ({lead.source})"
+            )
+
+        except Exception as e:
+            logger.error(f"Error creating lead: {str(e)}", exc_info=True)
+            raise
+
+    def create(self, request, *args, **kwargs):
+        """Override to provide better error messages in response."""
+        try:
+            return super().create(request, *args, **kwargs)
+        except ValidationError as e:
+            logger.warning(f"Validation error on lead creation: {e.detail}")
+            return Response(
+                {"success": False, "message": "Validation failed", "errors": e.detail},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error on lead creation: {str(e)}", exc_info=True)
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to create lead. Please try again.",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class LeadDetailView(generics.RetrieveUpdateAPIView):

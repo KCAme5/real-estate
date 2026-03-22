@@ -114,7 +114,7 @@ class ApiClient {
                             refresh: this.refreshToken,
                         }),
                     });
-                    
+
                     if (refreshResp.ok) {
                         const refreshData = await refreshResp.json();
                         // Update tokens
@@ -146,9 +146,32 @@ class ApiClient {
 
             if (!response.ok) {
                 let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+                let fieldErrors: Record<string, any> = {};
                 try {
                     const errorData = await response.json();
-                    errorMessage = errorData.detail || errorData.message || errorMessage;
+
+                    // Handle DRF validation errors (field errors dict)
+                    if (typeof errorData === 'object' && !Array.isArray(errorData)) {
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        } else {
+                            // Collect field errors
+                            for (const [field, errors] of Object.entries(errorData)) {
+                                if (Array.isArray(errors)) {
+                                    fieldErrors[field] = errors.join(', ');
+                                } else if (typeof errors === 'string') {
+                                    fieldErrors[field] = errors;
+                                }
+                            }
+                            if (Object.keys(fieldErrors).length > 0) {
+                                errorMessage = Object.entries(fieldErrors)
+                                    .map(([field, error]) => `${field}: ${error}`)
+                                    .join('\n');
+                            }
+                        }
+                    }
                 } catch {
                     // non-JSON error body — use default message
                 }
