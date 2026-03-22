@@ -68,6 +68,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     room_group_name,
                     {
                         "type": "chat_message",
+                        "conversation_id": conversation_id,
                         "message": {
                             "id": message.id,
                             "content": message.content,
@@ -91,6 +92,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 room_group_name,
                 {
                     "type": "typing_status",
+                    "conversation_id": conversation_id,
                     "user_id": self.user.id,
                     "username": self.user.username,
                     "is_typing": is_typing,
@@ -100,7 +102,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         # Send message to WebSocket
         await self.send(
-            text_data=json.dumps({"type": "message", "message": event["message"]})
+            text_data=json.dumps(
+                {
+                    "type": "message",
+                    "conversation_id": event.get("conversation_id"),
+                    "message": event["message"],
+                }
+            )
         )
 
     async def typing_status(self, event):
@@ -109,6 +117,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps(
                 {
                     "type": "typing",
+                    "conversation_id": event.get("conversation_id"),
                     "user_id": event["user_id"],
                     "username": event["username"],
                     "is_typing": event["is_typing"],
