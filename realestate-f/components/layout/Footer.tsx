@@ -7,22 +7,22 @@ export default function Footer() {
     const footerLinks = {
         company: [
             { name: 'About Us', href: '/about' },
-            { name: 'Our Team', href: '/team' },
-            { name: 'Careers', href: '/careers' },
-            { name: 'Press', href: '/press' }
+            // { name: 'Our Team', href: '/team' }, // Page not yet created
+            // { name: 'Careers', href: '/careers' }, // Page not yet created
+            // { name: 'Press', href: '/press' } // Page not yet created
         ],
         services: [
             { name: 'Buy Property', href: '/properties' },
             { name: 'Rent Property', href: '/properties?type=rent' },
             { name: 'Property Map', href: '/map' },
-            { name: 'Diaspora Services', href: '/diaspora' },
-            { name: 'Property Management', href: '/management' }
+            // { name: 'Diaspora Services', href: '/diaspora' }, // Page not yet created
+            // { name: 'Property Management', href: '/management' } // Page not yet created
         ],
         support: [
-            { name: 'Help Center', href: '/help' },
+            // { name: 'Help Center', href: '/help' }, // Page not yet created
             { name: 'Contact Us', href: '/contact' },
-            { name: 'Privacy Policy', href: '/privacy' },
-            { name: 'Terms of Service', href: '/terms' }
+            // { name: 'Privacy Policy', href: '/privacy' }, // Page not yet created
+            // { name: 'Terms of Service', href: '/terms' } // Page not yet created
         ],
         locations: [
             { name: 'Nairobi', href: '/locations/nairobi' },

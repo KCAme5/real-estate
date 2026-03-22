@@ -73,15 +73,7 @@ export default function LoginPage() {
         try {
             const response = await login(formData.email, formData.password);
             setSuccessMessage('Login successful! Redirecting...');
-
-            // Use the user from response for immediate redirection
-            if (response?.user?.user_type === 'management') {
-                router.push('/dashboard/management');
-            } else if (response?.user?.user_type === 'agent') {
-                router.push('/dashboard/agent');
-            } else {
-                router.push('/dashboard');
-            }
+            // Redirection is handled by AuthContext.login()
         } catch (err: any) {
             setError(err.message || 'Login failed. Please check your credentials and try again.');
         }
