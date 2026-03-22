@@ -60,8 +60,8 @@ export const useWebSocket = () => {
     // e.g., https://api.example.com/api -> wss://api.example.com/ws/chat/
     const baseUrl = apiBaseUrl.replace(/^http/, 'ws').replace(/\/api\/?$/, '');
 
-    // Get JWT token from localStorage
-    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    // Get JWT token from localStorage (AuthContext uses 'accessToken' key)
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
     if (token) {
       wsUrl = `${baseUrl}/ws/chat/?token=${token}`;
