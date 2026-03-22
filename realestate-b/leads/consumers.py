@@ -7,34 +7,65 @@ from .models import Conversation, Message
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
-        self.conversation_id = None
-        self.room_group_name = None
 
         # Check if user is authenticated
         if self.user.is_anonymous:
             await self.close()
             return
 
-        # Accept the connection - user will join specific rooms when they send messages
+        # Accept the connection
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Leave room group
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        # Leave any room groups we joined
+        if hasattr(self, "_joined_rooms"):
+            for conversation_id in self._joined_rooms:
+                room_group_name = f"chat_{conversation_id}"
+                await self.channel_layer.group_discard(
+                    room_group_name, self.channel_name
+                )
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+        try:
+            text_data_json = json.loads(text_data)
+        except json.JSONDecodeError:
+            await self.send_error("Invalid JSON")
+            return
+
         message_type = text_data_json.get("type", "message")
+        conversation_id = text_data_json.get("conversation_id")
+
+        # Validate conversation_id
+        if not conversation_id:
+            await self.send_error("conversation_id is required")
+            return
+
+        # Check access to conversation
+        has_access = await self.check_conversation_access(conversation_id)
+        if not has_access:
+            await self.send_error("Access denied to this conversation")
+            return
+
+        # Initialize joined rooms set if needed
+        if not hasattr(self, "_joined_rooms"):
+            self._joined_rooms = set()
+
+        room_group_name = f"chat_{conversation_id}"
+
+        # Join room group if not already joined
+        if conversation_id not in self._joined_rooms:
+            await self.channel_layer.group_add(room_group_name, self.channel_name)
+            self._joined_rooms.add(conversation_id)
 
         if message_type == "message":
-            content = text_data_json.get("content", "")
+            content = text_data_json.get("content", "").strip()
             if content:
                 # Save message to database
-                message = await self.save_message(content)
+                message = await self.save_message(conversation_id, content)
 
                 # Send message to room group
                 await self.channel_layer.group_send(
-                    self.room_group_name,
+                    room_group_name,
                     {
                         "type": "chat_message",
                         "message": {
@@ -52,11 +83,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         },
                     },
                 )
+
         elif message_type == "typing":
             is_typing = text_data_json.get("is_typing", False)
             # Broadcast typing status to room group
             await self.channel_layer.group_send(
-                self.room_group_name,
+                room_group_name,
                 {
                     "type": "typing_status",
                     "user_id": self.user.id,
@@ -84,17 +116,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
         )
 
+    async def send_error(self, message):
+        """Send error message to client"""
+        await self.send(text_data=json.dumps({"type": "error", "message": message}))
+
     @database_sync_to_async
-    def check_conversation_access(self):
+    def check_conversation_access(self, conversation_id):
         try:
-            conversation = Conversation.objects.get(id=self.conversation_id)
+            conversation = Conversation.objects.get(id=conversation_id)
             return conversation.agent == self.user or conversation.client == self.user
         except Conversation.DoesNotExist:
             return False
 
     @database_sync_to_async
-    def save_message(self, content):
-        conversation = Conversation.objects.get(id=self.conversation_id)
+    def save_message(self, conversation_id, content):
+        conversation = Conversation.objects.get(id=conversation_id)
         message = Message.objects.create(
             conversation=conversation, sender=self.user, content=content
         )
