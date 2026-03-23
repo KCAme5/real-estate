@@ -33,14 +33,53 @@ import {
 
 export default function AnalyticsDashboard() {
     const { user } = useAuth();
-    const [data, setData] = useState<any>(null);
+    const [stats, setStats] = useState<any>(null);
+    const [properties, setProperties] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchAnalytics = async () => {
+        const fetchAllData = async () => {
             try {
-                const res = await analyticsAPI.getDashboardStats();
-                setData(res);
+                // Fetch dashboard stats
+                const statsRes = await analyticsAPI.getDashboardStats();
+                setStats(statsRes);
+
+                // Fetch agent properties for performance data
+                const propsRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/properties/my-properties/`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    }
+                });
+
+                if (propsRes.ok) {
+                    const propsData = await propsRes.json();
+                    const props = Array.isArray(propsData) ? propsData : propsData.results || [];
+
+                    // Fetch view data for each property and calculate conversion rates
+                    const enrichedProps = await Promise.all(props.slice(0, 3).map(async (prop: any) => {
+                        try {
+                            const analyticsRes = await analyticsAPI.getPropertyAnalytics(prop.id);
+                            return {
+                                id: prop.id,
+                                title: prop.title || 'Unknown Property',
+                                views: analyticsRes.total_views || 0,
+                                leads: analyticsRes.leads_from_property || 0,
+                                conversionRate: analyticsRes.performance_metrics?.conversion_rate || 0,
+                                trend: analyticsRes.performance_metrics?.average_daily_views > 20 ? 'up' : 'down',
+                            };
+                        } catch (e) {
+                            return {
+                                id: prop.id,
+                                title: prop.title || 'Unknown Property',
+                                views: 0,
+                                leads: 0,
+                                conversionRate: 0,
+                                trend: 'down',
+                            };
+                        }
+                    }));
+                    setProperties(enrichedProps);
+                }
             } catch (error) {
                 console.error('Failed to fetch analytics:', error);
             } finally {
@@ -48,7 +87,7 @@ export default function AnalyticsDashboard() {
             }
         };
 
-        if (user) fetchAnalytics();
+        if (user) fetchAllData();
     }, [user]);
 
     if (loading) {
@@ -61,19 +100,25 @@ export default function AnalyticsDashboard() {
 
     const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
 
-    // Mock data for trends if not available
+    // Calculate trend data from actual stats
+    const totalLeads = stats?.total_leads || 0;
+    const totalViews = stats?.property_views || 0;
+    const recentLeads = stats?.recent_leads || 0;
+
+    // Build simple 4-week trend (simulate by dividing total by 4)
     const trendData = [
-        { name: 'Week 1', leads: 400, views: 2400 },
-        { name: 'Week 2', leads: 300, views: 1398 },
-        { name: 'Week 3', leads: 200, views: 9800 },
-        { name: 'Week 4', leads: 278, views: 3908 },
+        { name: 'Week 1', leads: Math.floor(totalLeads * 0.2), views: Math.floor(totalViews * 0.2) },
+        { name: 'Week 2', leads: Math.floor(totalLeads * 0.25), views: Math.floor(totalViews * 0.25) },
+        { name: 'Week 3', leads: Math.floor(totalLeads * 0.3), views: Math.floor(totalViews * 0.3) },
+        { name: 'Week 4', leads: Math.floor(totalLeads * 0.25), views: Math.floor(totalViews * 0.25) },
     ];
 
+    // Calculate source distribution (mock for now as backend doesn't have this)
     const sourceData = [
-        { name: 'Website', value: 400 },
-        { name: 'WhatsApp', value: 300 },
-        { name: 'Referral', value: 300 },
-        { name: 'Phone', value: 200 },
+        { name: 'Website', value: Math.floor(stats?.total_leads * 0.35) || 0 },
+        { name: 'WhatsApp', value: Math.floor(stats?.total_leads * 0.25) || 0 },
+        { name: 'Referral', value: Math.floor(stats?.total_leads * 0.25) || 0 },
+        { name: 'Phone', value: Math.floor(stats?.total_leads * 0.15) || 0 },
     ];
 
     return (
@@ -95,10 +140,10 @@ export default function AnalyticsDashboard() {
                 {/* Performance Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
-                        { label: 'Total Revenue', value: 'KES 42.8M', trend: '+12.5%', icon: TrendingUp, color: 'emerald' },
-                        { label: 'Lead Conversion', value: '18.4%', trend: '+2.1%', icon: Target, color: 'blue' },
-                        { label: 'Avg Sale Cycle', value: '24 Days', trend: '-3 Days', icon: Activity, color: 'purple' },
-                        { label: 'Market Reach', value: '1.2M', trend: '+45k', icon: Zap, color: 'amber' }
+                        { label: 'Total Properties', value: stats?.total_properties || 0, trend: stats?.active_properties || 0, icon: TrendingUp, color: 'emerald' },
+                        { label: 'Active Leads', value: stats?.total_leads || 0, trend: stats?.new_leads || 0, icon: Target, color: 'blue' },
+                        { label: 'Property Views', value: stats?.property_views || 0, trend: stats?.recent_leads || 0, icon: Activity, color: 'purple' },
+                        { label: 'Sold Properties', value: stats?.sold_properties || 0, trend: '+', icon: Zap, color: 'amber' }
                     ].map((stat, i) => (
                         <div key={i} className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-${stat.color}-500/5 rounded-full blur-3xl -mr-16 -mt-16`} />
@@ -110,7 +155,7 @@ export default function AnalyticsDashboard() {
                                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-full bg-${stat.color}-500/10 text-${stat.color}-400 border border-${stat.color}-500/20`}>
                                             {stat.trend}
                                         </span>
-                                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">vs Last Month</span>
+                                        <span className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">active</span>
                                     </div>
                                 </div>
                                 <div className={`p-4 bg-slate-800 rounded-2xl text-${stat.color}-400`}>
@@ -182,7 +227,7 @@ export default function AnalyticsDashboard() {
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <h4 className="text-3xl font-black text-white">1.2k</h4>
+                                <h4 className="text-3xl font-black text-white">{totalLeads}</h4>
                                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Leads</p>
                             </div>
                         </div>
@@ -223,11 +268,7 @@ export default function AnalyticsDashboard() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-800">
-                                {[
-                                    { title: 'Skyline Penthouse', views: '1,240', leads: 42, rate: '3.4%', trend: 'up' },
-                                    { title: 'Emerald Valley Villas', views: '890', leads: 38, rate: '4.2%', trend: 'up' },
-                                    { title: 'The Waterfront Suite', views: '750', leads: 12, rate: '1.6%', trend: 'down' },
-                                ].map((row, i) => (
+                                {properties.length > 0 ? properties.map((row, i) => (
                                     <tr key={i} className="hover:bg-slate-800/30 transition-colors">
                                         <td className="px-10 py-8">
                                             <div className="flex items-center gap-4">
@@ -236,24 +277,30 @@ export default function AnalyticsDashboard() {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-white tracking-tight">{row.title}</p>
-                                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Premium Listing</p>
+                                                    <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Property ID: {row.id}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-8 text-center font-bold text-slate-300">{row.views} Views</td>
+                                        <td className="px-10 py-8 text-center font-bold text-slate-300">{row.views.toLocaleString()} Views</td>
                                         <td className="px-10 py-8 text-center font-bold text-slate-300">{row.leads} Leads</td>
                                         <td className="px-10 py-8 text-center">
                                             <span className={`text-xs font-black p-2 rounded-lg ${row.trend === 'up' ? 'text-emerald-400 bg-emerald-400/10' : 'text-rose-400 bg-rose-400/10'}`}>
-                                                {row.rate}
+                                                {row.conversionRate.toFixed(1)}%
                                             </span>
                                         </td>
                                         <td className="px-10 py-8">
                                             <div className="w-24 h-1.5 bg-slate-800 rounded-full ml-auto overflow-hidden">
-                                                <div className="h-full bg-blue-600" style={{ width: `${Math.random() * 60 + 20}%` }} />
+                                                <div className="h-full bg-blue-600" style={{ width: `${Math.min(row.conversionRate * 10, 100)}%` }} />
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr>
+                                        <td colSpan={5} className="px-10 py-12 text-center text-slate-500">
+                                            No properties available yet
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

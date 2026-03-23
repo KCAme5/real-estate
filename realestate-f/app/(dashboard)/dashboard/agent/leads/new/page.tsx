@@ -259,7 +259,7 @@ export default function NewLeadPage() {
             };
             const lead = await leadsAPI.createLead(payload);
             success('Lead created', `${form.first_name} ${form.last_name} added to pipeline`);
-            router.push(`/dashboard/leads`);
+            router.push(`/dashboard/agent/leads`);
         } catch (e: any) {
             showError('Failed to create lead', e?.message ?? 'Please try again');
         } finally {

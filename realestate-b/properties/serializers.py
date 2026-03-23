@@ -42,6 +42,8 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "price_display",
             "location",
             "location_name",
+            "latitude",
+            "longitude",
             "bedrooms",
             "bathrooms",
             "square_feet",
