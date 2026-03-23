@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { bookingsAPI, Booking } from '@/lib/api/bookings';
+import { useToast } from '@/components/ui/toast';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
-import { Calendar, Clock, MapPin, User, Home } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, Home, Loader2 } from 'lucide-react';
 
 const statusColors: Record<string, string> = {
     'PENDING': 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
@@ -14,26 +15,61 @@ const statusColors: Record<string, string> = {
 
 export default function BookingsPage() {
     const { user } = useAuth();
+    const { success, error: showError } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
+    const [confirmingId, setConfirmingId] = useState<number | null>(null);
+
+    const fetchBookings = async () => {
+        try {
+            const data = await bookingsAPI.getAll();
+            const bookingsArray = data.results || data || [];
+            setBookings(bookingsArray);
+        } catch (error) {
+            console.error('Failed to fetch bookings:', error);
+            showError('Failed to load', 'Could not fetch bookings');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchBookings = async () => {
-            try {
-                const data = await bookingsAPI.getAll();
-                const bookingsArray = data.results || data || [];
-                setBookings(bookingsArray);
-            } catch (error) {
-                console.error('Failed to fetch bookings:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (user?.user_type === 'agent') {
             fetchBookings();
         }
     }, [user]);
+
+    const handleConfirmBooking = async (bookingId: number) => {
+        setConfirmingId(bookingId);
+        try {
+            await bookingsAPI.update(bookingId, { status: 'CONFIRMED' });
+            setBookings(prev => prev.map(b =>
+                b.id === bookingId ? { ...b, status: 'CONFIRMED' } : b
+            ));
+            success('Booking Confirmed', 'Viewing appointment confirmed');
+        } catch (error) {
+            console.error('Failed to confirm booking:', error);
+            showError('Confirmation Failed', 'Could not confirm booking');
+        } finally {
+            setConfirmingId(null);
+        }
+    };
+
+    const handleCancelBooking = async (bookingId: number) => {
+        setConfirmingId(bookingId);
+        try {
+            await bookingsAPI.update(bookingId, { status: 'CANCELLED' });
+            setBookings(prev => prev.map(b =>
+                b.id === bookingId ? { ...b, status: 'CANCELLED' } : b
+            ));
+            success('Booking Cancelled', 'Viewing appointment cancelled');
+        } catch (error) {
+            console.error('Failed to cancel booking:', error);
+            showError('Cancellation Failed', 'Could not cancel booking');
+        } finally {
+            setConfirmingId(null);
+        }
+    };
 
     if (loading) {
         return (
@@ -102,7 +138,10 @@ export default function BookingsPage() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <div className="flex items-center gap-2 text-sm">
                                                 <User size={16} className="text-muted-foreground" />
-                                                <span className="text-foreground font-medium">{booking.client_name}</span>
+                                                <div>
+                                                    <p className="text-foreground font-medium">{booking.client_name}</p>
+                                                    <p className="text-xs text-muted-foreground">{booking.client_email}</p>
+                                                </div>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm">
                                                 <Calendar size={16} className="text-muted-foreground" />
@@ -117,24 +156,41 @@ export default function BookingsPage() {
                                             </div>
                                             <div className="flex items-center gap-2 text-sm">
                                                 <Clock size={16} className="text-muted-foreground" />
-                                                <span className="text-foreground">{booking.booking_time}</span>
+                                                <span className="text-foreground">{booking.booking_time} ({booking.duration}min)</span>
                                             </div>
                                         </div>
 
-                                        {booking.notes && (
-                                            <p className="text-sm text-muted-foreground italic">{booking.notes}</p>
+                                        {booking.client_notes && (
+                                            <div className="p-3 bg-muted rounded-lg border-l-2 border-primary">
+                                                <p className="text-xs text-muted-foreground font-bold mb-1">CLIENT NOTES</p>
+                                                <p className="text-sm text-foreground">{booking.client_notes}</p>
+                                            </div>
                                         )}
                                     </div>
 
-                                    <div className="flex flex-col items-end gap-2">
+                                    <div className="flex flex-col items-end gap-3">
                                         <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[booking.status]}`}>
                                             <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
                                             {booking.status}
                                         </span>
                                         {booking.status === 'PENDING' && (
-                                            <button className="text-sm text-primary hover:underline font-semibold">
-                                                Confirm
-                                            </button>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => handleConfirmBooking(booking.id)}
+                                                    disabled={confirmingId === booking.id}
+                                                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-sm transition-colors disabled:opacity-50"
+                                                >
+                                                    {confirmingId === booking.id && <Loader2 size={14} className="animate-spin" />}
+                                                    Confirm
+                                                </button>
+                                                <button
+                                                    onClick={() => handleCancelBooking(booking.id)}
+                                                    disabled={confirmingId === booking.id}
+                                                    className="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg font-bold text-sm transition-colors disabled:opacity-50"
+                                                >
+                                                    Decline
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
                                 </div>

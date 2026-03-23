@@ -121,6 +121,23 @@ export default function AnalyticsDashboard() {
         { name: 'Phone', value: Math.floor(stats?.total_leads * 0.15) || 0 },
     ];
 
+    // Calculate actual total for percentages
+    const sourceTotal = sourceData.reduce((sum, item) => sum + item.value, 0);
+
+    // Lead status distribution
+    const statusData = [
+        { name: 'New', value: stats?.new_leads || 0 },
+        { name: 'Contacted', value: stats?.contacted || 0 },
+        { name: 'Viewing', value: stats?.viewing || 0 },
+        { name: 'Qualified', value: stats?.qualified_leads || 0 },
+        { name: 'Proposal', value: stats?.proposal || 0 },
+        { name: 'Negotiation', value: stats?.negotiation || 0 },
+        { name: 'Won', value: stats?.closed_won || 0 },
+        { name: 'Lost', value: stats?.closed_lost || 0 },
+    ].filter(item => item.value > 0);
+
+    const statusTotal = statusData.reduce((sum, item) => sum + item.value, 0);
+
     return (
         <div className="min-h-screen bg-[#020617] text-slate-200 p-4 md:p-8">
             <div className="max-w-7xl mx-auto space-y-10">
@@ -167,7 +184,7 @@ export default function AnalyticsDashboard() {
                 </div>
 
                 {/* Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Lead Inflow Chart */}
                     <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl">
                         <div className="flex items-center justify-between mb-10">
@@ -202,8 +219,8 @@ export default function AnalyticsDashboard() {
                         </div>
                     </div>
 
-                    {/* Distribution Chart */}
-                    <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl">
+                    {/* Source Distribution Chart */}
+                    <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl">
                         <div className="mb-10 text-center">
                             <h3 className="text-xl font-black text-white uppercase tracking-tight">Source Distribution</h3>
                             <p className="text-slate-500 text-xs font-medium">Top performing lead sources</p>
@@ -227,8 +244,8 @@ export default function AnalyticsDashboard() {
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <h4 className="text-3xl font-black text-white">{totalLeads}</h4>
-                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Leads</p>
+                                <h4 className="text-3xl font-black text-white">{sourceTotal}</h4>
+                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Leads</p>
                             </div>
                         </div>
                         <div className="mt-8 space-y-4">
@@ -238,10 +255,60 @@ export default function AnalyticsDashboard() {
                                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i] }} />
                                         <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{s.name}</span>
                                     </div>
-                                    <span className="text-xs font-black text-white">{((s.value / 1200) * 100).toFixed(0)}%</span>
+                                    <span className="text-xs font-black text-white">{sourceTotal > 0 ? ((s.value / sourceTotal) * 100).toFixed(0) : 0}%</span>
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Lead Status Distribution Chart */}
+                    <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl">
+                        <div className="mb-10 text-center">
+                            <h3 className="text-xl font-black text-white uppercase tracking-tight">Pipeline Status</h3>
+                            <p className="text-slate-500 text-xs font-medium">Leads by current stage</p>
+                        </div>
+                        {statusData.length > 0 ? (
+                            <>
+                                <div className="h-[300px] relative">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={statusData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={80}
+                                                outerRadius={100}
+                                                paddingAngle={8}
+                                                dataKey="value"
+                                            >
+                                                {statusData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                ))}
+                                            </Pie>
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                        <h4 className="text-3xl font-black text-white">{statusTotal}</h4>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total</p>
+                                    </div>
+                                </div>
+                                <div className="mt-8 space-y-4">
+                                    {statusData.map((s, i) => (
+                                        <div key={i} className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                                                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{s.name}</span>
+                                            </div>
+                                            <span className="text-xs font-black text-white">{statusTotal > 0 ? ((s.value / statusTotal) * 100).toFixed(0) : 0}%</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="h-[300px] flex items-center justify-center">
+                                <p className="text-slate-500 text-sm">No leads in pipeline yet</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

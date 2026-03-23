@@ -17,6 +17,7 @@ def on_lead_created(sender, instance, created, **kwargs):
     1. Auto-assigns to least-busy agent if none provided
     2. Creates a linked Conversation so messaging works immediately
     3. Fires a notification to the assigned agent
+    4. Calculates lead score
     """
     if not created:
         return
@@ -49,7 +50,10 @@ def on_lead_created(sender, instance, created, **kwargs):
             defaults={"lead": instance},
         )
 
-    # 3. Notify agent — import here to avoid circular imports
+    # 3. Calculate initial lead score
+    instance.update_score()
+
+    # 4. Notify agent — import here to avoid circular imports
     try:
         from notifications.utils import notify_agent_new_lead
 
@@ -81,6 +85,7 @@ def log_status_change(sender, instance, created, **kwargs):
     """
     On every save, if status changed, write to LeadStatusLog
     and create a LeadActivity entry for the timeline.
+    Also recalculate lead score.
     """
     if created:
         return
@@ -98,4 +103,8 @@ def log_status_change(sender, instance, created, **kwargs):
             activity_type="status_change",
             description=f"Status changed from {previous} to {instance.status}",
             agent=getattr(instance, "_changed_by", None) or instance.agent,
+        )
+    
+    # Recalculate lead score on any save
+    instance.update_score()
         )
