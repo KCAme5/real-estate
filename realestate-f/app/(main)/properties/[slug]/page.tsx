@@ -49,9 +49,12 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
     const [showStickyHeader, setShowStickyHeader] = useState(false);
 
     const [viewingForm, setViewingForm] = useState({
+        first_name: user?.first_name || '',
+        last_name: user?.last_name || '',
+        email: user?.email || '',
+        phone: user?.phone_number || '',
         date: '',
         time: 'Morning (9AM - 12PM)',
-        phone: '',
         notes: ''
     });
 
@@ -117,7 +120,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
         try {
             setIsStartingChat(true);
             const result = await createLeadAndConversation(property, 'contact_form', 'medium');
-            
+
             if (result && result.conversation) {
                 const conversationId = result.conversation.id || result.conversation.data?.id;
                 const baseMessagesPath = user.user_type === 'agent' ? '/dashboard/agent/messages' : '/dashboard/messages';
@@ -163,7 +166,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                 await propertyAPI.saveProperty(property.id);
                 setIsSaved(true);
                 success("Property Saved!", "Property added to your collection");
-                
+
                 // Create lead and track interaction for saved property
                 try {
                     const leadData = {
@@ -175,9 +178,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                         priority: 'low' as const,
                         property: property.id,
                     };
-                    
+
                     const lead = await leadsAPI.createLead(leadData);
-                    
+
                     // Track interaction for saved property
                     await leadsAPI.trackInteraction(
                         lead.id,
@@ -208,20 +211,26 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
 
         try {
             setIsSubmittingViewing(true);
-            
-            // Create lead first
+
+            // Validate required contact fields
+            if (!viewingForm.first_name || !viewingForm.last_name || !viewingForm.email || !viewingForm.date) {
+                showError("Missing Information", "Please provide your name, email, and select a date");
+                return;
+            }
+
+            // Create lead first with form data
             const leadData = {
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                phone: user.phone_number || '',
+                first_name: viewingForm.first_name,
+                last_name: viewingForm.last_name,
+                email: viewingForm.email,
+                phone: viewingForm.phone || '',
                 source: 'book_viewing' as const,
                 priority: 'high' as const,
                 property: property.id,
             };
-            
+
             const lead = await leadsAPI.createLead(leadData);
-            
+
             // Create booking with the lead ID
             const bookingTimeMap: Record<string, string> = {
                 'Morning (9AM - 12PM)': '09:00:00',
@@ -238,7 +247,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                 client_notes: `Phone: ${viewingForm.phone}\n${viewingForm.notes}`
             });
             success("Request Sent!", "An agent will contact you shortly to confirm");
-            setViewingForm({ date: '', time: 'Morning (9AM - 12PM)', phone: '', notes: '' });
+            setViewingForm({ first_name: user.first_name || '', last_name: user.last_name || '', email: user.email || '', phone: user.phone_number || '', date: '', time: 'Morning (9AM - 12PM)', notes: '' });
         } catch (error) {
             console.error("Error scheduling viewing:", error);
             showError("Request Failed", "Could not schedule viewing at this time");
@@ -613,6 +622,58 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                             <div className="bg-slate-900 rounded-[2.5rem] p-8 border border-slate-800 shadow-2xl">
                                 <h3 className="text-xl font-black text-white mb-6">Request Viewing</h3>
                                 <form onSubmit={handleScheduleViewing} className="space-y-4">
+                                    {/* Name Fields */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">First Name</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={viewingForm.first_name}
+                                                onChange={(e) => setViewingForm({ ...viewingForm, first_name: e.target.value })}
+                                                className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"
+                                                placeholder="John"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Last Name</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={viewingForm.last_name}
+                                                onChange={(e) => setViewingForm({ ...viewingForm, last_name: e.target.value })}
+                                                className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"
+                                                placeholder="Doe"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Email */}
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Email Address</label>
+                                        <input
+                                            type="email"
+                                            required
+                                            value={viewingForm.email}
+                                            onChange={(e) => setViewingForm({ ...viewingForm, email: e.target.value })}
+                                            className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"
+                                            placeholder="john@example.com"
+                                        />
+                                    </div>
+
+                                    {/* Phone */}
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Phone (Optional)</label>
+                                        <input
+                                            type="tel"
+                                            value={viewingForm.phone}
+                                            onChange={(e) => setViewingForm({ ...viewingForm, phone: e.target.value })}
+                                            className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"
+                                            placeholder="+254 7xx xxx xxx"
+                                        />
+                                    </div>
+
+                                    {/* Date */}
                                     <div>
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Choose Date</label>
                                         <input
@@ -623,6 +684,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                             className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"
                                         />
                                     </div>
+
+                                    {/* Time Frame */}
                                     <div>
                                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Time Frame</label>
                                         <select
@@ -635,6 +698,19 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                             <option>Evening (4PM - 7PM)</option>
                                         </select>
                                     </div>
+
+                                    {/* Notes */}
+                                    <div>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Additional Notes (Optional)</label>
+                                        <textarea
+                                            value={viewingForm.notes}
+                                            onChange={(e) => setViewingForm({ ...viewingForm, notes: e.target.value })}
+                                            className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden resize-none"
+                                            rows={2}
+                                            placeholder="Any special requests or questions..."
+                                        />
+                                    </div>
+
                                     <button
                                         type="submit"
                                         disabled={isSubmittingViewing}

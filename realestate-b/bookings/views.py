@@ -28,7 +28,34 @@ class BookingListView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         if self.request.user.user_type != "client":
             raise PermissionDenied("Only clients can create bookings")
-        serializer.save(client=self.request.user)
+        
+        # Get the lead and agent from it
+        lead = serializer.validated_data.get("lead")
+        agent = None
+        
+        if lead:
+            agent = lead.agent
+        
+        # If no agent from lead, get from property
+        if not agent:
+            property_obj = serializer.validated_data.get("property")
+            if property_obj and hasattr(property_obj, "agent") and property_obj.agent:
+                agent = property_obj.agent
+        
+        # If still no agent, get least-busy agent
+        if not agent:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            from django.db.models import Count
+            
+            agent = (
+                User.objects.filter(user_type="agent")
+                .annotate(booking_count=Count("agent_bookings"))
+                .order_by("booking_count")
+                .first()
+            )
+        
+        serializer.save(client=self.request.user, agent=agent)
 
 
 class BookingDetailView(generics.RetrieveUpdateDestroyAPIView):
