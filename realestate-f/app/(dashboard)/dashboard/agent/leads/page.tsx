@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { leadsAPI, Lead, CRMStats, Task } from '@/lib/api/leads';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import {
@@ -400,6 +400,7 @@ function AddTaskModal({ lead, onClose, onSave }: AddTaskModalProps) {
 export default function CRMPage() {
     const { user } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
     const { success, error: showError } = useToast();
     const [leads, setLeads] = useState<Lead[]>([]);
     const [stats, setStats] = useState<CRMStats | null>(null);
@@ -412,7 +413,7 @@ export default function CRMPage() {
     const [taskLead, setTaskLead] = useState<Lead | null>(null);
     const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-    useEffect(() => { fetchData(); }, [user]);
+    useEffect(() => { fetchData(); }, [pathname]);
 
     const fetchData = async () => {
         try {
