@@ -15,6 +15,7 @@ export default function Footer() {
             { name: 'Buy Property', href: '/properties' },
             { name: 'Rent Property', href: '/properties?type=rent' },
             { name: 'Property Map', href: '/map' },
+            { name: 'Financial Tools', href: '/tools' },
             // { name: 'Diaspora Services', href: '/diaspora' }, // Page not yet created
             // { name: 'Property Management', href: '/management' } // Page not yet created
         ],

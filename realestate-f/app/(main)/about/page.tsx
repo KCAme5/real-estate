@@ -299,9 +299,15 @@ export default function AboutPage() {
                             </p>
                             <div className="grid grid-cols-2 gap-4">
                                 {services.map((service, index) => (
-                                    <div key={index} className="flex items-center gap-3">
+                                    <div key={index} className="flex items-center gap-3 group">
                                         <CheckCircle className="w-5 h-5 text-emerald-500 dark:text-emerald-400 shrink-0" />
-                                        <span className="text-muted-foreground">{service}</span>
+                                        {service === 'Mortgage Assistance' ? (
+                                            <Link href="/tools" className="text-muted-foreground hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors cursor-pointer font-medium">
+                                                {service}
+                                            </Link>
+                                        ) : (
+                                            <span className="text-muted-foreground">{service}</span>
+                                        )}
                                     </div>
                                 ))}
                             </div>

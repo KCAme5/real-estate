@@ -41,6 +41,7 @@ export default function Header() {
         { name: "Properties", href: "/properties" },
         { name: "Map", href: "/map" },
         { name: "Agents", href: "/agents" },
+        { name: "Tools", href: "/tools" },
         { name: "About", href: "/about" },
         { name: "Contact", href: "/contact" },
         { name: "Diaspora Services", href: "/diaspora-services" },
