@@ -223,3 +223,7 @@ export default function CommissionPage() {
                         </div>
                     </>
                 )}
+            </div>
+        </div>
+    );
+}
