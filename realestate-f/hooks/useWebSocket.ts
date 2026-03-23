@@ -86,7 +86,46 @@ export const useWebSocket = () => {
 
       wsRef.current.onmessage = (event) => {
         try {
-          const message: WebSocketMessage = JSON.parse(event.data);
+          const rawMessage = JSON.parse(event.data);
+          let message: WebSocketMessage;
+
+          // Transform backend message format to frontend WebSocketMessage format
+          if (rawMessage.type === 'message') {
+            // Backend sends: { type, conversation_id, message: {...} }
+            // Frontend expects: { type, data: Message }
+            message = {
+              type: 'message',
+              data: {
+                ...rawMessage.message,
+                conversation: rawMessage.conversation_id
+              }
+            };
+          } else if (rawMessage.type === 'typing') {
+            // Backend sends: { type, conversation_id, user_id, username, is_typing }
+            // Frontend expects: { type, data: TypingIndicator }
+            message = {
+              type: 'typing',
+              data: {
+                conversation_id: rawMessage.conversation_id,
+                user_id: rawMessage.user_id,
+                user_name: rawMessage.username,
+                is_typing: rawMessage.is_typing
+              }
+            };
+          } else if (rawMessage.type === 'read_receipt') {
+            // Backend sends: { type, conversation_id, reader_id }
+            // Frontend expects: { type, data: ReadReceipt }
+            message = {
+              type: 'read_receipt',
+              data: {
+                conversation_id: rawMessage.conversation_id,
+                reader_id: rawMessage.reader_id
+              }
+            };
+          } else {
+            return;
+          }
+
           messageCallbacksRef.current.forEach(callback => callback(message));
         } catch (error) {
           console.debug('WebSocket: Error parsing message:', error);

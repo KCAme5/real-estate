@@ -142,8 +142,18 @@ class LeadListView(generics.ListCreateAPIView):
             return super().create(request, *args, **kwargs)
         except ValidationError as e:
             logger.warning(f"Validation error on lead creation: {e.detail}")
+            # Extract field errors from the ValidationError
+            errors = {}
+            if isinstance(e.detail, dict):
+                errors = e.detail
+            elif isinstance(e.detail, list) and len(e.detail) > 0:
+                # If it's a list of error messages, combine them
+                errors = {"detail": [str(err) for err in e.detail]}
+            else:
+                errors = {"detail": str(e.detail)}
+
             return Response(
-                {"success": False, "message": "Validation failed", "errors": e.detail},
+                {"success": False, "message": "Validation failed", "errors": errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         except Exception as e:

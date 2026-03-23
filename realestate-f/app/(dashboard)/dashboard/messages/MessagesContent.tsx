@@ -326,13 +326,14 @@ export default function MessagesContent() {
             const content = newMessage.trim();
             setNewMessage('');
 
+            // Send via WebSocket — backend saves to DB and broadcasts to all users
+            // Do NOT also send via HTTP (leadsAPI.sendMessage) to avoid duplication
             sendMessage({
                 type: 'message',
                 conversation_id: activeConversation.id,
                 content: content
             });
 
-            await leadsAPI.sendMessage(activeConversation.id, content);
             handleTypingStop();
             setTimeout(scrollToBottom, 100);
         } catch (error) {
