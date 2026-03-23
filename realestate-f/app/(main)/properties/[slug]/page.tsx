@@ -170,8 +170,8 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                 // Create lead and track interaction for saved property
                 try {
                     const leadData = {
-                        first_name: user.first_name,
-                        last_name: user.last_name,
+                        first_name: user.first_name || '',
+                        last_name: user.last_name || '',
                         email: user.email,
                         phone: user.phone_number || '',
                         source: 'saved_property' as const,
@@ -212,16 +212,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
         try {
             setIsSubmittingViewing(true);
 
-            // Validate required contact fields
-            if (!viewingForm.first_name || !viewingForm.last_name || !viewingForm.email || !viewingForm.date) {
-                showError("Missing Information", "Please provide your name, email, and select a date");
+            // Validate required contact fields - only email and date are truly required
+            if (!viewingForm.email || !viewingForm.date) {
+                showError("Missing Information", "Please provide your email and select a date");
                 return;
             }
 
             // Create lead first with form data
             const leadData = {
-                first_name: viewingForm.first_name,
-                last_name: viewingForm.last_name,
+                first_name: viewingForm.first_name || '',
+                last_name: viewingForm.last_name || '',
                 email: viewingForm.email,
                 phone: viewingForm.phone || '',
                 source: 'book_viewing' as const,
@@ -625,10 +625,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                     {/* Name Fields */}
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">First Name</label>
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">First Name (Optional)</label>
                                             <input
                                                 type="text"
-                                                required
                                                 value={viewingForm.first_name}
                                                 onChange={(e) => setViewingForm({ ...viewingForm, first_name: e.target.value })}
                                                 className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"
@@ -636,10 +635,9 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                             />
                                         </div>
                                         <div>
-                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Last Name</label>
+                                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2 mb-2 block">Last Name (Optional)</label>
                                             <input
                                                 type="text"
-                                                required
                                                 value={viewingForm.last_name}
                                                 onChange={(e) => setViewingForm({ ...viewingForm, last_name: e.target.value })}
                                                 className="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:border-emerald-500 transition-all outline-hidden"

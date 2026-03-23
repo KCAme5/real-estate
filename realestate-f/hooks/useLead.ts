@@ -54,19 +54,19 @@ export function useLead(): UseLeadReturn {
                 return null;
             }
 
-            // Validate user profile has required fields
-            if (!user.first_name || !user.last_name || !user.email) {
+            // Validate user has email (only required field)
+            if (!user.email) {
                 showError(
-                    'Incomplete Profile',
-                    'Please complete your profile (first name, last name, and email) before inquiring about properties.'
+                    'Email Required',
+                    'Please add an email address to your profile before inquiring about properties.'
                 );
                 return null;
             }
 
             try {
                 const leadData: LeadData = {
-                    first_name: user.first_name,
-                    last_name: user.last_name,
+                    first_name: user.first_name || '',
+                    last_name: user.last_name || '',
                     email: user.email,
                     phone: user.phone_number || '',
                     source,

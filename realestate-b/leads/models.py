@@ -37,8 +37,8 @@ class Lead(models.Model):
     )
 
     # Lead contact info
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50, blank=True)
     email = models.EmailField()
     phone = models.CharField(max_length=15, blank=True)
 

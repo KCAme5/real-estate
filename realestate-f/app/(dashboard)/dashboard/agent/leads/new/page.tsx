@@ -213,11 +213,10 @@ export default function NewLeadPage() {
     const validateStep = (s: Step): boolean => {
         const errs: typeof errors = {};
         if (s === 1) {
-            if (!form.first_name.trim()) errs.first_name = 'Required';
-            if (!form.last_name.trim()) errs.last_name = 'Required';
+            // First name and last name are now optional
+            // Phone is now optional
             if (!form.email.trim()) errs.email = 'Required';
             else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Invalid email';
-            if (!form.phone.trim()) errs.phone = 'Required';
         }
         if (s === 2) {
             if (form.budget_min && form.budget_max) {
@@ -258,7 +257,8 @@ export default function NewLeadPage() {
                 notes: form.notes.trim(),
             };
             const lead = await leadsAPI.createLead(payload);
-            success('Lead created', `${form.first_name} ${form.last_name} added to pipeline`);
+            const name = `${form.first_name} ${form.last_name}`.trim() || 'Lead';
+            success('Lead created', `${name} added to pipeline`);
             router.push(`/dashboard/agent/leads`);
         } catch (e: any) {
             showError('Failed to create lead', e?.message ?? 'Please try again');
@@ -312,7 +312,7 @@ export default function NewLeadPage() {
                         <div className="space-y-5">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <Label>First name</Label>
+                                    <Label>First name (Optional)</Label>
                                     <Input
                                         icon={User}
                                         placeholder="John"
@@ -322,7 +322,7 @@ export default function NewLeadPage() {
                                     />
                                 </div>
                                 <div>
-                                    <Label>Last name</Label>
+                                    <Label>Last name (Optional)</Label>
                                     <Input
                                         placeholder="Doe"
                                         value={form.last_name}
@@ -345,7 +345,7 @@ export default function NewLeadPage() {
                             </div>
 
                             <div>
-                                <Label>Phone</Label>
+                                <Label>Phone (Optional)</Label>
                                 <Input
                                     icon={Phone}
                                     type="tel"

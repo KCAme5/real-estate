@@ -413,9 +413,9 @@ export default function CRMPage() {
     const [taskLead, setTaskLead] = useState<Lead | null>(null);
     const [updatingId, setUpdatingId] = useState<number | null>(null);
 
-    useEffect(() => { fetchData(); }, [pathname]);
+    useEffect(() => { fetchData(); }, [pathname, user]);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             const [leadsRes, statsRes, tasksRes] = await Promise.all([
@@ -431,7 +431,7 @@ export default function CRMPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [showError]);
 
     const handleStatusChange = useCallback(async (leadId: number, newStatus: string) => {
         const prev = leads.find(l => l.id === leadId)?.status;
