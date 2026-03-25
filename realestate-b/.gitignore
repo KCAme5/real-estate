@@ -1,0 +1,75 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Data files (except source data in dedicated folders)
+*.json
+*.csv
+*.xlsx
+*.xls
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+real/
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.venv
+
+# Django
+/media/
+/staticfiles/
+/static/
+/static_root/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+pytest_debug.log
+.testomatic.py
+.coverage-*
+htmlcov/
+.pytest_cache/
+
+# Render
+.env.render
+
+# Secrets
+secrets.json
+key.pem
+cert.pem

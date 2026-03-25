@@ -1,0 +1,2104 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2025-11-19T07:59:54.240Z",
+    "user": 1,
+    "content_type": 9,
+    "object_id": "1",
+    "object_repr": "Adrian",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"User type\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2025-11-19T19:46:08.326Z",
+    "user": 1,
+    "content_type": 9,
+    "object_id": "4",
+    "object_repr": "John Doe",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2025-11-20T08:49:03.060Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "1",
+    "object_repr": "Westlands, Nairobi",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2025-11-20T08:49:46.906Z",
+    "user": 1,
+    "content_type": 6,
+    "object_id": "2",
+    "object_repr": "Ruiru, Kiambu",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2025-11-20T08:51:24.044Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "1",
+    "object_repr": "Nwe property hot in nairobi",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"property image\", \"object\": \"Image for Nwe property hot in nairobi\"}}, {\"added\": {\"name\": \"property image\", \"object\": \"Image for Nwe property hot in nairobi\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2025-11-20T08:56:07.446Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "2",
+    "object_repr": "The best property in Nairobi",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"name\": \"property image\", \"object\": \"Image for The best property in Nairobi\"}}, {\"added\": {\"name\": \"property image\", \"object\": \"Image for The best property in Nairobi\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2025-11-21T17:01:22.609Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "3",
+    "object_repr": "Ruiru Finest",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2025-11-21T17:29:19.280Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "3",
+    "object_repr": "Ruiru Finest",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Features\", \"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2025-11-21T19:42:11.791Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "3",
+    "object_repr": "Ruiru Finest",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Main image\"]}}, {\"added\": {\"name\": \"property image\", \"object\": \"Image for Ruiru Finest\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2025-11-21T19:43:09.268Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "2",
+    "object_repr": "The best property in Nairobi",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Main image\"]}}, {\"changed\": {\"name\": \"property image\", \"object\": \"Image for The best property in Nairobi\", \"fields\": [\"Image\"]}}, {\"changed\": {\"name\": \"property image\", \"object\": \"Image for The best property in Nairobi\", \"fields\": [\"Image\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2025-11-21T19:44:42.381Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "1",
+    "object_repr": "New property hot in nairobi",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Title\", \"Main image\"]}}, {\"changed\": {\"name\": \"property image\", \"object\": \"Image for New property hot in nairobi\", \"fields\": [\"Image\"]}}, {\"changed\": {\"name\": \"property image\", \"object\": \"Image for New property hot in nairobi\", \"fields\": [\"Image\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-01-20T18:03:23.258Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "18",
+    "object_repr": "agent_elena",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"User type\", \"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2026-01-20T18:14:56.398Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "18",
+    "object_repr": "agent_elena",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"User type\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2026-01-20T18:17:56.153Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "18",
+    "object_repr": "agent_elena",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2026-01-21T00:44:07.413Z",
+    "user": 20,
+    "content_type": 12,
+    "object_id": "1",
+    "object_repr": "Review for Mike Ross by Its me",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2026-01-21T07:13:00.452Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "14",
+    "object_repr": "Culson",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 17,
+  "fields": {
+    "action_time": "2026-01-21T08:18:27.726Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "21",
+    "object_repr": "Johny",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 18,
+  "fields": {
+    "action_time": "2026-01-21T08:18:44.254Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "17",
+    "object_repr": "agent_mike",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 19,
+  "fields": {
+    "action_time": "2026-01-21T08:18:58.121Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "16",
+    "object_repr": "agent_sarah",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 20,
+  "fields": {
+    "action_time": "2026-01-21T08:19:17.804Z",
+    "user": 20,
+    "content_type": 9,
+    "object_id": "10",
+    "object_repr": "alice_nyambura",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 21,
+  "fields": {
+    "action_time": "2026-01-21T08:25:05.723Z",
+    "user": 20,
+    "content_type": 10,
+    "object_id": "10",
+    "object_repr": "Johny's Profile",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Bio\", \"Company\", \"License number\", \"Years of experience\", \"Specialties\", \"Whatsapp number\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 22,
+  "fields": {
+    "action_time": "2026-01-21T08:38:27.173Z",
+    "user": 20,
+    "content_type": 11,
+    "object_id": "6",
+    "object_repr": "Agent Profile - Alice Nyambura",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is verified\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 23,
+  "fields": {
+    "action_time": "2026-01-21T08:59:23.605Z",
+    "user": 20,
+    "content_type": 11,
+    "object_id": "10",
+    "object_repr": "Agent Profile - Duke Gen",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Specialties\", \"Is verified\"]}}]"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "0q1jge9lre8khpi50aaeq2y66vbwu35u",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSEMb1y69xvIAINUDU1KuzL-uzbpQrf3nHNfLOK2trgNWuJU2JkBO_1uCfOD-g7KHftt5nnu6zIlviv8oINf50LPy-H-HTQc7Vt7sFI5nQJhKSYhWRGq8jl4kFaL4KShWikr8BpETdkhKFu8kRaqq4K9P9eMN34:1vLd5L:G6xkLF8Qd1cp4NrybCQDt0kEjaYs4T7ivZ5MltRYGTU",
+    "expire_date": "2025-12-03T07:58:39.792Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "7gbtp0cb3q9g8w0f0o0unbvslfa9n18d",
+  "fields": {
+    "session_data": ".eJxVjLEKgzAQQP8lc5HkEhOvY6Fj6dRZzrsEpRrB6FT677Xg0K7vPd5LtbStfbuVuLSDqLMCrU6_sCN-xvw1xDxveS3VgUp1nWgY78tj7zJN8TZLHC9H_zfpqfT7gWvdhEZEnAmeGZ0XjRaInPOdgLGBCAAh1clSQhMYInUYkvEOTWT1_gAjUTnd:1viTIr:iE8czDnsaj-QkNWfZujSlbQMvTiPbM-hYmBj9pPXBBc",
+    "expire_date": "2026-02-04T08:11:01.913Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "vq60n8421ojm2huus4w45yyidcr6dpzy",
+  "fields": {
+    "session_data": ".eJxVjLEKgzAQQP8lc5HkEhOvY6Fj6dRZzrsEpRrB6FT677Xg0K7vPd5LtbStfbuVuLSDqLMCrU6_sCN-xvw1xDxveS3VgUp1nWgY78tj7zJN8TZLHC9H_zfpqfT7gWvdhEZEnAmeGZ0XjRaInPOdgLGBCAAh1clSQhMYInUYkvEOTWT1_gAjUTnd:1viGIe:f8Z3v-86zvcrs9gYgDtY1FP8C0cHQ8g8-4pJl_0Wp-4",
+    "expire_date": "2026-02-03T18:17:56.276Z"
+  }
+},
+{
+  "model": "properties.location",
+  "pk": 1,
+  "fields": {
+    "name": "Westlands",
+    "county": "Nairobi",
+    "slug": "westlands",
+    "latitude": "1.567723",
+    "longitude": "2.235466"
+  }
+},
+{
+  "model": "properties.location",
+  "pk": 2,
+  "fields": {
+    "name": "Ruiru",
+    "county": "Kiambu",
+    "slug": "ruiru",
+    "latitude": "1.689854",
+    "longitude": "2.234216"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 1,
+  "fields": {
+    "title": "New property hot in nairobi",
+    "slug": "hot-nairobi",
+    "description": "jhvjfvbjfsdjkhjhjsfkjsdnjndsbjskfnedjkmvkd\r\n;dnoiksjksidoj gop\r\ngjgkojvikfjvkijifdjopdvgjoif\r\n[pjhbfiovjnvikojniovjreiogjersigjeklmg\r\n[p-rjggo9regioperkgoekojivofiwe\r\nffoiiedsjfikodhidsjddsifidojdjdfpo]ohdhgop\r\nufghsdoifcunoiwecjidsoj\r\ndfupifhdn;oj",
+    "property_type": "apartment",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "15000000.00",
+    "currency": "KES",
+    "price_display": "KES 15,000,000",
+    "location": 2,
+    "address": "00100",
+    "latitude": "1.546532",
+    "longitude": "2.672526",
+    "bedrooms": 5,
+    "bathrooms": 5,
+    "square_feet": "1500.00",
+    "plot_size": null,
+    "year_built": 2023,
+    "features": [
+      "bedroom",
+      "kitchen",
+      "living room"
+    ],
+    "main_image": "https://i.pinimg.com/736x/ed/96/5b/ed965bf7c94acf90ad27ea0b15c499cc.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 16,
+    "owner_name": "_",
+    "owner_phone": "_",
+    "is_featured": true,
+    "is_verified": true,
+    "is_active": true,
+    "views": 6,
+    "created_at": "2025-11-20T08:51:23.989Z",
+    "updated_at": "2026-01-07T19:53:31.891Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 2,
+  "fields": {
+    "title": "The best property in Nairobi",
+    "slug": "property-nairobi",
+    "description": "hjgsdjfgygjkf\r\nfhiufvgsdijhfioshdskjhgvjk;sdhusdhgv\r\ngfju;gfviyerfdvhbjkbskdijhbfjuhbvkjdsbnvjufdgvfdhbvjdfbvlhgvfdhvjkfhbjihcvdsjchidsohcsdkj;hcds[v\r\n;idsvhoikhvfdo\r\nhvdfvpofdhoil",
+    "property_type": "apartment",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "1400000.00",
+    "currency": "KES",
+    "price_display": "KES 1,400,000",
+    "location": 1,
+    "address": "Nairobi, Kiambu",
+    "latitude": "1.654623",
+    "longitude": "1.367256",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "square_feet": "500.00",
+    "plot_size": "2541.00",
+    "year_built": 2024,
+    "features": [
+      "very few",
+      "some are listed in blog",
+      "go read bro"
+    ],
+    "main_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnNZt27_L-2Lgx_fmDFbDD4XZc3SqcRAtJhQ&s",
+    "images": [],
+    "video_url": null,
+    "agent": 17,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": true,
+    "is_verified": true,
+    "is_active": true,
+    "views": 27,
+    "created_at": "2025-11-20T08:56:06.725Z",
+    "updated_at": "2026-01-07T19:53:31.849Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 3,
+  "fields": {
+    "title": "Ruiru Finest",
+    "slug": "ruiru",
+    "description": "jwhfujrebvnjfdbvjdfbf ju erkkj nui uifh i\r\nuifhei hgiofhvf\r\nflvbfjvkhbfkilvjk,vjhfd fhfoih gfoiuj'rfop\r\nhsbhvgjk;fhvkofd ibhfdiobfg oep]jufg\r\nrfrkbgrjghriugh ijboirjbiklrjbkljbkljbgbrtg  b",
+    "property_type": "apartment",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "5000000.00",
+    "currency": "KES",
+    "price_display": "KES 5,000,000",
+    "location": 2,
+    "address": "vbhdc gbud ghjdic nfe",
+    "latitude": "1.245236",
+    "longitude": "1.345235",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "square_feet": "200.00",
+    "plot_size": "500.00",
+    "year_built": 2023,
+    "features": [
+      "random features"
+    ],
+    "main_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGRvGBrktx52mWVbUEQ_1VBUjCuCpM1V8jTw&s",
+    "images": [],
+    "video_url": null,
+    "agent": 18,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": true,
+    "is_verified": true,
+    "is_active": true,
+    "views": 77,
+    "created_at": "2025-11-21T17:01:22.602Z",
+    "updated_at": "2026-01-07T19:53:31.806Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 4,
+  "fields": {
+    "title": "Modern Penthouse with City View",
+    "slug": "modern-penthouse-with-city-view",
+    "description": "This Modern Penthouse with City View offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "villa",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "5435315.00",
+    "currency": "KES",
+    "price_display": "KES 5,435,315",
+    "location": 2,
+    "address": "232 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 5,
+    "bathrooms": 1,
+    "square_feet": "3528.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 17,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": true,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:31.932Z",
+    "updated_at": "2026-01-07T19:53:31.932Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 5,
+  "fields": {
+    "title": "Cozy Suburban Family Home",
+    "slug": "cozy-suburban-family-home",
+    "description": "This Cozy Suburban Family Home offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "apartment",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "31286550.00",
+    "currency": "KES",
+    "price_display": "KES 31,286,550",
+    "location": 1,
+    "address": "18 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 4,
+    "bathrooms": 2,
+    "square_feet": "3003.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 16,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": true,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:31.983Z",
+    "updated_at": "2026-01-07T19:53:31.983Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 6,
+  "fields": {
+    "title": "Beachfront Luxury Villa",
+    "slug": "beachfront-luxury-villa",
+    "description": "This Beachfront Luxury Villa offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "commercial",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "46598483.00",
+    "currency": "KES",
+    "price_display": "KES 46,598,483",
+    "location": 1,
+    "address": "203 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "square_feet": "2333.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 16,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": true,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:32.028Z",
+    "updated_at": "2026-01-07T19:53:32.029Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 7,
+  "fields": {
+    "title": "Industrial Style Loft",
+    "slug": "industrial-style-loft",
+    "description": "This Industrial Style Loft offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "apartment",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "24665882.00",
+    "currency": "KES",
+    "price_display": "KES 24,665,882",
+    "location": 1,
+    "address": "357 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 3,
+    "bathrooms": 3,
+    "square_feet": "1281.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 16,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": false,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:32.106Z",
+    "updated_at": "2026-01-07T19:53:32.107Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 8,
+  "fields": {
+    "title": "Secluded Mountain Cabin",
+    "slug": "secluded-mountain-cabin",
+    "description": "This Secluded Mountain Cabin offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "villa",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "8248125.00",
+    "currency": "KES",
+    "price_display": "KES 8,248,125",
+    "location": 1,
+    "address": "422 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 2,
+    "bathrooms": 3,
+    "square_feet": "2353.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 17,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": false,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:32.161Z",
+    "updated_at": "2026-01-07T19:53:32.161Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 9,
+  "fields": {
+    "title": "Elegant Victorian Manor",
+    "slug": "elegant-victorian-manor",
+    "description": "This Elegant Victorian Manor offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "land",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "39640633.00",
+    "currency": "KES",
+    "price_display": "KES 39,640,633",
+    "location": 2,
+    "address": "291 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 2,
+    "bathrooms": 4,
+    "square_feet": "823.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 16,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": true,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:32.198Z",
+    "updated_at": "2026-01-07T19:53:32.198Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 10,
+  "fields": {
+    "title": "Minimalist Studio Apartment",
+    "slug": "minimalist-studio-apartment",
+    "description": "This Minimalist Studio Apartment offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "villa",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "14381871.00",
+    "currency": "KES",
+    "price_display": "KES 14,381,871",
+    "location": 2,
+    "address": "72 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "square_feet": "1940.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 17,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": false,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:32.267Z",
+    "updated_at": "2026-01-07T19:53:32.267Z"
+  }
+},
+{
+  "model": "properties.property",
+  "pk": 11,
+  "fields": {
+    "title": "Spacious Farmhouse with Acreage",
+    "slug": "spacious-farmhouse-with-acreage",
+    "description": "This Spacious Farmhouse with Acreage offers unparalleled comfort and style. Perfect for those seeking a premium lifestyle in a prime location. Features include modern finishes, ample natural light, and state-of-the-art amenities.",
+    "property_type": "commercial",
+    "status": "available",
+    "listing_type": "sale",
+    "is_development": false,
+    "price": "47589286.00",
+    "currency": "KES",
+    "price_display": "KES 47,589,286",
+    "location": 2,
+    "address": "452 Real Estate Ave",
+    "latitude": null,
+    "longitude": null,
+    "bedrooms": 4,
+    "bathrooms": 2,
+    "square_feet": "3161.00",
+    "plot_size": null,
+    "year_built": null,
+    "features": [
+      "Broadband",
+      "Swimming Pool",
+      "Gym",
+      "Security",
+      "Backup Generator",
+      "Garden"
+    ],
+    "main_image": "https://i.pinimg.com/736x/8a/8a/8a/8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a8a.jpg",
+    "images": [],
+    "video_url": null,
+    "agent": 16,
+    "owner_name": null,
+    "owner_phone": null,
+    "is_featured": false,
+    "is_verified": false,
+    "is_active": true,
+    "views": 0,
+    "created_at": "2026-01-07T19:53:32.323Z",
+    "updated_at": "2026-01-07T19:53:32.323Z"
+  }
+},
+{
+  "model": "properties.propertyimage",
+  "pk": 1,
+  "fields": {
+    "property": 1,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUw7m2reoJS7SXAB1IJ_Aa__PYMUGwM27ZwA&s",
+    "is_primary": true,
+    "caption": "front view",
+    "created_at": "2025-11-20T08:51:24.028Z"
+  }
+},
+{
+  "model": "properties.propertyimage",
+  "pk": 2,
+  "fields": {
+    "property": 1,
+    "image": "https://media.gettyimages.com/id/1281180946/photo/beautiful-luxury-home.jpg?s=612x612&w=gi&k=20&c=PRNZglAefiIZXV_JLBs90KxIN8892dvl0csH2ZoqhrE=",
+    "is_primary": true,
+    "caption": "back view",
+    "created_at": "2025-11-20T08:51:24.043Z"
+  }
+},
+{
+  "model": "properties.propertyimage",
+  "pk": 3,
+  "fields": {
+    "property": 2,
+    "image": "https://i.pinimg.com/736x/ed/96/5b/ed965bf7c94acf90ad27ea0b15c499cc.jpg",
+    "is_primary": false,
+    "caption": "",
+    "created_at": "2025-11-20T08:56:07.437Z"
+  }
+},
+{
+  "model": "properties.propertyimage",
+  "pk": 4,
+  "fields": {
+    "property": 2,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzKa9wZS4Nv0UN9jnW3FYetKOvk_M18zAGbQ&s",
+    "is_primary": false,
+    "caption": "",
+    "created_at": "2025-11-20T08:56:07.444Z"
+  }
+},
+{
+  "model": "properties.propertyimage",
+  "pk": 5,
+  "fields": {
+    "property": 3,
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnNZt27_L-2Lgx_fmDFbDD4XZc3SqcRAtJhQ&s",
+    "is_primary": false,
+    "caption": "Pretty homes kenya",
+    "created_at": "2025-11-21T19:42:11.790Z"
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 12,
+  "fields": {
+    "user": 3,
+    "property": 3,
+    "saved_at": "2025-11-22T20:56:39.655Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 13,
+  "fields": {
+    "user": 3,
+    "property": 2,
+    "saved_at": "2025-11-22T20:56:41.369Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 14,
+  "fields": {
+    "user": 3,
+    "property": 1,
+    "saved_at": "2025-11-22T20:56:44.310Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 15,
+  "fields": {
+    "user": 11,
+    "property": 3,
+    "saved_at": "2026-01-06T08:09:29.084Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 16,
+  "fields": {
+    "user": 11,
+    "property": 2,
+    "saved_at": "2026-01-06T08:09:30.911Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 17,
+  "fields": {
+    "user": 11,
+    "property": 1,
+    "saved_at": "2026-01-06T08:09:33.981Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 18,
+  "fields": {
+    "user": 15,
+    "property": 3,
+    "saved_at": "2026-01-07T18:40:09.932Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 19,
+  "fields": {
+    "user": 15,
+    "property": 2,
+    "saved_at": "2026-01-07T18:40:10.262Z",
+    "notes": ""
+  }
+},
+{
+  "model": "properties.savedproperty",
+  "pk": 20,
+  "fields": {
+    "user": 15,
+    "property": 1,
+    "saved_at": "2026-01-07T18:40:11.737Z",
+    "notes": ""
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CUOzbc0L7qurUSriWDxoca$lRo62QxM8SHr1PHHgnj8wi0q3Gl8fRwjeAOy4OfY/wA=",
+    "last_login": "2025-11-19T07:58:39Z",
+    "is_superuser": true,
+    "first_name": "Adrian",
+    "last_name": "Chan",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-19T07:57:37Z",
+    "username": "Adrian",
+    "user_type": "management",
+    "phone_number": "",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2025-11-19T07:57:37.966Z",
+    "updated_at": "2025-11-19T07:59:54.232Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$cTTMB453aTM1RhImjCnXck$M6bj1pJyK+EukK7AQLr3Y0WdaBqwh8e5cq1corxHa3U=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "email": "emailhackernew@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T08:06:44.146Z",
+    "username": "emailhacker",
+    "user_type": "client",
+    "phone_number": "",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2025-11-19T08:06:45.517Z",
+    "updated_at": "2025-11-19T08:06:45.517Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$C635k9kyFBcf9AlFiqGgZ8$nNpoLtXf8khAiVEgAj4S07fTbF5TaxlXiJ/sFC77pUs=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Brad",
+    "last_name": "Pitt",
+    "email": "bradpitt@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T19:22:07.882Z",
+    "username": "brad pitt",
+    "user_type": "client",
+    "phone_number": "0791633441",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2025-11-19T19:22:09.498Z",
+    "updated_at": "2025-11-19T19:22:09.498Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$GHprLuozlT2Dsdbbf39woW$me0A1voeQI3tE0TRg/rmrUhjJ13ev7OVp2ufUEDk5+A=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "johndoe@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-11-19T19:39:58Z",
+    "username": "John Doe",
+    "user_type": "client",
+    "phone_number": "0791633223",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2025-11-19T19:40:00.182Z",
+    "updated_at": "2025-11-19T19:46:08.118Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$WHVjDqCcOCk96iVURrhc6B$4lnOAsGvVzr9/d3zl0+23OqFvfNj20zth8d/V7OONYY=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "john.doe@kenyaprime.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:24:25.680Z",
+    "username": "john_doe_agent",
+    "user_type": "agent",
+    "phone_number": "+254712345678",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-05T06:24:27.856Z",
+    "updated_at": "2026-01-05T06:24:27.856Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7xtnA5CwltSuDSyiFbCUhR$DijO+eNE/5fVWZzFhHhPt7tpBG72xeqGJNGc4CS9Cmo=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Sarah",
+    "last_name": "Johnson",
+    "email": "sarah.johnson@kenyaprime.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:24:28.214Z",
+    "username": "sarah_johnson",
+    "user_type": "agent",
+    "phone_number": "+254723456789",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-05T06:24:30.235Z",
+    "updated_at": "2026-01-05T06:24:30.235Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$WsWasTKvoLs6SDYvAl2t4Y$IYLuefpLwkSfLY8bjje9t8iJjeAltIp9fl1KKhZ/kHo=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "David",
+    "last_name": "Kamau",
+    "email": "david.kamau@kenyaprime.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:24:31.178Z",
+    "username": "david_kamau",
+    "user_type": "agent",
+    "phone_number": "+254734567890",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-05T06:24:33.073Z",
+    "updated_at": "2026-01-05T06:24:33.073Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$pJlJ0teIiUsEqi6EfSwMiC$TQWR4CNB/ExDw9sssiu4pvZMVcPaViNNYgvY01Ylzek=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Grace",
+    "last_name": "Wanjiru",
+    "email": "grace.wanjiru@kenyaprime.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:24:33.415Z",
+    "username": "grace_wanjiru",
+    "user_type": "agent",
+    "phone_number": "+254745678901",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-05T06:24:35.725Z",
+    "updated_at": "2026-01-05T06:24:35.725Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$JuoBMaBfl9POEweXNgcrBK$6wvREUfDlTgsy5mWTTtOWnekuXds3kroxhwFQI/SueM=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "James",
+    "last_name": "Mwangi",
+    "email": "james.mwangi@kenyaprime.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:24:36.898Z",
+    "username": "james_mwangi",
+    "user_type": "agent",
+    "phone_number": "+254756789012",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-05T06:24:38.911Z",
+    "updated_at": "2026-01-05T06:24:38.911Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$BvT35ZuqznLp8yLRNxpwQt$PdWyMQdJdb1tWabxtjfREdF4McBEfJv4cZ0kPVu2x8g=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Alice",
+    "last_name": "Nyambura",
+    "email": "alice.nyambura@kenyaprime.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:24:39Z",
+    "username": "alice_nyambura",
+    "user_type": "agent",
+    "phone_number": "+254767890123",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-05T06:24:41.923Z",
+    "updated_at": "2026-01-21T08:19:17.669Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$pLTMKpdlWHw3Ub9xZTkiDI$l0UmuIIUX2IEsW7emTROV/cyOB7WncuAv1kzYxmP3MY=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Philippe",
+    "last_name": "Jones",
+    "email": "philipjones@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-05T06:30:15.579Z",
+    "username": "Philippe",
+    "user_type": "client",
+    "phone_number": "0791622433",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2026-01-05T06:30:18.966Z",
+    "updated_at": "2026-01-05T06:30:18.966Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$1fkqq3p7W0Xv1TLdAYQcMi$/7nU8QnXNuU/rik0iYG1ijtJWaUxplADnVknlahggdM=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "",
+    "last_name": "",
+    "email": "test@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T08:28:00.319Z",
+    "username": "testuser",
+    "user_type": "client",
+    "phone_number": "",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2026-01-07T08:28:03.354Z",
+    "updated_at": "2026-01-07T08:28:03.354Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$FSqYjo0kRyakdM0PEbg6JO$RHLMpwPmrQClOD1juULld6/VuoYZFn09qIG1jqUzZrE=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Desire",
+    "last_name": "doue",
+    "email": "doue@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T09:05:41.304Z",
+    "username": "Desire",
+    "user_type": "client",
+    "phone_number": "0707246245",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2026-01-07T09:05:42.610Z",
+    "updated_at": "2026-01-07T09:05:42.610Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$xtHYVoGQ2c2TV9BXLAsZ7L$ligb6HtKZKmg0SFThs0mp1DrV+WYLIh9OdK1OnfgUrE=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Agent",
+    "last_name": "Culson",
+    "email": "culson@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T14:03:35Z",
+    "username": "Culson",
+    "user_type": "agent",
+    "phone_number": "0725127128",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-07T14:03:38.346Z",
+    "updated_at": "2026-01-21T07:13:00.393Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 15,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Z6N49cfjP2vLI9n4BAYdHN$QmulrWGMhNpBN4kdKgbht9b2BO5610HyEpquWVDLcOA=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "mark",
+    "last_name": "mike",
+    "email": "mark@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T16:46:17.717Z",
+    "username": "mark",
+    "user_type": "client",
+    "phone_number": "0791627441",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2026-01-07T16:46:20.086Z",
+    "updated_at": "2026-01-07T16:46:20.087Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 16,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$EdCK50mIMUuNJKiJxAbUJs$cbNq/VSVB2eNoortCmLH7iX5IcRjZi3T3UHyUKJxX8Y=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Sarah",
+    "last_name": "Jenkins",
+    "email": "sarah@realestate.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T19:53:23Z",
+    "username": "agent_sarah",
+    "user_type": "agent",
+    "phone_number": "+254712345678",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-07T19:53:23.093Z",
+    "updated_at": "2026-01-21T08:52:41.042Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$tSeQZDzZms0dNaNNthxGiO$1e5teSf/dEHnQqIKdd235H/qL7GjqngKy7dAJS+0EcI=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Mike",
+    "last_name": "Ross",
+    "email": "mike@realestate.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T19:53:25Z",
+    "username": "agent_mike",
+    "user_type": "agent",
+    "phone_number": "+254722334455",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-07T19:53:25.646Z",
+    "updated_at": "2026-01-21T08:52:42.751Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 18,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$kTC9KD7jo70OVj1XiGMUNa$RWlo3JFJb8gFF7t4n/HuUIsCsITTYrk8BW9upaxrVpk=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Elena",
+    "last_name": "Gilbert",
+    "email": "elena@realestate.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-07T19:53:29Z",
+    "username": "agent_elena",
+    "user_type": "management",
+    "phone_number": "+254733112233",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-07T19:53:29.328Z",
+    "updated_at": "2026-01-21T08:52:42.820Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 19,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$L5HQNs4csIpcimddUEf2qM$PY6GlKiy3tkY8fM4+m8z9+xmpHZkjwty6OPUlACIYM0=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "James",
+    "last_name": "Bond",
+    "email": "jamesbond@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-20T14:19:37.781Z",
+    "username": "James",
+    "user_type": "client",
+    "phone_number": "+254791633441",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2026-01-20T14:19:42.266Z",
+    "updated_at": "2026-01-20T14:19:42.266Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 20,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$HQIVtFs2nJhQb6RpEtUh7R$8ietcYZPL8uROiRzfPwoW22apskh56aShyZOCwU2P4A=",
+    "last_login": "2026-01-21T08:11:01.539Z",
+    "is_superuser": true,
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-01-20T18:00:10.853Z",
+    "username": "Real",
+    "user_type": "client",
+    "phone_number": "",
+    "profile_picture": "",
+    "is_verified": false,
+    "created_at": "2026-01-20T18:00:15.243Z",
+    "updated_at": "2026-01-20T18:00:15.243Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 21,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$cBGv2prdln5UChDyxIgHYY$IGdOwgs3yvmkmTYmHZFueZ+XjWp+w5QNwn3Q2/k8vpc=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "John",
+    "last_name": "Vanderburg",
+    "email": "johnvanderburg@mail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-21T08:09:00Z",
+    "username": "Johny",
+    "user_type": "agent",
+    "phone_number": "0791633447",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-21T08:09:02.922Z",
+    "updated_at": "2026-01-21T08:18:27.721Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.customuser",
+  "pk": 22,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$AnFJqdDMNYWDanQMKwaBod$KqpfWnSZhb59rj/CpLRl7sS4mxsHgtmWnqCYzSiHSlw=",
+    "last_login": null,
+    "is_superuser": false,
+    "first_name": "Duke",
+    "last_name": "Gen",
+    "email": "dukegen@mail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-21T08:57:21.301Z",
+    "username": "Duke",
+    "user_type": "agent",
+    "phone_number": "0756782345",
+    "profile_picture": "",
+    "is_verified": true,
+    "created_at": "2026-01-21T08:57:22.803Z",
+    "updated_at": "2026-01-21T08:57:22.803Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 2,
+  "fields": {
+    "user": 3,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 3,
+  "fields": {
+    "user": 4,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 4,
+  "fields": {
+    "user": 11,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 5,
+  "fields": {
+    "user": 12,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 6,
+  "fields": {
+    "user": 13,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 7,
+  "fields": {
+    "user": 14,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 8,
+  "fields": {
+    "user": 15,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 9,
+  "fields": {
+    "user": 19,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 10,
+  "fields": {
+    "user": 21,
+    "bio": "A very Good man",
+    "company": "Johny realtors",
+    "license_number": "RAE/13456",
+    "years_of_experience": 10,
+    "specialties": [
+      "commercial",
+      "residential"
+    ],
+    "whatsapp_number": "0791633447",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 11,
+  "fields": {
+    "user": 22,
+    "bio": "",
+    "company": "",
+    "license_number": "",
+    "years_of_experience": 0,
+    "specialties": [],
+    "whatsapp_number": "",
+    "alternative_email": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": ""
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 1,
+  "fields": {
+    "user": 5,
+    "slug": "john-doe",
+    "bio": "Experienced real estate agent with over 10 years in the Kenyan property market. Specializing in residential and commercial properties in Nairobi and surrounding areas. I have a proven track record of helping clients find their dream homes and make profitable investments.",
+    "license_number": "REA/12345/2024",
+    "years_of_experience": 10,
+    "specialties": [
+      "Residential",
+      "Commercial",
+      "Luxury Homes"
+    ],
+    "office_address": "ABC Plaza, Waiyaki Way, Westlands, Nairobi",
+    "whatsapp_number": "+254712345678",
+    "facebook_url": "https://facebook.com/johndoeagent",
+    "twitter_url": "",
+    "linkedin_url": "https://linkedin.com/in/johndoe",
+    "instagram_url": "",
+    "total_properties_sold": 45,
+    "total_sales_value": "0.00",
+    "average_rating": "4.80",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-05T06:24:28.175Z",
+    "updated_at": "2026-01-21T00:57:45.226Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 2,
+  "fields": {
+    "user": 6,
+    "slug": "sarah-johnson",
+    "bio": "Passionate about helping diaspora clients invest in Kenyan real estate. Expert in land and investment properties with a focus on prime locations across Kenya. I provide end-to-end support from property search to legal documentation.",
+    "license_number": "REA/23456/2024",
+    "years_of_experience": 7,
+    "specialties": [
+      "Land",
+      "Investment Properties",
+      "Diaspora Services"
+    ],
+    "office_address": "Delta Towers, Westlands Road, Nairobi",
+    "whatsapp_number": "+254723456789",
+    "facebook_url": "",
+    "twitter_url": "https://twitter.com/sarahjohnson",
+    "linkedin_url": "",
+    "instagram_url": "https://instagram.com/sarahj_realestate",
+    "total_properties_sold": 32,
+    "total_sales_value": "0.00",
+    "average_rating": "4.90",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-05T06:24:31.139Z",
+    "updated_at": "2026-01-21T00:57:45.273Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 3,
+  "fields": {
+    "user": 7,
+    "slug": "david-kamau",
+    "bio": "Specialist in coastal properties with extensive knowledge of Mombasa, Diani, and Malindi areas. Whether you are looking for a beachfront villa or a commercial property, I can help you find the perfect investment opportunity.",
+    "license_number": "REA/34567/2024",
+    "years_of_experience": 5,
+    "specialties": [
+      "Coastal Properties",
+      "Vacation Homes",
+      "Commercial"
+    ],
+    "office_address": "Mombasa Road, Nyali, Mombasa",
+    "whatsapp_number": "+254734567890",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "https://linkedin.com/in/davidkamau",
+    "instagram_url": "",
+    "total_properties_sold": 28,
+    "total_sales_value": "0.00",
+    "average_rating": "4.70",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-05T06:24:33.382Z",
+    "updated_at": "2026-01-21T00:57:45.326Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 4,
+  "fields": {
+    "user": 8,
+    "slug": "grace-wanjiru",
+    "bio": "Award-winning agent specializing in luxury properties and estates in Karen, Runda, and Muthaiga. With a keen eye for detail and excellent negotiation skills, I ensure my clients get the best deals in the high-end property market.",
+    "license_number": "REA/45678/2024",
+    "years_of_experience": 12,
+    "specialties": [
+      "Luxury Homes",
+      "Estates",
+      "High-End Properties"
+    ],
+    "office_address": "The Hub, Karen, Nairobi",
+    "whatsapp_number": "+254745678901",
+    "facebook_url": "https://facebook.com/gracewanjiruagent",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": "https://instagram.com/gracew_luxury",
+    "total_properties_sold": 67,
+    "total_sales_value": "0.00",
+    "average_rating": "5.00",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-05T06:24:36.858Z",
+    "updated_at": "2026-01-21T00:57:45.363Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 5,
+  "fields": {
+    "user": 9,
+    "slug": "james-mwangi",
+    "bio": "First-time buyer specialist with a commitment to making property ownership accessible. I guide young professionals and families through every step of the home-buying process with patience and expertise.",
+    "license_number": "REA/56789/2024",
+    "years_of_experience": 4,
+    "specialties": [
+      "First-Time Buyers",
+      "Affordable Housing",
+      "Residential"
+    ],
+    "office_address": "Thika Road Mall, Kasarani, Nairobi",
+    "whatsapp_number": "+254756789012",
+    "facebook_url": "",
+    "twitter_url": "https://twitter.com/jamesmwangi_re",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "total_properties_sold": 21,
+    "total_sales_value": "0.00",
+    "average_rating": "4.60",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-05T06:24:39.656Z",
+    "updated_at": "2026-01-21T00:57:45.400Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 6,
+  "fields": {
+    "user": 10,
+    "slug": "alice-nyambura",
+    "bio": "New to the real estate industry but eager to help clients find their ideal properties. Currently working on verification and building my portfolio.",
+    "license_number": "REA/67890/2024",
+    "years_of_experience": 1,
+    "specialties": [
+      "Residential",
+      "Rentals"
+    ],
+    "office_address": "CBD, Nairobi",
+    "whatsapp_number": "+254767890123",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "total_properties_sold": 3,
+    "total_sales_value": "0.00",
+    "average_rating": "4.20",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-05T06:24:42.059Z",
+    "updated_at": "2026-01-21T08:38:26.956Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 7,
+  "fields": {
+    "user": 16,
+    "slug": "sarah-jenkins",
+    "bio": "Experienced real estate agent specializing in luxury properties. Sarah has over 10 years of experience in the market.",
+    "license_number": "RE-3273",
+    "years_of_experience": 15,
+    "specialties": [],
+    "office_address": "",
+    "whatsapp_number": "+254712345678",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "total_properties_sold": 0,
+    "total_sales_value": "0.00",
+    "average_rating": "0.00",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-07T19:53:25.603Z",
+    "updated_at": "2026-01-21T08:52:42.706Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 8,
+  "fields": {
+    "user": 17,
+    "slug": "mike-ross",
+    "bio": "Experienced real estate agent specializing in luxury properties. Mike has over 10 years of experience in the market.",
+    "license_number": "RE-8525",
+    "years_of_experience": 12,
+    "specialties": [],
+    "office_address": "",
+    "whatsapp_number": "+254722334455",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "total_properties_sold": 0,
+    "total_sales_value": "0.00",
+    "average_rating": "0.00",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-07T19:53:29.237Z",
+    "updated_at": "2026-01-21T08:52:42.784Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 9,
+  "fields": {
+    "user": 18,
+    "slug": "elena-gilbert",
+    "bio": "Experienced real estate agent specializing in luxury properties. Elena has over 10 years of experience in the market.",
+    "license_number": "RE-8254",
+    "years_of_experience": 14,
+    "specialties": [],
+    "office_address": "",
+    "whatsapp_number": "+254733112233",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "total_properties_sold": 0,
+    "total_sales_value": "0.00",
+    "average_rating": "0.00",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-07T19:53:31.765Z",
+    "updated_at": "2026-01-21T08:52:42.851Z"
+  }
+},
+{
+  "model": "agents.agentprofile",
+  "pk": 10,
+  "fields": {
+    "user": 22,
+    "slug": "duke-gen",
+    "bio": "Professional agent Duke Gen",
+    "license_number": "PENDING-22",
+    "years_of_experience": 0,
+    "specialties": [
+      "commercial",
+      "residential"
+    ],
+    "office_address": "",
+    "whatsapp_number": "",
+    "facebook_url": "",
+    "twitter_url": "",
+    "linkedin_url": "",
+    "instagram_url": "",
+    "total_properties_sold": 0,
+    "total_sales_value": "0.00",
+    "average_rating": "0.00",
+    "is_verified": true,
+    "verification_documents": [],
+    "created_at": "2026-01-21T08:57:22.920Z",
+    "updated_at": "2026-01-21T08:59:23.600Z"
+  }
+},
+{
+  "model": "agents.agentreview",
+  "pk": 1,
+  "fields": {
+    "agent": 8,
+    "client_name": "Its me",
+    "client_email": "myemail@gmail.com",
+    "rating": 4,
+    "review_text": "nice job",
+    "is_approved": true,
+    "created_at": "2026-01-21T00:44:05.084Z"
+  }
+},
+{
+  "model": "leads.conversation",
+  "pk": 1,
+  "fields": {
+    "property": null,
+    "client": 3,
+    "agent": 22,
+    "created_at": "2026-01-21T09:28:24.179Z",
+    "updated_at": "2026-01-21T09:28:24.179Z",
+    "is_active": true
+  }
+},
+{
+  "model": "leads.message",
+  "pk": 1,
+  "fields": {
+    "conversation": 1,
+    "sender": 3,
+    "content": "Hello",
+    "is_read": true,
+    "created_at": "2026-01-21T09:32:06.013Z"
+  }
+},
+{
+  "model": "leads.message",
+  "pk": 2,
+  "fields": {
+    "conversation": 1,
+    "sender": 3,
+    "content": "I wanted to inquire about a property i saw on your listings",
+    "is_read": true,
+    "created_at": "2026-01-21T09:32:50.658Z"
+  }
+},
+{
+  "model": "leads.message",
+  "pk": 3,
+  "fields": {
+    "conversation": 1,
+    "sender": 22,
+    "content": "Okay  Brad you are in the right place kindly drop me your contac t info so that we can plan your site visit",
+    "is_read": false,
+    "created_at": "2026-01-21T09:35:41.769Z"
+  }
+},
+{
+  "model": "analytics.agentperformance",
+  "pk": 1,
+  "fields": {
+    "agent": 21,
+    "period": "2026-01-01",
+    "properties_listed": 0,
+    "properties_sold": 0,
+    "total_sales_value": "0.00",
+    "leads_generated": 0,
+    "leads_converted": 0,
+    "conversion_rate": "0.00",
+    "average_response_time": null,
+    "created_at": "2026-01-21T08:09:45.738Z",
+    "updated_at": "2026-01-21T08:09:46.493Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 1,
+  "fields": {
+    "property": 1,
+    "client": 3,
+    "agent": 3,
+    "date": "2025-11-24T01:25:00Z",
+    "duration": 30,
+    "status": "cancelled",
+    "client_notes": "",
+    "agent_notes": "",
+    "created_at": "2025-11-23T08:15:41.863Z",
+    "updated_at": "2025-11-23T09:44:46.087Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 2,
+  "fields": {
+    "property": 2,
+    "client": 3,
+    "agent": 3,
+    "date": "2025-11-25T22:34:00Z",
+    "duration": 30,
+    "status": "confirmed",
+    "client_notes": "",
+    "agent_notes": "",
+    "created_at": "2025-11-23T08:19:25.917Z",
+    "updated_at": "2025-11-23T09:44:40.551Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 3,
+  "fields": {
+    "property": 3,
+    "client": 3,
+    "agent": 3,
+    "date": "2025-12-02T11:25:00Z",
+    "duration": 30,
+    "status": "confirmed",
+    "client_notes": "",
+    "agent_notes": "",
+    "created_at": "2025-11-23T09:44:04.752Z",
+    "updated_at": "2025-11-23T09:44:28.111Z"
+  }
+}
+]
