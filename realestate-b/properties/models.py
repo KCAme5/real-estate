@@ -82,7 +82,7 @@ class Property(models.Model):
     # Location
     location = models.ForeignKey(
         Location,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="properties",
         null=True,
         blank=True,
@@ -121,7 +121,7 @@ class Property(models.Model):
     # Agent and Ownership
     agent = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="properties",
         limit_choices_to={"user_type": "agent"},
         blank=True,
@@ -149,7 +149,14 @@ class Property(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            slug = base_slug
+            counter = 1
+            # Ensure slug uniqueness by appending a number if collision
+            while Property.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
         # Format price display
         if self.currency == "KES":
             self.price_display = f"KES {self.price:,.0f}"
