@@ -1,5 +1,16 @@
 'use client';
 
+interface Filters {
+    property_type: string;
+    location: string;
+    price_min: string;
+    price_max: string;
+    bedrooms: string;
+    bathrooms: string;
+    listing_type: string;
+    is_development: string;
+}
+
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Property } from '@/types/property';
@@ -7,6 +18,7 @@ import PropertyCard from '@/components/property/PropertyCard';
 import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 import PropertyFiltersBar from '@/components/property/PropertyFiltersBar';
 import PropertiesSidebar from '@/components/property/PropertiesSidebar';
+import MapView from '@/components/map/MapView';
 import { apiClient } from '@/lib/api/client';
 
 function PropertiesContent() {
@@ -18,7 +30,7 @@ function PropertiesContent() {
     const [currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 20;
 
-    const [filters, setFilters] = useState({
+    const [filters, setFilters] = useState<Filters>({
         property_type: '',
         location: '',
         price_min: '',
@@ -40,19 +52,21 @@ function PropertiesContent() {
         fetchProperties(urlFilters);
     }, [searchParams]);
 
-    const fetchProperties = async (searchFilters = {}, page = 1) => {
+    const fetchProperties = async (searchFilters: Partial<Filters> = {}, page = 1) => {
         try {
             setLoading(true);
             // Clean up empty filters
-            const cleanFilters: Record<string, any> = {
+            const cleanFilters: Record<string, string | number> = {
                 page: page,
                 page_size: PAGE_SIZE
             };
             Object.entries(searchFilters).forEach(([key, value]) => {
-                if (value) cleanFilters[key] = value;
+                if (value !== '' && value !== null && value !== undefined) {
+                    cleanFilters[key] = value;
+                }
             });
 
-            const queryParams = new URLSearchParams(cleanFilters).toString();
+            const queryParams = new URLSearchParams(cleanFilters as Record<string, string>).toString();
             const data = await apiClient.get(`/properties/?${queryParams}`);
 
             if (data.results) {
@@ -100,20 +114,11 @@ function PropertiesContent() {
                                 ))}
                             </div>
                         ) : viewMode === 'map' ? (
-                            <div className="bg-slate-900 border border-slate-800 rounded-3xl h-[600px] flex items-center justify-center relative overflow-hidden group">
-                                <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Kenya&zoom=6&size=800x600&sensor=false')] bg-cover opacity-20 grayscale group-hover:grayscale-0 transition-all duration-700"></div>
-                                <div className="relative z-10 text-center p-8 bg-slate-950/80 backdrop-blur-xl rounded-2xl border border-slate-800">
-                                    <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-500">
-                                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4" />
-                                        </svg>
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">Interactive Map View</h3>
-                                    <p className="text-slate-400 max-w-sm mb-6">Explore properties visually on our interactive map interface. Zoom in to specific areas and see prices at a glance.</p>
-                                    <button className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-500/20">
-                                        Launch Full Map
-                                    </button>
-                                </div>
+                            <div className="h-[600px] w-full rounded-3xl border border-slate-800">
+                                <MapView
+                                    initialSearch={filters.location || ''}
+                                    initialPropertyType={filters.property_type || 'all'}
+                                />
                             </div>
                         ) : properties.length > 0 ? (
                             <div className={`
