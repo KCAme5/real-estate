@@ -10,7 +10,6 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 
 // Fix for default marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
@@ -56,7 +55,7 @@ const getMarkerIcon = (propertyType: string, isFeatured: boolean = false) => {
     const color = iconColors[propertyType] || '#10b981';
     const size = isFeatured ? 40 : 30;
     const borderWidth = isFeatured ? 3 : 2;
-    const starIcon = isFeatured ? '<span style="position:absolute;top:-8px;right:-8px;font-size:14px;">⭐</span>' : '';
+    const starIcon = isFeatured ? '<span style="position:absolute;top:-8px;right:-8px;font-size:14px;">★</span>' : '';
 
     return L.divIcon({
         className: 'custom-marker',
@@ -92,7 +91,12 @@ const getMarkerIcon = (propertyType: string, isFeatured: boolean = false) => {
     });
 };
 
-export default function MapView() {
+interface MapViewProps {
+    initialSearch?: string;
+    initialPropertyType?: string;
+}
+
+export default function MapView({ initialSearch = '', initialPropertyType = 'all' }: MapViewProps) {
     const router = useRouter();
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstanceRef = useRef<L.Map | null>(null);
@@ -101,20 +105,36 @@ export default function MapView() {
     const [properties, setProperties] = useState<Property[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filterType, setFilterType] = useState('all');
+    const [searchQuery, setSearchQuery] = useState(initialSearch);
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(initialSearch);
+    const [filterType, setFilterType] = useState(initialPropertyType);
     const [showFilters, setShowFilters] = useState(false);
+
+    useEffect(() => {
+        const handle = setTimeout(() => setDebouncedSearchQuery(searchQuery), 300);
+        return () => clearTimeout(handle);
+    }, [searchQuery]);
 
     // Fetch properties
     useEffect(() => {
+        const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api').replace(/\/$/, '');
+        const controller = new AbortController();
+
         const fetchProperties = async () => {
             try {
+                setLoading(true);
+                const queryParams = new URLSearchParams();
+                if (debouncedSearchQuery) queryParams.append('search', debouncedSearchQuery);
+                if (filterType && filterType !== 'all') queryParams.append('property_type', filterType);
+
                 const response = await fetch(
-                    (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api') + '/properties/'
+                    `${apiBase}/properties/?${queryParams.toString()}`,
+                    { signal: controller.signal }
                 );
                 const data = await response.json();
                 setProperties(data.results || data || []);
             } catch (error) {
+                if ((error as any)?.name === 'AbortError') return;
                 console.error('Error fetching properties:', error);
             } finally {
                 setLoading(false);
@@ -122,7 +142,9 @@ export default function MapView() {
         };
 
         fetchProperties();
-    }, []);
+
+        return () => controller.abort();
+    }, [debouncedSearchQuery, filterType]);
 
     // Initialize map
     useEffect(() => {
@@ -170,9 +192,9 @@ export default function MapView() {
                    !isNaN(Number(p.latitude)) && !isNaN(Number(p.longitude))
         );
 
-        // Apply search filter
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
+        // Apply search filter (defensive: API already filtered)
+        if (debouncedSearchQuery) {
+            const query = debouncedSearchQuery.toLowerCase();
             filteredProperties = filteredProperties.filter(
                 (p) =>
                     p.title.toLowerCase().includes(query) ||
@@ -218,7 +240,7 @@ export default function MapView() {
                         />
                     ` : ''}
                     <div class="flex items-center gap-2 mb-1">
-                        ${property.is_featured ? '<span class="text-yellow-500">⭐</span>' : ''}
+                        ${property.is_featured ? '<span class="text-yellow-500">★</span>' : ''}
                         <h3 class="font-semibold text-sm">${property.title}</h3>
                     </div>
                     <p class="text-xs text-gray-600 mb-1">
@@ -228,22 +250,23 @@ export default function MapView() {
                         ${formatPrice(property.price, property.currency)}
                     </p>
                     <div class="flex gap-3 mt-2 text-xs text-gray-500">
-                        ${property.bedrooms ? `<span class="flex items-center gap-1"><span>🛏️</span>${property.bedrooms}</span>` : ''}
-                        ${property.bathrooms ? `<span class="flex items-center gap-1"><span>🚿</span>${property.bathrooms}</span>` : ''}
-                        ${property.square_feet ? `<span class="flex items-center gap-1"><span>📐</span>${property.square_feet} sqft</span>` : ''}
+                        ${property.bedrooms ? `<span class="flex items-center gap-1"><span class="font-semibold">Beds:</span>${property.bedrooms}</span>` : ''}
+                        ${property.bathrooms ? `<span class="flex items-center gap-1"><span class="font-semibold">Baths:</span>${property.bathrooms}</span>` : ''}
+                        ${property.square_feet ? `<span class="flex items-center gap-1"><span class="font-semibold">Size:</span>${property.square_feet} sqft</span>` : ''}
                     </div>
-                    <button 
-                        onclick="window.location.href='/properties/${property.slug}'"
-                        class="mt-2 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors"
+                    <a
+                        href="/properties/${property.slug}"
+                        class="mt-2 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors text-center block"
                     >
                         View Details
-                    </button>
+                    </a>
                 </div>
             `;
 
             marker.bindPopup(popupContent);
             marker.on('click', () => {
                 setSelectedProperty(property);
+                marker.openPopup();
             });
 
             clusterGroupRef.current?.addLayer(marker);
@@ -260,7 +283,7 @@ export default function MapView() {
                 mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50] });
             }
         }
-    }, [properties, searchQuery, filterType]);
+    }, [properties, debouncedSearchQuery, filterType]);
 
     const propertyTypes = ['all', 'apartment', 'townhouse', 'maisonette', 'land', 'commercial', 'office', 'duplex', 'bungalow', 'villa'];
 

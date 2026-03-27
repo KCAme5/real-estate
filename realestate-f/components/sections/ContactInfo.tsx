@@ -16,7 +16,7 @@ export default function ContactInfo() {
             ],
             action: {
                 text: 'Get Directions',
-                link: 'https://maps.google.com/?q=ABC+Place,+Waiyaki+Way,+Nairobi'
+                link: 'https://www.openstreetmap.org/?mlat=-1.265636999079991&mlon=36.80601051475391#map=18/-1.265636999079991/36.80601051475391'
             }
         },
         {
@@ -118,15 +118,12 @@ export default function ContactInfo() {
                         </h3>
                     </div>
                     <div className="h-[400px]">
-                        {/* Google Maps Embed */}
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.847208379022!2d36.80601051475391!3d-1.265636999079991!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f173c0a1f9d27%3A0x44301a10c095dc8c!2sABC%20Place!5e0!3m2!1sen!2ske!4v1641381773244!5m2!1sen!2ske"
+                            src="https://www.openstreetmap.org/export/embed.html?bbox=36.79601051475391%2C-1.270636999079991%2C36.81601051475391%2C-1.260636999079991&layer=mapnik&marker=-1.265636999079991%2C36.80601051475391"
                             width="100%"
                             height="100%"
                             style={{ border: 0 }}
-                            allowFullScreen
                             loading="lazy"
-                            referrerPolicy="no-referrer-when-downgrade"
                             title="KenyaPrime Properties Location"
                         />
                     </div>
