@@ -12,14 +12,23 @@ interface Filters {
 }
 
 import { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { Property } from '@/types/property';
 import PropertyCard from '@/components/property/PropertyCard';
 import PropertyCardSkeleton from '@/components/property/PropertyCardSkeleton';
 import PropertyFiltersBar from '@/components/property/PropertyFiltersBar';
 import PropertiesSidebar from '@/components/property/PropertiesSidebar';
-import MapView from '@/components/map/MapView';
 import { apiClient } from '@/lib/api/client';
+
+const MapView = dynamic(() => import('@/components/map/MapView'), {
+    ssr: false,
+    loading: () => (
+        <div className="h-full w-full bg-slate-900/60 animate-pulse rounded-3xl flex items-center justify-center text-slate-300 font-medium">
+            Loading map...
+        </div>
+    ),
+});
 
 function PropertiesContent() {
     const searchParams = useSearchParams();

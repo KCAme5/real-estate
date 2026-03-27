@@ -1,5 +1,5 @@
 export interface Property {
-    slug: any;
+    slug: string;
     id: number;
     title: string;
     price: number;
@@ -22,7 +22,7 @@ export interface Property {
     bathrooms: number;
     square_feet: number;
     address: string;
-    agent: any;
+    agent: AgentProfile | number | null;
     features: string[];
     year_built: number;
     is_featured: boolean;

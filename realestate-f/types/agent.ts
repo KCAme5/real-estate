@@ -21,7 +21,7 @@ export interface Agent {
     linkedin_url?: string;
     instagram_url?: string;
     reviews?: AgentReview[];
-    properties?: any[]; // We'll use a more specific type if we have one, but any[] is safer for now to avoid circular issues
+    properties?: unknown[];
     location?: string; // used by some frontend components
 }
 
