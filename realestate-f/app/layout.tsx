@@ -1,14 +1,11 @@
 // app/layout.tsx
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from "@/components/theme-provider"
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { ToastProvider } from '@/components/ui/toast';
-
-const inter = Inter({ subsets: ['latin'], preload: false });
 
 export const metadata: Metadata = {
   title: 'Tugai Realtors | Luxury Real Estate for Kenyans & Diaspora',
@@ -36,7 +33,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           forcedTheme="dark"
