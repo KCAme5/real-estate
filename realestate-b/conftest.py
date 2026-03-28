@@ -5,6 +5,7 @@ Following TDD principles: fixtures create test data factories.
 import pytest
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.utils.text import slugify
 from rest_framework.test import APIClient
 from properties.models import Location, Property, PropertyImage
 from leads.models import (
@@ -36,9 +37,13 @@ def location_factory(db):
         longitude=36.8036,
         **kwargs
     ):
+        slug = kwargs.pop("slug", None)
+        if not slug:
+            slug = f"{slugify(name)}-{uuid.uuid4().hex[:8]}"
         return Location.objects.create(
             name=name,
             county=county,
+            slug=slug,
             latitude=latitude,
             longitude=longitude,
             **kwargs
