@@ -8,9 +8,10 @@ import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import { Calendar, Clock, MapPin, User, Home, Loader2 } from 'lucide-react';
 
 const statusColors: Record<string, string> = {
-    'PENDING': 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
-    'CONFIRMED': 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
-    'CANCELLED': 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
+    pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
+    confirmed: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
+    cancelled: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
+    completed: 'bg-slate-100 dark:bg-slate-900/20 text-slate-800 dark:text-slate-300',
 };
 
 export default function BookingsPage() {
@@ -42,9 +43,9 @@ export default function BookingsPage() {
     const handleConfirmBooking = async (bookingId: number) => {
         setConfirmingId(bookingId);
         try {
-            await bookingsAPI.update(bookingId, { status: 'CONFIRMED' });
+            await bookingsAPI.update(bookingId, { status: 'confirmed' });
             setBookings(prev => prev.map(b =>
-                b.id === bookingId ? { ...b, status: 'CONFIRMED' } : b
+                b.id === bookingId ? { ...b, status: 'confirmed' } : b
             ));
             success('Booking Confirmed', 'Viewing appointment confirmed');
         } catch (error) {
@@ -58,9 +59,9 @@ export default function BookingsPage() {
     const handleCancelBooking = async (bookingId: number) => {
         setConfirmingId(bookingId);
         try {
-            await bookingsAPI.update(bookingId, { status: 'CANCELLED' });
+            await bookingsAPI.update(bookingId, { status: 'cancelled' });
             setBookings(prev => prev.map(b =>
-                b.id === bookingId ? { ...b, status: 'CANCELLED' } : b
+                b.id === bookingId ? { ...b, status: 'cancelled' } : b
             ));
             success('Booking Cancelled', 'Viewing appointment cancelled');
         } catch (error) {
@@ -101,13 +102,13 @@ export default function BookingsPage() {
                     <div className="bg-card border border-border rounded-xl p-4">
                         <p className="text-sm text-muted-foreground font-medium">Confirmed</p>
                         <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">
-                            {bookings.filter(b => b.status === 'CONFIRMED').length}
+                            {bookings.filter(b => b.status === 'confirmed').length}
                         </p>
                     </div>
                     <div className="bg-card border border-border rounded-xl p-4">
                         <p className="text-sm text-muted-foreground font-medium">Pending</p>
                         <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">
-                            {bookings.filter(b => b.status === 'PENDING').length}
+                            {bookings.filter(b => b.status === 'pending').length}
                         </p>
                     </div>
                 </div>
@@ -171,9 +172,9 @@ export default function BookingsPage() {
                                     <div className="flex flex-col items-end gap-3">
                                         <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[booking.status]}`}>
                                             <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                            {booking.status}
+                                            {booking.status.toUpperCase()}
                                         </span>
-                                        {booking.status === 'PENDING' && (
+                                        {booking.status === 'pending' && (
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => handleConfirmBooking(booking.id)}

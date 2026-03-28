@@ -42,16 +42,16 @@ export default function BookingsPage() {
         if (statusFilter === 'all') {
             setFilteredBookings(bookings);
         } else {
-            setFilteredBookings(bookings.filter(b => b.status?.toUpperCase() === statusFilter.toUpperCase()));
+            setFilteredBookings(bookings.filter(b => b.status === statusFilter));
         }
     }, [bookings, statusFilter]);
 
-    const handleStatusUpdate = async (bookingId: number, newStatus: string) => {
+    const handleStatusUpdate = async (bookingId: number, newStatus: Booking['status']) => {
         setUpdatingId(bookingId);
         try {
             await bookingsAPI.update(bookingId, { status: newStatus });
             setBookings(prev => prev.map(b =>
-                b.id === bookingId ? { ...b, status: newStatus as any } : b
+                b.id === bookingId ? { ...b, status: newStatus } : b
             ));
             success('Booking updated', `Status changed to ${newStatus}`);
         } catch (err) {
@@ -84,14 +84,14 @@ export default function BookingsPage() {
                 {/* Combined Filter & Content Section */}
                 <div className="space-y-8">
                     {/* Filters - Breadcrumb style */}
-                    <div className="flex flex-wrap items-center gap-3 p-2 bg-card border border-border rounded-2xl w-fit shadow-sm">
+                <div className="flex flex-wrap items-center gap-3 p-2 bg-card border border-border rounded-2xl w-fit shadow-sm">
                         <div className="px-4 py-2 text-muted-foreground">
                             <Filter size={18} />
                         </div>
                         {[
                             { id: 'all', label: 'All Bookings' },
-                            { id: 'CONFIRMED', label: 'Confirmed' },
-                            { id: 'PENDING', label: 'Pending Approval' },
+                            { id: 'confirmed', label: 'Confirmed' },
+                            { id: 'pending', label: 'Pending Approval' },
                         ].map((filter) => (
                             <button
                                 key={filter.id}
@@ -143,20 +143,20 @@ export default function BookingsPage() {
                                                         {booking.property_location || 'Location TBD'}
                                                     </p>
                                                 </div>
-                                                <div className={`px-4 py-2 rounded-lg font-bold text-sm ${booking.status === 'CONFIRMED'
-                                                    ? 'bg-emerald-500/10 text-emerald-400'
-                                                    : booking.status === 'PENDING'
-                                                        ? 'bg-amber-500/10 text-amber-400'
-                                                        : 'bg-red-500/10 text-red-400'
+                                            <div className={`px-4 py-2 rounded-lg font-bold text-sm ${booking.status === 'confirmed'
+                                                        ? 'bg-emerald-500/10 text-emerald-400'
+                                                        : booking.status === 'pending'
+                                                            ? 'bg-amber-500/10 text-amber-400'
+                                                            : 'bg-red-500/10 text-red-400'
                                                     }`}>
-                                                    {booking.status || 'PENDING'}
+                                                    {(booking.status || 'pending').toUpperCase()}
                                                 </div>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-4 bg-slate-800/50 rounded-lg">
                                                 <div>
                                                     <p className="text-xs text-slate-500 font-bold mb-1">DATE</p>
-                                                    <p className="font-black text-white text-sm">{new Date(booking.booking_date).toLocaleDateString()}</p>
+                                                    <p className="font-black text-white text-sm">{new Date(booking.booking_date || booking.date).toLocaleDateString()}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-xs text-slate-500 font-bold mb-1">TIME</p>

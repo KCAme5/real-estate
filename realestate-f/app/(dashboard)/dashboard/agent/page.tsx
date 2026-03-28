@@ -217,12 +217,13 @@ export default function AgentDashboard() {
                                     ) : (
                                         conversations.slice(0, 5).map((booking: any, i) => {
                                             const statusColors: Record<string, string> = {
-                                                'PENDING': 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
-                                                'CONFIRMED': 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
-                                                'CANCELLED': 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
+                                                pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
+                                                confirmed: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
+                                                cancelled: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
+                                                completed: 'bg-slate-100 dark:bg-slate-900/20 text-slate-800 dark:text-slate-300',
                                             };
                                             const booking_time = booking.updated_at ? new Date(booking.updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'TBD';
-                                            const status = booking.status || 'PENDING';
+                                            const status = (booking.status || 'pending').toLowerCase();
 
                                             return (
                                                 <tr key={i} className="hover:bg-muted/20 transition-colors group">
@@ -237,9 +238,9 @@ export default function AgentDashboard() {
                                                         {booking.property_location || 'Nairobi'}
                                                     </td>
                                                     <td className="px-6 py-5">
-                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[status] || statusColors['PENDING']}`}>
+                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[status] || statusColors.pending}`}>
                                                             <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                                            {status}
+                                                            {status.toUpperCase()}
                                                         </span>
                                                     </td>
                                                 </tr>

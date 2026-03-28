@@ -252,14 +252,14 @@ export default function ClientDashboard() {
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6">
-                                                    <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${booking.status === 'CONFIRMED'
+                                                    <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${booking.status === 'confirmed'
                                                         ? 'bg-secondary/10 text-secondary'
-                                                        : booking.status === 'PENDING'
+                                                        : booking.status === 'pending'
                                                             ? 'bg-accent/10 text-accent'
                                                             : 'bg-destructive/10 text-destructive'
                                                         }`}>
-                                                        <span className={`w-1.5 h-1.5 rounded-full ${booking.status === 'CONFIRMED' ? 'bg-secondary animate-pulse' : booking.status === 'PENDING' ? 'bg-accent animate-pulse' : 'bg-destructive'}`}></span>
-                                                        {booking.status}
+                                                        <span className={`w-1.5 h-1.5 rounded-full ${booking.status === 'confirmed' ? 'bg-secondary animate-pulse' : booking.status === 'pending' ? 'bg-accent animate-pulse' : 'bg-destructive'}`}></span>
+                                                        {booking.status.toUpperCase()}
                                                     </span>
                                                 </td>
                                             </tr>

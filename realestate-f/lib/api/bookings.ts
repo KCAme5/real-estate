@@ -12,9 +12,25 @@ export interface Booking {
     client_name: string;
     booking_date: string;
     booking_time: string;
-    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
-    notes?: string;
+    date: string;
+    duration: number;
+    status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+    client_notes?: string;
+    agent_notes?: string;
     created_at: string;
+}
+
+export interface BookingCreatePayload {
+    property: number;
+    date: string;
+    duration?: number;
+    client_notes?: string;
+    lead?: number;
+}
+
+export interface BookingUpdatePayload {
+    status?: Booking['status'];
+    agent_notes?: string;
 }
 
 export const bookingsAPI = {
@@ -29,12 +45,12 @@ export const bookingsAPI = {
     },
 
     // Create a new booking
-    create: async (data: any) => {
+    create: async (data: BookingCreatePayload) => {
         return apiClient.post('/bookings/', data);
     },
 
     // Update booking
-    update: async (id: number, data: any) => {
+    update: async (id: number, data: BookingUpdatePayload) => {
         return apiClient.patch(`/bookings/${id}/`, data);
     }
 };

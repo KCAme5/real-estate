@@ -220,26 +220,11 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
         try {
             setIsSubmittingViewing(true);
 
-            // Validate required contact fields - only email and date are truly required
-            if (!viewingForm.email || !viewingForm.date) {
-                showError("Missing Information", "Please provide your email and select a date");
+            if (!viewingForm.date) {
+                showError("Missing Information", "Please select a date");
                 return;
             }
 
-            // Create lead first with form data
-            const leadData = {
-                first_name: viewingForm.first_name || '',
-                last_name: viewingForm.last_name || '',
-                email: viewingForm.email,
-                phone: viewingForm.phone || '',
-                source: 'book_viewing' as const,
-                priority: 'high' as const,
-                property: property.id,
-            };
-
-            const lead = await leadsAPI.createLead(leadData);
-
-            // Create booking with the lead ID
             const bookingTimeMap: Record<string, string> = {
                 'Morning (9AM - 12PM)': '09:00:00',
                 'Afternoon (12PM - 4PM)': '14:00:00',
@@ -247,15 +232,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
             };
             const dateTimeStr = `${viewingForm.date}T${bookingTimeMap[viewingForm.time] || '09:00:00'}`;
 
+            // Do NOT pass a lead: backend auto-creates it for property-detail booking.
             await bookingsAPI.create({
                 property: property.id,
-                lead: lead.id,
                 date: dateTimeStr,
                 duration: 30,
-                client_notes: `Phone: ${viewingForm.phone}\n${viewingForm.notes}`
+                client_notes: viewingForm.notes
             });
-            success("Request Sent!", "An agent will contact you shortly to confirm");
+            success("Request Sent!", "Your viewing request is booked. Check My Bookings for updates.");
             setViewingForm({ first_name: user.first_name || '', last_name: user.last_name || '', email: user.email || '', phone: user.phone_number || '', date: '', time: 'Morning (9AM - 12PM)', notes: '' });
+            router.push("/dashboard/bookings");
         } catch (error) {
             console.error("Error scheduling viewing:", error);
             showError("Request Failed", "Could not schedule viewing at this time");
