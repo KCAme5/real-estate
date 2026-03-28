@@ -48,6 +48,7 @@ urlpatterns = [
     path("approve-property/<int:pk>/", views.ApprovePropertyView.as_view(), name="approve-property"),
     path("reject-property/<int:pk>/", views.RejectPropertyView.as_view(), name="reject-property"),
     path("toggle-featured/<int:pk>/", views.ToggleFeaturedPropertyView.as_view(), name="toggle-featured"),
+    path("valuation/", views.PropertyValuationView.as_view(), name="property-valuation"),
     # Keep slug pattern LAST to avoid catching other routes
     path("<slug:slug>/", views.PropertyDetailView.as_view(), name="property-detail"),
 ]

@@ -16,6 +16,12 @@ class PropertyListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = PropertyFilter
 
+    def get_serializer_context(self):
+        """Pass request to serializer for is_saved check."""
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
+
     def get_queryset(self):
         queryset = Property.objects.filter(status="available", is_verified=True)
 
@@ -40,6 +46,12 @@ class PropertyDetailView(generics.RetrieveAPIView):
     serializer_class = PropertyDetailSerializer
     permission_classes = [permissions.AllowAny]
     lookup_field = "slug"
+
+    def get_serializer_context(self):
+        """Pass request to serializer for is_saved check."""
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     def get_queryset(self):
         return Property.objects.filter(is_verified=True)
@@ -73,6 +85,11 @@ class PropertyCreateView(generics.CreateAPIView):
 class AgentPropertyListView(generics.ListAPIView):
     serializer_class = PropertyListSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     def get_queryset(self):
         return Property.objects.filter(agent=self.request.user)
@@ -120,7 +137,7 @@ def featured_properties(request):
     properties = Property.objects.filter(
         is_featured=True, is_verified=True, status="available"
     )[:6]
-    serializer = PropertyListSerializer(properties, many=True)
+    serializer = PropertyListSerializer(properties, many=True, context={'request': request})
     return Response(serializer.data)
 
 
@@ -135,6 +152,28 @@ class SavedPropertyListCreateView(generics.ListCreateAPIView):
         if self.request.method == "POST":
             return SavedPropertyCreateSerializer
         return SavedPropertySerializer
+
+    def create(self, request, *args, **kwargs):
+        """Handle toggle behavior: if property is already saved, unsave it."""
+        property_id = request.data.get("property")
+        
+        # Check if already saved
+        existing = SavedProperty.objects.filter(
+            user=request.user, property_id=property_id
+        ).first()
+        
+        if existing:
+            # Already saved - remove it (unsave)
+            existing.delete()
+            from rest_framework.response import Response
+            return Response({
+                "status": "unsaved",
+                "message": "Property removed from saved",
+                "property": property_id
+            }, status=200)
+        
+        # Not saved - create new saved property
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         property_id = self.request.data.get("property")
@@ -155,6 +194,11 @@ class SavedPropertyDestroyView(generics.DestroyAPIView):
 class PropertySearchView(generics.ListAPIView):
     serializer_class = PropertySearchSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     def get_queryset(self):
         queryset = Property.objects.filter(status="available", is_verified=True)
@@ -189,12 +233,94 @@ class UserRecommendationsView(generics.ListAPIView):
     serializer_class = PropertyListSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
+
     def get_queryset(self):
-        # For now, return featured properties
-        # Later you can implement recommendation logic based on user behavior
-        return Property.objects.filter(
-            is_featured=True, is_verified=True, status="available"
-        )[:6]
+        """
+        Personalized property recommendations based on:
+        1. User's saved properties (location, property_type preferences)
+        2. User's lead preferences (budget, locations, property types)
+        3. Fallback to featured properties for new users
+        """
+        user = self.request.user
+        
+        # Import models here to avoid circular imports
+        from properties.models import SavedProperty
+        from leads.models import Lead
+        
+        # Start with all available and verified properties
+        base_qs = Property.objects.filter(
+            is_verified=True,
+            status="available"
+        )
+        
+        # Get IDs of properties user has already saved (exclude these)
+        saved_property_ids = SavedProperty.objects.filter(
+            user=user
+        ).values_list('property_id', flat=True)
+        
+        # Get user's lead preferences
+        user_leads = Lead.objects.filter(user=user)
+        
+        # Extract preferences from leads
+        preferred_locations = set()
+        preferred_property_types = set()
+        min_budget = None
+        max_budget = None
+        
+        for lead in user_leads:
+            if lead.preferred_locations:
+                preferred_locations.update(lead.preferred_locations)
+            if lead.property_types:
+                preferred_property_types.update(lead.property_types)
+            if lead.budget_min and (min_budget is None or lead.budget_min < min_budget):
+                min_budget = lead.budget_min
+            if lead.budget_max and (max_budget is None or lead.budget_max > max_budget):
+                max_budget = lead.budget_max
+        
+        # Get preferences from saved properties
+        saved_properties = Property.objects.filter(id__in=saved_property_ids)
+        for prop in saved_properties:
+            if prop.location:
+                preferred_locations.add(prop.location.name)
+            if prop.property_type:
+                preferred_property_types.add(prop.property_type)
+        
+        # Build recommendation query
+        recommendations = base_qs.exclude(id__in=saved_property_ids)
+        
+        # Apply location filter if we have preferences
+        if preferred_locations:
+            recommendations = recommendations.filter(
+                location__name__in=list(preferred_locations)
+            )
+        
+        # Apply property type filter if we have preferences
+        if preferred_property_types:
+            recommendations = recommendations.filter(
+                property_type__in=list(preferred_property_types)
+            )
+        
+        # Apply budget filter if we have preferences
+        if min_budget:
+            recommendations = recommendations.filter(price__gte=min_budget)
+        if max_budget:
+            recommendations = recommendations.filter(price__lte=max_budget)
+        
+        # Check if we have any recommendations
+        if not recommendations.exists():
+            # Fallback: return featured properties for new users
+            recommendations = Property.objects.filter(
+                is_featured=True,
+                is_verified=True,
+                status="available"
+            ).exclude(id__in=saved_property_ids)
+        
+        # Order by featured first, then by creation date
+        return recommendations.order_by('-is_featured', '-created_at')[:10]
 
 
 class PropertyImageDeleteView(generics.DestroyAPIView):
@@ -223,6 +349,11 @@ class ManagementPropertyListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = PropertyFilter
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
     def get_queryset(self):
         if self.request.user.user_type != "management":
@@ -299,3 +430,95 @@ class ToggleFeaturedPropertyView(APIView):
             return Response(
                 {"detail": "Property not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+class PropertyValuationView(APIView):
+    """
+    Property Valuation API - estimates property value based on comparable properties.
+    
+    Algorithm: Uses average price per sqm from comparable properties in the same location.
+    Formula: estimated_value = avg(price_per_sqm) * requested_size
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        # Get parameters
+        location_name = request.query_params.get('location', '').strip()
+        size = request.query_params.get('size')
+
+        # Validate required parameters
+        errors = {}
+        if not location_name:
+            errors['location'] = 'Location is required'
+        if not size:
+            errors['size'] = 'Property size is required'
+        
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Parse size as integer
+        try:
+            size = int(size)
+            if size <= 0:
+                return Response(
+                    {'size': 'Size must be a positive number'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except ValueError:
+            return Response(
+                {'size': 'Size must be a valid number'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Find comparable properties in the same location (case-insensitive)
+        comparable_properties = Property.objects.filter(
+            location__name__iexact=location_name,
+            is_verified=True,
+            status='available',
+            square_feet__isnull=False,
+            square_feet__gt=0
+        )
+
+        # If no comparable properties found
+        if not comparable_properties.exists():
+            return Response(
+                {
+                    'error': f'No comparable properties found in {location_name}. Cannot calculate valuation.'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Calculate price per sqm for each property
+        price_per_sqm_list = []
+        for prop in comparable_properties:
+            if prop.square_feet and prop.square_feet > 0:
+                # Convert sqft to sqm (1 sqft = 0.092903 sqm)
+                sqm = float(prop.square_feet) * 0.092903
+                price_per_sqm = float(prop.price) / sqm
+                price_per_sqm_list.append(price_per_sqm)
+
+        if not price_per_sqm_list:
+            return Response(
+                {
+                    'error': f'No properties with valid size found in {location_name}. Cannot calculate valuation.'
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Calculate average price per sqm
+        avg_price_per_sqm = sum(price_per_sqm_list) / len(price_per_sqm_list)
+
+        # Convert requested size from sqft to sqm
+        requested_size_sqm = int(size) * 0.092903
+
+        # Calculate estimated value
+        estimated_value = int(avg_price_per_sqm * requested_size_sqm)
+
+        return Response({
+            'location': location_name,
+            'size': size,
+            'estimated_value': estimated_value,
+            'price_per_sqm': round(avg_price_per_sqm, 2),
+            'comparable_count': comparable_properties.count(),
+            'currency': 'KES'
+        })

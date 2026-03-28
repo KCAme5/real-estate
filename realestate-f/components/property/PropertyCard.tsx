@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Heart, MapPin, Bed, Bath, Maximize, Star } from 'lucide-react';
 import { propertyAPI } from '@/lib/api/properties';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/ui/toast';
 
 interface PropertyCardProps {
     property: Property;
@@ -15,10 +16,18 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property, initialSaved = false, viewMode = 'grid' }: PropertyCardProps) {
     const { isAuthenticated } = useAuth();
+    const { success, error: showError } = useToast();
     const [imageLoaded, setImageLoaded] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [isSaved, setIsSaved] = useState(initialSaved);
     const [saving, setSaving] = useState(false);
+
+    // Sync with property data (from API) - this is the persistent state
+    useEffect(() => {
+        if (property.is_saved !== undefined) {
+            setIsSaved(property.is_saved);
+        }
+    }, [property.is_saved]);
 
     const formatPrice = (price: number | string) => {
         const numPrice = typeof price === 'string' ? parseFloat(price) : price;
@@ -34,25 +43,24 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
         e.stopPropagation();
 
         if (!isAuthenticated) {
-            // Optional: Show login prompt
+            showError('Login Required', 'Please log in to save properties');
             return;
         }
 
         try {
             setSaving(true);
             if (isSaved) {
-                // If we had the saved_id we'd use it, otherwise we might need to find it
-                // For now, let's assume the API handles toggle or we fetch it
-                // propertyAPI.removeSavedProperty needs the ID of the SavedProperty entry
-                // Simplified for now:
-                await propertyAPI.saveProperty(property.id); // Toggle logic on backend usually?
+                await propertyAPI.saveProperty(property.id);
                 setIsSaved(false);
+                success('Removed from Saved', 'Property removed from your collection');
             } else {
                 await propertyAPI.saveProperty(property.id);
                 setIsSaved(true);
+                success('Property Saved!', 'Property added to your collection');
             }
         } catch (error) {
             console.error('Error toggling save:', error);
+            showError('Action Failed', 'Failed to save property. Please try again.');
         } finally {
             setSaving(false);
         }

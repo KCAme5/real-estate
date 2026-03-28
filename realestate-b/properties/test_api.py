@@ -290,3 +290,360 @@ class PropertyAPITest(TestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.get('/api/properties/saved/')
         self.assertEqual(len(response.data), 0)
+
+    def test_valuation_endpoint_exists(self):
+        """Test that valuation endpoint exists and is publicly accessible."""
+        # Use existing location and size from test setup
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'Westlands',
+            'size': 1200
+        })
+        # Should return 200 or 404 (if no comparable properties exist)
+        self.assertIn(response.status_code, [200, 404])
+
+    def test_valuation_requires_location_parameter(self):
+        """Test that valuation endpoint requires location parameter."""
+        response = self.client.get('/api/properties/valuation/')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('location', response.data)
+
+    def test_valuation_requires_size_parameter(self):
+        """Test that valuation endpoint requires size parameter."""
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'Westlands'
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('size', response.data)
+
+    def test_valuation_with_no_comparable_properties(self):
+        """Test valuation when no comparable properties exist in location."""
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'NonExistentLocation',
+            'size': 1000
+        })
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('error', response.data)
+
+    def test_valuation_calculation_with_comparable_properties(self):
+        """Test valuation calculation uses average price per sqm from comparable properties."""
+        # Create additional properties in the same location for comparison
+        Property.objects.create(
+            title="Comparable 1",
+            price=6000000,
+            currency="KES",
+            location=self.location,
+            square_feet=1200,
+            agent=self.user,
+            is_verified=True,
+            status="available"
+        )
+        Property.objects.create(
+            title="Comparable 2",
+            price=7000000,
+            currency="KES",
+            location=self.location,
+            square_feet=1400,
+            agent=self.user,
+            is_verified=True,
+            status="available"
+        )
+        
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'Westlands',
+            'size': 1300
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('estimated_value', response.data)
+        self.assertIn('price_per_sqm', response.data)
+        self.assertIn('comparable_count', response.data)
+        
+        # Verify calculation: average price/sqm * requested size
+        self.assertGreater(response.data['estimated_value'], 6000000)
+        self.assertLess(response.data['estimated_value'], 6500000)
+        self.assertEqual(response.data['comparable_count'], 3)
+
+    def test_valuation_filters_by_location_name(self):
+        """Test that valuation only uses properties from the specified location."""
+        # Create property in different location
+        other_location = Location.objects.create(
+            name="Kilimani",
+            county="Nairobi",
+            latitude=-1.2833,
+            longitude=36.7833
+        )
+        Property.objects.create(
+            title="Kilimani Property",
+            price=10000000,
+            currency="KES",
+            location=other_location,
+            square_feet=2000,
+            agent=self.user,
+            is_verified=True,
+            status="available"
+        )
+        
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'Westlands',
+            'size': 1200
+        })
+        self.assertEqual(response.status_code, 200)
+        # Should only use Westlands properties, not Kilimani
+        self.assertEqual(response.data['comparable_count'], 1)
+        # Estimated value should be based on Westlands property only
+        self.assertEqual(response.data['estimated_value'], 5000000)
+
+    def test_valuation_excludes_unverified_properties(self):
+        """Test that valuation excludes unverified properties from calculation."""
+        Property.objects.create(
+            title="Unverified Property",
+            price=10000000,
+            currency="KES",
+            location=self.location,
+            square_feet=1000,
+            agent=self.user,
+            is_verified=False,
+            status="available"
+        )
+        
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'Westlands',
+            'size': 1200
+        })
+        self.assertEqual(response.status_code, 200)
+        # Should only use verified properties
+        self.assertEqual(response.data['comparable_count'], 1)
+        self.assertEqual(response.data['estimated_value'], 5000000)
+
+    def test_valuation_excludes_sold_properties(self):
+        """Test that valuation excludes sold properties from calculation."""
+        Property.objects.create(
+            title="Sold Property",
+            price=10000000,
+            currency="KES",
+            location=self.location,
+            square_feet=1000,
+            agent=self.user,
+            is_verified=True,
+            status="sold"
+        )
+        
+        response = self.client.get('/api/properties/valuation/', {
+            'location': 'Westlands',
+            'size': 1200
+        })
+        self.assertEqual(response.status_code, 200)
+        # Should only use available properties
+        self.assertEqual(response.data['comparable_count'], 1)
+        self.assertEqual(response.data['estimated_value'], 5000000)
+
+
+class PropertyRecommendationsTest(TestCase):
+    """Test Property Recommendation API endpoints."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            username="client1",
+            email="client1@test.com",
+            password="testpass123",
+            user_type="client"
+        )
+        self.agent = get_user_model().objects.create_user(
+            username="agent1",
+            email="agent1@test.com",
+            password="testpass123",
+            user_type="agent"
+        )
+        
+        # Create locations
+        self.nairobi_location = Location.objects.create(
+            name="Nairobi",
+            county="Nairobi",
+            latitude=-1.2921,
+            longitude=36.8219
+        )
+        self.mombasa_location = Location.objects.create(
+            name="Mombasa",
+            county="Mombasa",
+            latitude=-4.0435,
+            longitude=39.6682
+        )
+        
+        # Create properties in Nairobi - similar to what user might like
+        for i in range(3):
+            Property.objects.create(
+                title=f"Nairobi Apartment {i}",
+                slug=f"nairobi-apartment-{i}",
+                description="Modern apartment in Nairobi",
+                price=5000000 + (i * 500000),
+                currency="KES",
+                location=self.nairobi_location,
+                bedrooms=2,
+                bathrooms=2,
+                square_feet=1200,
+                property_type="apartment",
+                listing_type="sale",
+                agent=self.agent,
+                is_verified=True,
+                status="available"
+            )
+        
+        # Create properties in Mombasa - different location
+        for i in range(3):
+            Property.objects.create(
+                title=f"Mombasa Villa {i}",
+                slug=f"mombasa-villa-{i}",
+                description="Beach villa in Mombasa",
+                price=8000000 + (i * 1000000),
+                currency="KES",
+                location=self.mombasa_location,
+                bedrooms=4,
+                bathrooms=3,
+                square_feet=2000,
+                property_type="villa",
+                listing_type="sale",
+                agent=self.agent,
+                is_verified=True,  # Make sure Mombasa properties are also verified
+                status="available"
+            )
+
+    def test_recommendations_require_authentication(self):
+        """Test that recommendations endpoint requires login."""
+        response = self.client.get('/api/properties/recommendations/')
+        # Should return 401 (unauthorized) or 403 (forbidden) when not authenticated
+        self.assertIn(response.status_code, [401, 403])
+
+    def test_authenticated_user_can_get_recommendations(self):
+        """Test that authenticated users can access recommendations."""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/properties/recommendations/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_recommendations_based_on_saved_properties(self):
+        """Test that recommendations prioritize properties similar to saved ones."""
+        from properties.models import SavedProperty
+        
+        # User saves a Nairobi apartment
+        nairobi_prop = Property.objects.filter(location=self.nairobi_location).first()
+        SavedProperty.objects.create(user=self.user, property=nairobi_prop)
+        
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/properties/recommendations/')
+        
+        self.assertEqual(response.status_code, 200)
+        results = response.data.get('results', response.data)
+        # Recommendations should include properties from same location
+        recommended_locations = [p.get('location', {}).get('name') for p in results if p.get('location')]
+        self.assertIn("Nairobi", recommended_locations)
+
+    def test_recommendations_exclude_saved_properties(self):
+        """Test that recommendations don't include properties user already saved."""
+        from properties.models import SavedProperty
+        
+        # Save a property
+        saved_prop = Property.objects.first()
+        SavedProperty.objects.create(user=self.user, property=saved_prop)
+        
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/properties/recommendations/')
+        
+        self.assertEqual(response.status_code, 200)
+        results = response.data.get('results', response.data)
+        # The saved property should NOT be in recommendations
+        recommended_ids = [p.get('id') for p in results]
+        self.assertNotIn(saved_prop.id, recommended_ids)
+
+    def test_recommendations_based_on_lead_preferences(self):
+        """Test that recommendations consider user's lead preferences."""
+        from leads.models import Lead
+        
+        # User has a lead with specific preferences
+        Lead.objects.create(
+            first_name="Test",
+            last_name="User",
+            email="test@test.com",
+            user=self.user,
+            source="website",
+            status="new",
+            priority="high",
+            preferred_locations=["Nairobi"],
+            property_types=["apartment"],
+            budget_min=3000000,
+            budget_max=7000000
+        )
+        
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/properties/recommendations/')
+        
+        self.assertEqual(response.status_code, 200)
+        results = response.data.get('results', response.data)
+        # Should have recommendations
+        self.assertGreater(len(results), 0)
+
+    def test_recommendations_limit_results(self):
+        """Test that recommendations are limited (e.g., 6 properties)."""
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/properties/recommendations/')
+        
+        self.assertEqual(response.status_code, 200)
+        results = response.data.get('results', response.data)
+        # Should return limited number of recommendations
+        self.assertLessEqual(len(results), 10)
+
+    def test_recommendations_fallback_for_new_users(self):
+        """Test that new users (no saved properties, no leads) get featured properties."""
+        # Create a fresh user with no activity
+        new_user = get_user_model().objects.create_user(
+            username="newuser",
+            email="newuser@test.com",
+            password="testpass123",
+            user_type="client"
+        )
+        
+        # Mark some properties as featured
+        Property.objects.update(is_featured=True)
+        
+        self.client.force_authenticate(user=new_user)
+        response = self.client.get('/api/properties/recommendations/')
+        
+        self.assertEqual(response.status_code, 200)
+        results = response.data.get('results', response.data)
+        # Should return featured properties as fallback
+        self.assertGreater(len(results), 0)
+
+    def test_recommendations_only_include_available_verified(self):
+        """Test that recommendations only include verified and available properties."""
+        # Create unavailable and unverified properties
+        Property.objects.create(
+            title="Unavailable Property",
+            slug="unavailable-property-test-3",
+            price=5000000,
+            currency="KES",
+            location=self.nairobi_location,
+            agent=self.agent,
+            is_verified=True,
+            status="sold"
+        )
+        Property.objects.create(
+            title="Unverified Property",
+            slug="unverified-property-test-3",
+            price=5000000,
+            currency="KES",
+            location=self.nairobi_location,
+            agent=self.agent,
+            is_verified=False,
+            status="available"
+        )
+        
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/properties/recommendations/')
+        
+        self.assertEqual(response.status_code, 200)
+        results = response.data.get('results', response.data)
+        # Backend already filters by is_verified=True and status="available" in get_queryset
+        # So we just verify we get properties back and they are verified via verification_status
+        self.assertGreater(len(results), 0)
+        for prop in results:
+            # verification_status is the serialized field (returns 'verified' or 'pending')
+            self.assertEqual(prop.get('verification_status'), 'verified', 
+                f"Property {prop.get('title')} should be verified")

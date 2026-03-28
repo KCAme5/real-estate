@@ -29,6 +29,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
     verification_status = serializers.SerializerMethodField()
     location_name = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
@@ -56,6 +57,7 @@ class PropertyListSerializer(serializers.ModelSerializer):
             "agent_name",
             "verification_status",
             "created_at",
+            "is_saved",
         )
 
     def get_verification_status(self, obj):
@@ -64,6 +66,17 @@ class PropertyListSerializer(serializers.ModelSerializer):
         # If we need 'rejected', we might need a Status field in the model.
         # For now let's map is_verified to 'verified'/'pending'
         return "verified" if obj.is_verified else "pending"
+
+    def get_is_saved(self, obj):
+        """Check if the current user has saved this property."""
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        from properties.models import SavedProperty
+        return SavedProperty.objects.filter(
+            user=request.user,
+            property=obj
+        ).exists()
 
 
 class PropertyDetailSerializer(serializers.ModelSerializer):
@@ -76,6 +89,7 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     verification_status = serializers.SerializerMethodField()
     location_name = serializers.CharField(read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
@@ -84,6 +98,17 @@ class PropertyDetailSerializer(serializers.ModelSerializer):
     def get_verification_status(self, obj):
         return "verified" if obj.is_verified else "pending"
         extra_kwargs = {"main_image": {"required": False, "allow_null": True}}
+
+    def get_is_saved(self, obj):
+        """Check if the current user has saved this property."""
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        from properties.models import SavedProperty
+        return SavedProperty.objects.filter(
+            user=request.user,
+            property=obj
+        ).exists()
 
 
 class PropertyCreateSerializer(serializers.ModelSerializer):
@@ -287,6 +312,7 @@ class SavedPropertyCreateSerializer(serializers.ModelSerializer):
 class PropertySearchSerializer(serializers.ModelSerializer):
     location = LocationSerializer(read_only=True)
     main_image_url = serializers.URLField(source="main_image", read_only=True)
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
@@ -303,4 +329,16 @@ class PropertySearchSerializer(serializers.ModelSerializer):
             "main_image",
             "main_image_url",
             "is_featured",
+            "is_saved",
         ]
+
+    def get_is_saved(self, obj):
+        """Check if the current user has saved this property."""
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        from properties.models import SavedProperty
+        return SavedProperty.objects.filter(
+            user=request.user,
+            property=obj
+        ).exists()

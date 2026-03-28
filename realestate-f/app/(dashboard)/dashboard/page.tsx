@@ -36,8 +36,9 @@ export default function ClientDashboard() {
         const fetchData = async () => {
             try {
                 setLoading(true);
+                // Use personalized recommendations endpoint for clients
                 const [propsData, bookingsData, notifsData] = await Promise.all([
-                    propertyAPI.getAll(),
+                    propertyAPI.getRecommended(),  // Personalized recommendations
                     bookingsAPI.getAll(),
                     notificationsAPI.getAll()
                 ]);

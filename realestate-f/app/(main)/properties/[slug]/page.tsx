@@ -76,8 +76,16 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
     });
 
     // Effects
+    // Use is_saved from property data directly (provided by backend serializer)
     useEffect(() => {
-        if (savedProperties && property) {
+        if (property && property.is_saved !== undefined) {
+            setIsSaved(property.is_saved);
+        }
+    }, [property?.is_saved]);
+
+    // Fallback: also check saved properties query for backward compatibility
+    useEffect(() => {
+        if (property && property.is_saved === undefined && savedProperties) {
             const list = Array.isArray(savedProperties) ? savedProperties : (savedProperties.results || []);
             setIsSaved(list.some((p: any) => p.property === property.id || p.property?.id === property.id));
         }

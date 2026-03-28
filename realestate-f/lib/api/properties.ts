@@ -76,11 +76,29 @@ export const propertyAPI = {
 
     // Save a property
     saveProperty: async (propertyId: number) => {
-        return apiClient.post('/properties/saved/', {
-            property: propertyId,
-            notes: '',
-            saved_at: new Date().toISOString()
-        });
+        try {
+            return await apiClient.post('/properties/saved/', {
+                property: propertyId,
+                notes: '',
+            });
+        } catch (error: any) {
+            // If already saved, this might return an error - we handle it in the component
+            throw error;
+        }
+    },
+
+    // Toggle save property (save or unsave)
+    toggleSaveProperty: async (propertyId: number, isCurrentlySaved: boolean, savedId?: number) => {
+        if (isCurrentlySaved && savedId) {
+            // Unsaved - need the saved property ID
+            return apiClient.delete(`/properties/saved/${savedId}/`);
+        } else {
+            // Save
+            return apiClient.post('/properties/saved/', {
+                property: propertyId,
+                notes: '',
+            });
+        }
     },
 
     // Remove saved property
@@ -111,6 +129,11 @@ export const propertyAPI = {
     // Get featured properties
     getFeaturedProperties: async () => {
         return apiClient.get('/properties/featured/');
+    },
+
+    // Get personalized recommendations
+    getRecommended: async () => {
+        return apiClient.get('/properties/recommendations/');
     },
 
     // Search properties

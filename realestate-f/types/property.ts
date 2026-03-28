@@ -46,6 +46,7 @@ export interface Property {
         caption: string;
         created_at: string;
     }>;
+    is_saved?: boolean;
 }
 
 export interface SavedProperty {
