@@ -146,5 +146,10 @@ export const propertyAPI = {
 
     toggleFeatured: async (id: number) => {
         return apiClient.post(`/properties/toggle-featured/${id}/`, {});
+    },
+
+    // Property Valuation
+    getValuation: async (location: string, size: number) => {
+        return apiClient.get('/properties/valuation/', { params: { location, size } });
     }
 };
