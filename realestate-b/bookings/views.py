@@ -2,11 +2,13 @@ from rest_framework import generics, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import ValidationError
 from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db import models
 from .models import Booking
 from .serializers import BookingSerializer, BookingCreateSerializer
+from leads.models import Lead
 
 
 class BookingListView(generics.ListCreateAPIView):
@@ -16,6 +18,21 @@ class BookingListView(generics.ListCreateAPIView):
         if self.request.method == "POST":
             return BookingCreateSerializer
         return BookingSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Check permission BEFORE validation
+        if request.user.user_type != "client":
+            return Response(
+                {"detail": "Only clients can create bookings"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        booking = serializer.instance
+        output = BookingSerializer(booking, context={"request": request}).data
+        return Response(output, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         user = self.request.user
@@ -54,8 +71,43 @@ class BookingListView(generics.ListCreateAPIView):
                 .order_by("booking_count")
                 .first()
             )
-        
-        serializer.save(client=self.request.user, agent=agent)
+
+        if not agent:
+            raise ValidationError({"agent": "No available agent found for this booking."})
+
+        # Auto-create a lead when booking comes directly from property detail (no lead provided).
+        if not lead:
+            user = self.request.user
+            property_obj = serializer.validated_data.get("property")
+            lead = Lead.objects.create(
+                user=user,
+                first_name=getattr(user, "first_name", "") or "",
+                last_name=getattr(user, "last_name", "") or "",
+                email=getattr(user, "email", "") or "",
+                phone=getattr(user, "phone_number", "") or "",
+                source="book_viewing",
+                status="viewing",
+                property=property_obj,
+                agent=agent,
+            )
+
+        requested_start = serializer.validated_data["date"]
+        duration = serializer.validated_data.get("duration") or 30
+        requested_end = requested_start + timedelta(minutes=duration)
+
+        candidates = Booking.objects.filter(
+            agent=agent,
+            status__in=["pending", "confirmed"],
+            date__lt=requested_end,
+            date__gt=requested_start - timedelta(hours=24),
+        ).only("date", "duration", "status")
+
+        for existing in candidates:
+            existing_end = existing.date + timedelta(minutes=existing.duration)
+            if existing.date < requested_end and existing_end > requested_start:
+                raise ValidationError({"date": "Agent is not available for the selected time slot."})
+
+        serializer.save(client=self.request.user, agent=agent, lead=lead)
 
 
 class BookingDetailView(generics.RetrieveUpdateDestroyAPIView):

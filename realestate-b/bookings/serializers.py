@@ -82,15 +82,13 @@ class BookingCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         property_obj = data["property"]
         lead_obj = data.get("lead")
-        
-        # Validate lead if provided
-        if lead_obj:
-            if not isinstance(lead_obj, int):
-                raise serializers.ValidationError("Lead must be an integer ID.")
-            try:
-                Lead.objects.get(pk=lead_obj)
-            except Lead.DoesNotExist:
-                raise serializers.ValidationError("Lead with provided ID does not exist.")
+
+        if lead_obj is not None and not isinstance(lead_obj, Lead):
+            raise serializers.ValidationError({"lead": "Invalid lead."})
+
+        request = self.context.get("request")
+        if request and lead_obj and lead_obj.user and lead_obj.user != request.user:
+            raise serializers.ValidationError({"lead": "Lead does not belong to the authenticated user."})
 
         # Check if the property exists
         if not property_obj:
@@ -101,40 +99,3 @@ class BookingCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Booking date must be in the future.")
 
         return data
-
-    def create(self, validated_data):
-        # Get the current user
-        user = self.context["request"].user
-        
-        # If lead is provided, use it; otherwise create a new client
-        lead_obj = validated_data.get("lead")
-        if lead_obj:
-            lead = Lead.objects.get(pk=lead_obj)
-            validated_data["client"] = lead.user
-            validated_data["agent"] = lead.agent
-        else:
-            validated_data["client"] = user
-            
-            # Assign the property owner as the agent
-            property_obj = validated_data["property"]
-            if property_obj.agent:
-                validated_data["agent"] = property_obj.agent
-            else:
-                # Fallback if property has no agent
-                pass
-        
-        # Assign the current user as the client
-        validated_data["client"] = user
-        
-        # Assign the property owner as the agent
-        property_obj = validated_data["property"]
-        if property_obj.agent:
-            validated_data["agent"] = property_obj.agent
-        else:
-            # Fallback if property has no agent (should not happen in a healthy system)
-            # We could look for a superuser or leave it as is, but setting it to some default agent is better.
-            # For now, let's keep it as property.agent even if null, or handle it.
-            # The model allows agent to be null.
-            pass
-
-        return super().create(validated_data)
