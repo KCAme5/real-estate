@@ -4,20 +4,82 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TrendingUp, FileText, Bell, Heart } from 'lucide-react';
 import { propertyAPI } from '@/lib/api/properties';
+import { apiClient } from '@/lib/api/client';
 import { formatRelativeTime } from '@/lib/utils/time';
 import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
+
+type TrendingArea = {
+    name: string;
+    rank: number;
+    count: number | null;
+    percent: number | null;
+};
 
 export default function PropertiesSidebar() {
     const { isAuthenticated } = useAuth();
     const [savedProperties, setSavedProperties] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [trendingAreas, setTrendingAreas] = useState<TrendingArea[]>([
+        { name: 'Westlands', rank: 1, count: null, percent: null },
+        { name: 'Karen', rank: 2, count: null, percent: null },
+        { name: 'Nyali', rank: 3, count: null, percent: null },
+        { name: 'Runda', rank: 4, count: null, percent: null },
+    ]);
 
     useEffect(() => {
         if (isAuthenticated) {
             fetchSavedProperties();
         }
     }, [isAuthenticated]);
+
+    useEffect(() => {
+        const fetchTrendingAreas = async () => {
+            try {
+                const totalData = await apiClient.get('/properties/', { params: { page_size: 1 } });
+                const totalCount =
+                    typeof totalData?.count === 'number'
+                        ? totalData.count
+                        : Array.isArray(totalData)
+                            ? totalData.length
+                            : Array.isArray(totalData?.results)
+                                ? totalData.results.length
+                                : 0;
+
+                const updated = await Promise.all(
+                    trendingAreas.map(async (area) => {
+                        try {
+                            const data = await apiClient.get('/properties/', {
+                                params: { location: area.name, page_size: 1 },
+                            });
+                            const count =
+                                typeof data?.count === 'number'
+                                    ? data.count
+                                    : Array.isArray(data)
+                                        ? data.length
+                                        : Array.isArray(data?.results)
+                                            ? data.results.length
+                                            : 0;
+
+                            const percent = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
+                            return { ...area, count, percent };
+                        } catch (error) {
+                            console.error(`Error fetching trending area count for ${area.name}:`, error);
+                            return { ...area, count: 0, percent: 0 };
+                        }
+                    })
+                );
+
+                setTrendingAreas(updated);
+            } catch (error) {
+                console.error('Error fetching total property count:', error);
+                setTrendingAreas((prev) => prev.map((a) => ({ ...a, count: 0, percent: 0 })));
+            }
+        };
+
+        fetchTrendingAreas();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchSavedProperties = async () => {
         try {
@@ -48,13 +110,12 @@ export default function PropertiesSidebar() {
                 </div>
 
                 <div className="space-y-4 relative z-10">
-                    {[
-                        { name: 'Westlands', growth: '+12%', rank: 1 },
-                        { name: 'Karen', growth: '+12%', rank: 2 },
-                        { name: 'Nyali', growth: '+12%', rank: 3 },
-                        { name: 'Runda', growth: '+12%', rank: 4 },
-                    ].map((area) => (
-                        <div key={area.name} className="flex items-center justify-between group/item hover:bg-slate-800/50 p-2 rounded-lg transition-colors cursor-pointer">
+                    {trendingAreas.map((area) => (
+                        <Link
+                            key={area.name}
+                            href={`/properties?location=${encodeURIComponent(area.name)}`}
+                            className="flex items-center justify-between group/item hover:bg-slate-800/50 p-2 rounded-lg transition-colors cursor-pointer"
+                        >
                             <div className="flex items-center gap-4">
                                 <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-md">
                                     #{area.rank}
@@ -63,8 +124,16 @@ export default function PropertiesSidebar() {
                                     {area.name}
                                 </span>
                             </div>
-                            <span className="text-emerald-400 text-sm font-bold">{area.growth}</span>
-                        </div>
+                            <span className="text-slate-400 text-sm font-bold tabular-nums">
+                                {area.count === null || area.percent === null ? (
+                                    '...'
+                                ) : (
+                                    <>
+                                        {area.count} • {area.percent}%
+                                    </>
+                                )}
+                            </span>
+                        </Link>
                     ))}
                 </div>
 
