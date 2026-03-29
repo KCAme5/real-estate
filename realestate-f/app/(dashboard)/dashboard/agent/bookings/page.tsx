@@ -138,6 +138,39 @@ export default function BookingsPage() {
         }
     };
 
+    const filteredBookings = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        return bookings
+            .filter((b) => (statusFilter === 'all' ? true : b.status === statusFilter))
+            .filter((b) => {
+                if (!q) return true;
+                const haystack = [
+                    safeText(b.property_title),
+                    safeText(b.property_location),
+                    safeText(b.client_name),
+                    safeText(b.client_email),
+                    safeText(b.booking_date),
+                    safeText(b.booking_time),
+                ]
+                    .join(' ')
+                    .toLowerCase();
+                return haystack.includes(q);
+            })
+            .slice()
+            .sort((a, b) => {
+                const da = toDateTime(a.booking_date, a.booking_time);
+                const db = toDateTime(b.booking_date, b.booking_time);
+                if (!da && !db) return b.id - a.id;
+                if (!da) return 1;
+                if (!db) return -1;
+                return da.getTime() - db.getTime();
+            });
+    }, [bookings, query, statusFilter]);
+
+    const total = bookings.length;
+    const confirmedCount = bookings.filter((b) => b.status === 'confirmed').length;
+    const pendingCount = bookings.filter((b) => b.status === 'pending').length;
+
     if (loading) {
         return (
             <div className="min-h-screen bg-background p-4 md:p-8">
@@ -175,39 +208,6 @@ export default function BookingsPage() {
             </div>
         );
     }
-
-    const filteredBookings = useMemo(() => {
-        const q = query.trim().toLowerCase();
-        return bookings
-            .filter((b) => (statusFilter === 'all' ? true : b.status === statusFilter))
-            .filter((b) => {
-                if (!q) return true;
-                const haystack = [
-                    safeText(b.property_title),
-                    safeText(b.property_location),
-                    safeText(b.client_name),
-                    safeText(b.client_email),
-                    safeText(b.booking_date),
-                    safeText(b.booking_time),
-                ]
-                    .join(' ')
-                    .toLowerCase();
-                return haystack.includes(q);
-            })
-            .slice()
-            .sort((a, b) => {
-                const da = toDateTime(a.booking_date, a.booking_time);
-                const db = toDateTime(b.booking_date, b.booking_time);
-                if (!da && !db) return b.id - a.id;
-                if (!da) return 1;
-                if (!db) return -1;
-                return da.getTime() - db.getTime();
-            });
-    }, [bookings, query, statusFilter]);
-
-    const total = bookings.length;
-    const confirmedCount = bookings.filter((b) => b.status === 'confirmed').length;
-    const pendingCount = bookings.filter((b) => b.status === 'pending').length;
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-8">

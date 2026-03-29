@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'kenyaprimeback.onrender.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'kenyaprimeback.onrender.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'encrypted-tbn0.gstatic.com',
       },
       {
