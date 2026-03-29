@@ -107,4 +107,3 @@ def log_status_change(sender, instance, created, **kwargs):
     
     # Recalculate lead score on any save
     instance.update_score()
-        )

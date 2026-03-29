@@ -283,6 +283,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     is_read = models.BooleanField(default=False)
+    is_auto = models.BooleanField(default=False, help_text="Auto-generated message from system")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

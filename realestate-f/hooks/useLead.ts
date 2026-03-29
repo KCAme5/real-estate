@@ -77,9 +77,12 @@ export function useLead(): UseLeadReturn {
                 const lead = await leadsAPI.createLead(leadData);
 
                 if (openChat) {
-                    const conversation = await leadsAPI.createConversation(
+                    // Use get-or-create to reuse existing conversations with same agent
+                    const conversation = await leadsAPI.getOrCreateConversationByAgent(
+                        property.agent.id,
                         property.id,
-                        property.agent.id
+                        property.title,
+                        property.location_name || property.location?.name
                     );
                     return { lead, conversation };
                 }

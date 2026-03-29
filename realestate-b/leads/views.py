@@ -398,76 +398,84 @@ class ConversationByAgentView(generics.CreateAPIView):
     - If not, create new conversation
     - Send auto-message with property info if provided
     """
+
     serializer_class = ConversationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        agent_id = kwargs.get('agent_id')
-        property_id = request.data.get('property')
-        property_title = request.data.get('property_title', '')
-        property_location = request.data.get('property_location', '')
+        agent_id = kwargs.get("agent_id")
+        property_id = request.data.get("property")
+        property_title = request.data.get("property_title", "")
+        property_location = request.data.get("property_location", "")
         client = request.user
-        
+
         # Try to find existing conversation with this agent
-        existing = Conversation.objects.filter(
-            client=client, agent_id=agent_id
-        ).select_related('property', 'client', 'agent', 'lead').first()
-        
+        existing = (
+            Conversation.objects.filter(client=client, agent_id=agent_id)
+            .select_related("property", "client", "agent", "lead")
+            .first()
+        )
+
         if existing:
             # Update property if new one provided
             if property_id and existing.property_id != property_id:
                 existing.property_id = property_id
                 existing.save()
-                
+
                 # Update lead association
                 lead = Lead.objects.filter(user=client, property_id=property_id).first()
                 if lead:
                     existing.lead = lead
                     existing.save()
-            
+
             # Create auto-message about new property interest
             if property_title:
                 auto_message = f"Hi, I'm interested in your listing: {property_title}"
                 if property_location:
                     auto_message += f" at {property_location}"
                 auto_message += ". I look forward to hearing from you!"
-                
-                Message.objects.create(
+
+                # Check for duplicate auto-messages about this property
+                existing_auto = Message.objects.filter(
                     conversation=existing,
-                    sender=client,
-                    content=auto_message,
-                    is_auto=True  # Mark as auto-generated message
-                )
-            
+                    is_auto=True,
+                    content__contains=property_title,
+                ).exists()
+
+                if not existing_auto:
+                    Message.objects.create(
+                        conversation=existing,
+                        sender=client,
+                        content=auto_message,
+                        is_auto=True,  # Mark as auto-generated message
+                    )
+
             serializer = self.get_serializer(existing)
             return Response(serializer.data)
-        
+
         # Create new conversation
         lead = None
         if property_id:
             lead = Lead.objects.filter(user=client, property_id=property_id).first()
-        
+
         conversation = Conversation.objects.create(
-            client=client,
-            agent_id=agent_id,
-            property_id=property_id,
-            lead=lead
+            client=client, agent_id=agent_id, property_id=property_id, lead=lead
         )
-        
+
         # Send auto-message
         if property_title:
             auto_message = f"Hi, I'm interested in your listing: {property_title}"
             if property_location:
                 auto_message += f" at {property_location}"
             auto_message += ". I look forward to hearing from you!"
-            
+
             Message.objects.create(
                 conversation=conversation,
                 sender=client,
                 content=auto_message,
-                is_auto=True
+                is_auto=True,
             )
-        
+
         serializer = self.get_serializer(conversation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

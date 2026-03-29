@@ -112,6 +112,7 @@ export interface Message {
     sender_type: string;
     content: string;
     is_read: boolean;
+    is_auto?: boolean;
     created_at: string;
 }
 

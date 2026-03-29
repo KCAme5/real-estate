@@ -212,6 +212,7 @@ class MessageSerializer(serializers.ModelSerializer):
             "sender_type",
             "content",
             "is_read",
+            "is_auto",
             "created_at",
         ]
         read_only_fields = ["sender", "conversation", "created_at"]
