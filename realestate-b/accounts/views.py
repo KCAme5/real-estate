@@ -208,7 +208,21 @@ def user_profile_picture(request, user_id: int):
     except Exception:
         raise Http404("Profile picture not available")
 
-    response = FileResponse(file_handle, content_type="image/*")
+    # Detect content type from the file
+    content_type = user.profile_picture.file.content_type if hasattr(user.profile_picture.file, 'content_type') else 'application/octet-stream'
+    if not content_type or content_type == 'application/octet-stream':
+        # Fallback: detect from file extension
+        name = user.profile_picture.name.lower()
+        if name.endswith('.png'):
+            content_type = 'image/png'
+        elif name.endswith('.jpg') or name.endswith('.jpeg'):
+            content_type = 'image/jpeg'
+        elif name.endswith('.gif'):
+            content_type = 'image/gif'
+        else:
+            content_type = 'image/jpeg'  # Default to JPEG
+
+    response = FileResponse(file_handle, content_type=content_type)
     response["Cache-Control"] = "public, max-age=86400"
     return response
 
