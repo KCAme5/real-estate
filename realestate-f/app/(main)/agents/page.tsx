@@ -1,15 +1,71 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { agentsAPI } from '@/lib/api/agents';
 import { Agent } from '@/types/agent';
-import { Search, Filter, Building2, UserCheck, ShieldCheck, Loader2, RefreshCw, Phone, Mail, MapPin, Star, Calendar, CheckCircle, MessageSquare, Award, Users, Zap, ChevronRight, Sparkles } from 'lucide-react';
+import { Search, Filter, Building2, UserCheck, ShieldCheck, Loader2, RefreshCw, Phone, Mail, MapPin, Star, CheckCircle, Award, Users, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AgentCardSkeleton from '@/components/agents/AgentCardSkeleton';
 
 type ViewMode = 'grid' | 'list';
 type SortOption = 'experience' | 'name' | 'rating';
+
+// Cache duration in milliseconds (5 minutes)
+const CACHE_DURATION = 5 * 60 * 1000;
+
+// Custom hook for caching agents data
+function useAgentsCache() {
+    const [cachedAgents, setCachedAgents] = useState<Agent[] | null>(null);
+    const [cacheTime, setCacheTime] = useState<number | null>(null);
+
+    useEffect(() => {
+        // Try to load from localStorage on mount
+        try {
+            const cached = localStorage.getItem('agents_cache');
+            const cachedTimeStr = localStorage.getItem('agents_cache_time');
+            
+            if (cached && cachedTimeStr) {
+                const time = parseInt(cachedTimeStr, 10);
+                if (Date.now() - time < CACHE_DURATION) {
+                    setCachedAgents(JSON.parse(cached));
+                    setCacheTime(time);
+                }
+            }
+        } catch {
+            // Cache not available or invalid
+        }
+    }, []);
+
+    const saveToCache = useCallback((agents: Agent[]) => {
+        try {
+            localStorage.setItem('agents_cache', JSON.stringify(agents));
+            localStorage.setItem('agents_cache_time', Date.now().toString());
+            setCachedAgents(agents);
+            setCacheTime(Date.now());
+        } catch {
+            // Cache not available
+        }
+    }, []);
+
+    const clearCache = useCallback(() => {
+        try {
+            localStorage.removeItem('agents_cache');
+            localStorage.removeItem('agents_cache_time');
+            setCachedAgents(null);
+            setCacheTime(null);
+        } catch {
+            // Cache not available
+        }
+    }, []);
+
+    const isCacheValid = useCallback(() => {
+        if (!cacheTime) return false;
+        return Date.now() - cacheTime < CACHE_DURATION;
+    }, [cacheTime]);
+
+    return { cachedAgents, cacheTime, saveToCache, clearCache, isCacheValid };
+}
 
 export default function AgentsPage() {
     const [agents, setAgents] = useState<Agent[]>([]);
@@ -22,6 +78,10 @@ export default function AgentsPage() {
     const [viewMode, setViewMode] = useState<ViewMode>('grid');
     const [sortBy, setSortBy] = useState<SortOption>('experience');
     const [hoveredAgent, setHoveredAgent] = useState<number | null>(null);
+    const [usingCache, setUsingCache] = useState(false);
+
+    // Initialize cache hook
+    const { cachedAgents, saveToCache, isCacheValid } = useAgentsCache();
 
     const specialties = [
         { value: 'all', label: 'All Specialties', icon: '✨' },
@@ -41,10 +101,21 @@ export default function AgentsPage() {
         { value: 'expert', label: 'Expert (10+ yrs)' },
     ];
 
+    // Initial load - check cache first
     useEffect(() => {
-        fetchAgents();
-    }, []);
+        // Check cache first
+        if (cachedAgents && isCacheValid()) {
+            setAgents(cachedAgents);
+            setFilteredAgents(cachedAgents);
+            setLoading(false);
+            setUsingCache(true);
+        } else {
+            // No valid cache, fetch from API
+            fetchAgents();
+        }
+    }, [cachedAgents, isCacheValid]);
 
+    // Filter agents when search/filter changes
     useEffect(() => {
         filterAgents();
     }, [agents, searchTerm, selectedSpecialty, selectedExperience, sortBy]);
@@ -53,16 +124,22 @@ export default function AgentsPage() {
         try {
             setLoading(true);
             setError('');
+            setUsingCache(false);
             const data = await agentsAPI.getAll();
+            
+            let fetchedAgents: Agent[] = [];
             if (Array.isArray(data)) {
-                setAgents(data);
-                setFilteredAgents(data);
-            } else if (data && Array.isArray(data.results)) {
-                setAgents(data.results);
-                setFilteredAgents(data.results);
-            } else {
-                setAgents([]);
-                setFilteredAgents([]);
+                fetchedAgents = data;
+            } else if (data && Array.isArray((data as { results?: Agent[] }).results)) {
+                fetchedAgents = (data as { results: Agent[] }).results;
+            }
+            
+            setAgents(fetchedAgents);
+            setFilteredAgents(fetchedAgents);
+            
+            // Save to cache
+            if (fetchedAgents.length > 0) {
+                saveToCache(fetchedAgents);
             }
         } catch (err) {
             console.error('Failed to fetch agents', err);
@@ -77,22 +154,22 @@ export default function AgentsPage() {
 
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
-            filtered = filtered.filter(agent =>
+            filtered = filtered.filter((agent: Agent) =>
                 agent.user_name?.toLowerCase().includes(term) ||
                 agent.user_email?.toLowerCase().includes(term) ||
                 agent.user_phone?.toLowerCase().includes(term) ||
-                agent.specialties?.some(s => s.toLowerCase().includes(term))
+                agent.specialties?.some((s: string) => s.toLowerCase().includes(term))
             );
         }
 
         if (selectedSpecialty !== 'all') {
-            filtered = filtered.filter(agent =>
-                agent.specialties?.some(s => s.toLowerCase() === selectedSpecialty)
+            filtered = filtered.filter((agent: Agent) =>
+                agent.specialties?.some((s: string) => s.toLowerCase() === selectedSpecialty)
             );
         }
 
         if (selectedExperience !== 'all') {
-            filtered = filtered.filter(agent => {
+            filtered = filtered.filter((agent: Agent) => {
                 const exp = agent.years_of_experience || 0;
                 switch (selectedExperience) {
                     case 'entry': return exp <= 2;
@@ -104,17 +181,17 @@ export default function AgentsPage() {
             });
         }
 
-        filtered = filtered.filter(agent => agent.is_verified);
+        filtered = filtered.filter((agent: Agent) => agent.is_verified);
 
         switch (sortBy) {
             case 'experience':
-                filtered.sort((a, b) => (b.years_of_experience || 0) - (a.years_of_experience || 0));
+                filtered.sort((a: Agent, b: Agent) => (b.years_of_experience || 0) - (a.years_of_experience || 0));
                 break;
             case 'name':
-                filtered.sort((a, b) => (a.user_name || '').localeCompare(b.user_name || ''));
+                filtered.sort((a: Agent, b: Agent) => (a.user_name || '').localeCompare(b.user_name || ''));
                 break;
             case 'rating':
-                filtered.sort((a, b) => {
+                filtered.sort((a: Agent, b: Agent) => {
                     if (a.is_verified !== b.is_verified) return b.is_verified ? 1 : -1;
                     return (b.years_of_experience || 0) - (a.years_of_experience || 0);
                 });
@@ -195,7 +272,7 @@ export default function AgentsPage() {
                         <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-full border border-white/10 mb-8 backdrop-blur-sm">
                             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                             <span className="text-sm font-semibold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                                Trusted by 500+ Clients
+                                {usingCache ? 'Loaded from cache' : 'Trusted by 500+ Clients'}
                             </span>
                         </div>
 
@@ -233,7 +310,7 @@ export default function AgentsPage() {
                                     <CheckCircle className="w-6 h-6 text-teal-400" />
                                 </div>
                                 <div className="text-left">
-                                    <p className="text-2xl font-black text-foreground">{agents.filter(a => a.is_verified).length}</p>
+                                    <p className="text-2xl font-black text-foreground">{agents.filter((a: Agent) => a.is_verified).length}</p>
                                     <p className="text-xs text-muted-foreground">Verified</p>
                                 </div>
                             </div>
@@ -383,7 +460,7 @@ export default function AgentsPage() {
                                 {filteredAgents.length} Agents Available
                             </h2>
                             <p className="text-sm text-muted-foreground">
-                                All agents are verified professionals
+                                {usingCache ? 'Loaded from cache for faster loading' : 'All agents are verified professionals'}
                             </p>
                         </div>
                         <button
@@ -430,7 +507,7 @@ export default function AgentsPage() {
                             {/* Grid View */}
                             {viewMode === 'grid' && (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {filteredAgents.map((agent) => (
+                                    {filteredAgents.map((agent: Agent) => (
                                         <Link
                                             key={agent.id}
                                             href={`/agents/${agent.slug}`}
@@ -491,7 +568,7 @@ export default function AgentsPage() {
 
                                                     {/* Specialties */}
                                                     <div className="flex flex-wrap gap-2 mb-5">
-                                                        {agent.specialties?.slice(0, 2).map((specialty, i) => (
+                                                        {agent.specialties?.slice(0, 2).map((specialty: string, i: number) => (
                                                             <span
                                                                 key={i}
                                                                 className="px-3 py-1.5 bg-slate-800/80 text-slate-300 text-xs font-medium rounded-lg border border-slate-700/50"
@@ -552,7 +629,7 @@ export default function AgentsPage() {
                             {/* List View */}
                             {viewMode === 'list' && (
                                 <div className="space-y-4">
-                                    {filteredAgents.map((agent) => (
+                                    {filteredAgents.map((agent: Agent) => (
                                         <Link
                                             key={agent.id}
                                             href={`/agents/${agent.slug}`}
@@ -603,7 +680,7 @@ export default function AgentsPage() {
                                                                 {getExperienceText(agent.years_of_experience)} • {agent.years_of_experience || 0} yrs
                                                             </span>
                                                             <div className="flex flex-wrap gap-2">
-                                                                {agent.specialties?.slice(0, 3).map((s, i) => (
+                                                                {agent.specialties?.slice(0, 3).map((s: string, i: number) => (
                                                                     <span key={i} className="px-2 py-1 bg-slate-800/50 text-slate-400 text-xs rounded-lg">
                                                                         {s}
                                                                     </span>

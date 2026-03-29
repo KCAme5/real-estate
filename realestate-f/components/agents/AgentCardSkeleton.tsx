@@ -86,3 +86,4 @@ export default function AgentCardSkeleton({ viewMode = 'grid' }: AgentCardSkelet
         </div>
     );
 }
+woer
