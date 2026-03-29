@@ -10,6 +10,7 @@ urlpatterns = [
         "my-properties/", views.AgentPropertyListView.as_view(), name="agent-properties"
     ),
     path("locations/", views.LocationListView.as_view(), name="location-list"),
+    path("location-stats/", views.location_stats, name="location-stats"),
     # Move saved routes BEFORE the slug pattern to avoid conflicts
     path(
         "saved/", views.SavedPropertyListCreateView.as_view(), name="saved-properties"

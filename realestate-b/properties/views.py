@@ -5,7 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.db.models.functions import Coalesce, NullIf
 from .models import *
 from .serializers import *
 from .filters import PropertyFilter
@@ -149,6 +150,66 @@ class LocationListView(generics.ListAPIView):
     serializer_class = LocationSerializer
     permission_classes = [permissions.AllowAny]
     queryset = Location.objects.all()
+
+
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def location_stats(request):
+    """
+    Return property counts grouped by location name.
+
+    Query params:
+      - names: comma-separated location names to include (optional)
+      - limit: number of locations to return when names not provided (default 10)
+
+    Response:
+      { "total": <int>, "locations": [ { "name": <str>, "count": <int>, "percent": <int> } ] }
+    """
+    qs = Property.objects.filter(status="available", is_verified=True)
+
+    total = qs.count()
+
+    display_name = Coalesce("location__name", NullIf("location_name", ""))
+
+    grouped = (
+        qs.annotate(display_location=display_name)
+        .exclude(display_location__isnull=True)
+        .values("display_location")
+        .annotate(count=Count("id"))
+        .order_by("-count", "display_location")
+    )
+
+    names_param = request.query_params.get("names")
+    if names_param:
+        requested = [n.strip() for n in names_param.split(",") if n.strip()]
+        if requested:
+            grouped = grouped.filter(display_location__in=requested)
+
+    try:
+        limit = int(request.query_params.get("limit", "10"))
+    except ValueError:
+        limit = 10
+    if limit < 1:
+        limit = 1
+    if limit > 100:
+        limit = 100
+
+    if not names_param:
+        grouped = grouped[:limit]
+
+    locations = []
+    for row in grouped:
+        count = int(row["count"])
+        percent = int(round((count / total) * 100)) if total > 0 else 0
+        locations.append(
+            {
+                "name": row["display_location"],
+                "count": count,
+                "percent": percent,
+            }
+        )
+
+    return Response({"total": total, "locations": locations})
 
 
 class PropertyDetailModifyView(generics.RetrieveUpdateDestroyAPIView):

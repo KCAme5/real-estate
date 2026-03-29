@@ -16,6 +16,11 @@ type TrendingArea = {
     percent: number | null;
 };
 
+type LocationStatsResponse = {
+    total: number;
+    locations: Array<{ name: string; count: number; percent: number }>;
+};
+
 export default function PropertiesSidebar() {
     const { isAuthenticated } = useAuth();
     const [savedProperties, setSavedProperties] = useState<any[]>([]);
@@ -36,43 +41,23 @@ export default function PropertiesSidebar() {
     useEffect(() => {
         const fetchTrendingAreas = async () => {
             try {
-                const totalData = await apiClient.get('/properties/', { params: { page_size: 1 } });
-                const totalCount =
-                    typeof totalData?.count === 'number'
-                        ? totalData.count
-                        : Array.isArray(totalData)
-                            ? totalData.length
-                            : Array.isArray(totalData?.results)
-                                ? totalData.results.length
-                                : 0;
+                const names = trendingAreas.map((a) => a.name).join(',');
+                const data = await apiClient.get<LocationStatsResponse>('/properties/location-stats/', {
+                    params: { names },
+                });
 
-                const updated = await Promise.all(
-                    trendingAreas.map(async (area) => {
-                        try {
-                            const data = await apiClient.get('/properties/', {
-                                params: { location: area.name, page_size: 1 },
-                            });
-                            const count =
-                                typeof data?.count === 'number'
-                                    ? data.count
-                                    : Array.isArray(data)
-                                        ? data.length
-                                        : Array.isArray(data?.results)
-                                            ? data.results.length
-                                            : 0;
-
-                            const percent = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
-                            return { ...area, count, percent };
-                        } catch (error) {
-                            console.error(`Error fetching trending area count for ${area.name}:`, error);
-                            return { ...area, count: 0, percent: 0 };
-                        }
-                    })
+                const byName = new Map<string, { count: number; percent: number }>(
+                    (data.locations || []).map((l) => [l.name, { count: l.count, percent: l.percent }])
                 );
 
-                setTrendingAreas(updated);
+                setTrendingAreas((prev) =>
+                    prev.map((area) => {
+                        const stats = byName.get(area.name);
+                        return stats ? { ...area, count: stats.count, percent: stats.percent } : { ...area, count: 0, percent: 0 };
+                    })
+                );
             } catch (error) {
-                console.error('Error fetching total property count:', error);
+                console.error('Error fetching location stats:', error);
                 setTrendingAreas((prev) => prev.map((a) => ({ ...a, count: 0, percent: 0 })));
             }
         };
