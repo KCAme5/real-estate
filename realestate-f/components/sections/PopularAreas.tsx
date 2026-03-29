@@ -5,7 +5,18 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 
-const initialCities = [
+type City = {
+    name: string;
+    count: string;
+    image: string;
+};
+
+type LocationStatsResponse = {
+    total: number;
+    locations: Array<{ name: string; count: number; percent: number }>;
+};
+
+const initialCities: City[] = [
     {
         name: 'Nairobi',
         count: '...',
@@ -38,28 +49,26 @@ const PopularAreas = () => {
 
     useEffect(() => {
         const fetchCounts = async () => {
-            const updatedCities = await Promise.all(
-                initialCities.map(async (city) => {
-                    try {
-                        // Pass location as a query param.
-                        const data = await apiClient.get('/properties/', { params: { location: city.name } });
-                        let count = '0';
-                        if (data && typeof data.count === 'number') {
-                            count = data.count.toString();
-                        } else if (Array.isArray(data)) {
-                            count = data.length.toString();
-                        } else if (data && Array.isArray(data.results)) {
-                            count = data.results.length.toString();
-                        }
+            try {
+                const names = initialCities.map((c) => c.name).join(',');
+                const data = await apiClient.get<LocationStatsResponse>('/properties/location-stats/', {
+                    params: { names },
+                });
 
-                        return { ...city, count };
-                    } catch (error) {
-                        console.error(`Error fetching count for ${city.name}:`, error);
-                        return { ...city, count: '0' };
-                    }
-                })
-            );
-            setCities(updatedCities);
+                const byName = new Map<string, number>(
+                    (data.locations || []).map((l) => [l.name, l.count])
+                );
+
+                setCities(
+                    initialCities.map((city) => ({
+                        ...city,
+                        count: String(byName.get(city.name) ?? 0),
+                    }))
+                );
+            } catch (error) {
+                console.error('Error fetching popular area counts:', error);
+                setCities(initialCities.map((city) => ({ ...city, count: '0' })));
+            }
         };
 
         fetchCounts();
