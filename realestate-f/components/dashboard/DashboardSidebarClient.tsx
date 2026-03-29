@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { LayoutDashboard, Heart, Calendar, MessageSquare, Settings, TrendingUp, Users, Home } from 'lucide-react';
+import { LayoutDashboard, Heart, Calendar, MessageSquare, Settings, TrendingUp, Users, Home, CreditCard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function DashboardSidebarClient() {
@@ -25,6 +25,7 @@ export default function DashboardSidebarClient() {
         { href: '/dashboard/bookings', label: 'Bookings', icon: Calendar },
         { href: '/dashboard/agent/messages', label: 'Messages', icon: MessageSquare },
         { href: '/dashboard/agent/analytics', label: 'Analytics', icon: TrendingUp },
+        { href: '/dashboard/agent/billing', label: 'Billing', icon: CreditCard },
         { href: '/dashboard/settings', label: 'Settings', icon: Settings },
     ];
 

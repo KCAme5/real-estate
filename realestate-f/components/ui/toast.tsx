@@ -117,14 +117,14 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
     const getStyles = () => {
         switch (toast.type) {
             case 'success':
-                return 'border-green-200 bg-green-50';
+                return 'border-green-300 bg-green-100';
             case 'error':
-                return 'border-red-200 bg-red-50';
+                return 'border-red-300 bg-red-100';
             case 'warning':
-                return 'border-yellow-200 bg-yellow-50';
+                return 'border-yellow-300 bg-yellow-100';
             case 'info':
             default:
-                return 'border-blue-200 bg-blue-50';
+                return 'border-blue-300 bg-blue-100';
         }
     };
 
@@ -141,9 +141,9 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         >
             {getIcon()}
             <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-foreground">{toast.title}</h4>
+                <h4 className="text-sm font-semibold text-slate-900">{toast.title}</h4>
                 {toast.message && (
-                    <p className="text-sm text-muted-foreground mt-1">{toast.message}</p>
+                    <p className="text-sm text-slate-700 mt-1">{toast.message}</p>
                 )}
             </div>
             <button
