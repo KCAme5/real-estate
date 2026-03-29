@@ -22,7 +22,7 @@ export default function DashboardSidebarClient() {
         { href: '/dashboard/agent', label: 'Dashboard', icon: LayoutDashboard },
         { href: '/dashboard/agent/properties', label: 'Properties', icon: Home },
         { href: '/dashboard/agent/leads', label: 'Leads', icon: Users },
-        { href: '/dashboard/bookings', label: 'Bookings', icon: Calendar },
+        { href: '/dashboard/agent/bookings', label: 'Bookings', icon: Calendar },
         { href: '/dashboard/agent/messages', label: 'Messages', icon: MessageSquare },
         { href: '/dashboard/agent/analytics', label: 'Analytics', icon: TrendingUp },
         { href: '/dashboard/agent/billing', label: 'Billing', icon: CreditCard },

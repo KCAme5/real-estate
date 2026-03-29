@@ -106,7 +106,6 @@ export default function AgentsPage() {
 
         filtered = filtered.filter(agent => agent.is_verified);
 
-        // Sort
         switch (sortBy) {
             case 'experience':
                 filtered.sort((a, b) => (b.years_of_experience || 0) - (a.years_of_experience || 0));
@@ -115,7 +114,10 @@ export default function AgentsPage() {
                 filtered.sort((a, b) => (a.user_name || '').localeCompare(b.user_name || ''));
                 break;
             case 'rating':
-                filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                filtered.sort((a, b) => {
+                    if (a.is_verified !== b.is_verified) return b.is_verified ? 1 : -1;
+                    return (b.years_of_experience || 0) - (a.years_of_experience || 0);
+                });
                 break;
         }
 
@@ -131,10 +133,10 @@ export default function AgentsPage() {
     };
 
     const getExperienceColor = (years?: number) => {
-        if (!years || years <= 2) return 'from-blue-500 to-cyan-500';
-        if (years <= 5) return 'from-emerald-500 to-teal-500';
-        if (years <= 10) return 'from-purple-500 to-pink-500';
-        return 'from-amber-500 to-orange-500';
+        if (!years || years <= 2) return 'from-emerald-500 to-teal-500';
+        if (years <= 5) return 'from-teal-500 to-cyan-500';
+        if (years <= 10) return 'from-cyan-500 to-emerald-400';
+        return 'from-emerald-600 to-teal-600';
     };
 
     if (error) {
@@ -170,19 +172,29 @@ export default function AgentsPage() {
         <main className="min-h-screen bg-background relative overflow-hidden">
             {/* Animated Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/10 via-cyan-500/5 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-violet-500/5 to-fuchsia-500/5 rounded-full blur-3xl" />
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-tr from-teal-500/10 via-cyan-500/5 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-cyan-500/5 to-emerald-500/5 rounded-full blur-3xl" />
             </div>
 
-            {/* Hero Section */}
-            <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24">
+            {/* Hero Section with Background Image */}
+            <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+                {/* Hero Background Image */}
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=80"
+                        alt="Modern real estate office"
+                        className="w-full h-full object-cover opacity-[0.15]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+                </div>
+
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center max-w-5xl mx-auto">
                         {/* Badge */}
-                        <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-full border border-white/10 mb-8 backdrop-blur-sm">
-                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                            <span className="text-sm font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-full border border-white/10 mb-8 backdrop-blur-sm">
+                            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                            <span className="text-sm font-semibold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                                 Trusted by 500+ Clients
                             </span>
                         </div>
@@ -193,7 +205,7 @@ export default function AgentsPage() {
                                 Meet Our
                             </span>
                             <br />
-                            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
                                 Elite Agents
                             </span>
                         </h1>
@@ -208,8 +220,8 @@ export default function AgentsPage() {
                         {/* Stats Row */}
                         <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-12">
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center border border-blue-500/20">
-                                    <Users className="w-6 h-6 text-blue-400" />
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-emerald-500/20">
+                                    <Users className="w-6 h-6 text-emerald-400" />
                                 </div>
                                 <div className="text-left">
                                     <p className="text-2xl font-black text-foreground">{agents.length}+</p>
@@ -217,8 +229,8 @@ export default function AgentsPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-emerald-500/20">
-                                    <CheckCircle className="w-6 h-6 text-emerald-400" />
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500/20 to-teal-500/5 flex items-center justify-center border border-teal-500/20">
+                                    <CheckCircle className="w-6 h-6 text-teal-400" />
                                 </div>
                                 <div className="text-left">
                                     <p className="text-2xl font-black text-foreground">{agents.filter(a => a.is_verified).length}</p>
@@ -226,8 +238,8 @@ export default function AgentsPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center border border-purple-500/20">
-                                    <Star className="w-6 h-6 text-purple-400" />
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 flex items-center justify-center border border-cyan-500/20">
+                                    <Star className="w-6 h-6 text-cyan-400" />
                                 </div>
                                 <div className="text-left">
                                     <p className="text-2xl font-black text-foreground">4.9</p>
@@ -252,7 +264,7 @@ export default function AgentsPage() {
                                     placeholder="Search agents by name or specialty..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-14 pr-5 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all text-white placeholder:text-slate-500"
+                                    className="w-full pl-14 pr-5 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all text-white placeholder:text-slate-500"
                                 />
                             </div>
 
@@ -262,7 +274,7 @@ export default function AgentsPage() {
                                 <select
                                     value={selectedSpecialty}
                                     onChange={(e) => setSelectedSpecialty(e.target.value)}
-                                    className="w-full pl-14 pr-10 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all text-white appearance-none cursor-pointer"
+                                    className="w-full pl-14 pr-10 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all text-white appearance-none cursor-pointer"
                                 >
                                     {specialties.map((s) => (
                                         <option key={s.value} value={s.value}>{s.label}</option>
@@ -276,7 +288,7 @@ export default function AgentsPage() {
                                 <select
                                     value={selectedExperience}
                                     onChange={(e) => setSelectedExperience(e.target.value)}
-                                    className="w-full pl-14 pr-10 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all text-white appearance-none cursor-pointer"
+                                    className="w-full pl-14 pr-10 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all text-white appearance-none cursor-pointer"
                                 >
                                     {experienceLevels.map((level) => (
                                         <option key={level.value} value={level.value}>{level.label}</option>
@@ -293,7 +305,7 @@ export default function AgentsPage() {
                                         {searchTerm && (
                                             <button
                                                 onClick={() => setSearchTerm('')}
-                                                className="px-4 py-2 bg-blue-500/10 text-blue-400 rounded-xl text-sm font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20"
+                                                className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
                                             >
                                                 "{searchTerm}" ×
                                             </button>
@@ -301,7 +313,7 @@ export default function AgentsPage() {
                                         {selectedSpecialty !== 'all' && (
                                             <button
                                                 onClick={() => setSelectedSpecialty('all')}
-                                                className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
+                                                className="px-4 py-2 bg-teal-500/10 text-teal-400 rounded-xl text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/20"
                                             >
                                                 {selectedSpecialty} ×
                                             </button>
@@ -309,7 +321,7 @@ export default function AgentsPage() {
                                         {selectedExperience !== 'all' && (
                                             <button
                                                 onClick={() => setSelectedExperience('all')}
-                                                className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-xl text-sm font-medium hover:bg-purple-500/20 transition-colors border border-purple-500/20"
+                                                className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-xl text-sm font-medium hover:bg-cyan-500/20 transition-colors border border-cyan-500/20"
                                             >
                                                 {experienceLevels.find(l => l.value === selectedExperience)?.label} ×
                                             </button>
@@ -340,7 +352,7 @@ export default function AgentsPage() {
                                 <div className="flex items-center gap-1 p-1.5 bg-slate-800/50 rounded-xl border border-slate-700/50">
                                     <button
                                         onClick={() => setViewMode('grid')}
-                                        className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white'}`}
                                     >
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -348,7 +360,7 @@ export default function AgentsPage() {
                                     </button>
                                     <button
                                         onClick={() => setViewMode('list')}
-                                        className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white'}`}
                                     >
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -407,7 +419,7 @@ export default function AgentsPage() {
                             {agents.length > 0 && (
                                 <button
                                     onClick={() => { setSearchTerm(''); setSelectedSpecialty('all'); setSelectedExperience('all'); }}
-                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold rounded-2xl transition-all"
+                                    className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-2xl transition-all"
                                 >
                                     Clear All Filters
                                 </button>
@@ -426,9 +438,9 @@ export default function AgentsPage() {
                                             onMouseEnter={() => setHoveredAgent(agent.id)}
                                             onMouseLeave={() => setHoveredAgent(null)}
                                         >
-                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-blue-500/30 shadow-2xl shadow-blue-500/10 -translate-y-2' : ''}`}>
+                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-emerald-500/30 shadow-2xl shadow-emerald-500/10 -translate-y-2' : ''}`}>
                                                 {/* Decorative Gradient */}
-                                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/5 rounded-full blur-2xl" />
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 rounded-full blur-2xl" />
                                                 
                                                 <div className="p-6">
                                                     {/* Header */}
@@ -445,7 +457,7 @@ export default function AgentsPage() {
                                                                             className="object-cover"
                                                                         />
                                                                     ) : (
-                                                                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                                                                        <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
                                                                             <span className="text-2xl font-black text-white">
                                                                                 {agent.user_name?.[0]?.toUpperCase() || 'A'}
                                                                             </span>
@@ -462,7 +474,7 @@ export default function AgentsPage() {
 
                                                         {/* Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <h3 className={`text-lg font-bold text-white truncate transition-colors ${hoveredAgent === agent.id ? 'text-blue-400' : ''}`}>
+                                                            <h3 className={`text-lg font-bold text-white truncate transition-colors ${hoveredAgent === agent.id ? 'text-emerald-400' : ''}`}>
                                                                 {agent.user_name}
                                                             </h3>
                                                             <div className="flex items-center gap-2 mt-1">
@@ -523,11 +535,11 @@ export default function AgentsPage() {
 
                                                     {/* CTA */}
                                                     <div className={`flex items-center justify-between pt-4 border-t border-slate-800/50 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-slate-700/50' : ''}`}>
-                                                        <span className="text-sm font-semibold text-slate-400 group-hover:text-blue-400 transition-colors">
+                                                        <span className="text-sm font-semibold text-slate-400 group-hover:text-emerald-400 transition-colors">
                                                             View Profile
                                                         </span>
-                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-blue-500 scale-110' : ''}`}>
-                                                            <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1' : ''}`} />
+                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-emerald-500 scale-110' : ''}`}>
+                                                            <ChevronRight className={`w-5 h-5 text-emerald-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1' : ''}`} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -548,7 +560,7 @@ export default function AgentsPage() {
                                             onMouseEnter={() => setHoveredAgent(agent.id)}
                                             onMouseLeave={() => setHoveredAgent(null)}
                                         >
-                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-2xl p-6 border transition-all duration-500 ${hoveredAgent === agent.id ? 'border-blue-500/30 shadow-xl shadow-blue-500/5 -translate-y-1' : 'border-white/5'}`}>
+                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-2xl p-6 border transition-all duration-500 ${hoveredAgent === agent.id ? 'border-emerald-500/30 shadow-xl shadow-emerald-500/5 -translate-y-1' : 'border-white/5'}`}>
                                                 <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                                                     {/* Avatar */}
                                                     <div className="shrink-0">
@@ -562,7 +574,7 @@ export default function AgentsPage() {
                                                                         className="object-cover"
                                                                     />
                                                                 ) : (
-                                                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                                                                    <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
                                                                         <span className="text-3xl font-black text-white">
                                                                             {agent.user_name?.[0]?.toUpperCase() || 'A'}
                                                                         </span>
@@ -575,7 +587,7 @@ export default function AgentsPage() {
                                                     {/* Info */}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                            <h3 className={`text-xl font-bold text-white transition-colors ${hoveredAgent === agent.id ? 'text-blue-400' : ''}`}>
+                                                            <h3 className={`text-xl font-bold text-white transition-colors ${hoveredAgent === agent.id ? 'text-emerald-400' : ''}`}>
                                                                 {agent.user_name}
                                                             </h3>
                                                             {agent.is_verified && (
@@ -620,8 +632,8 @@ export default function AgentsPage() {
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-blue-500' : ''}`}>
-                                                            <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1 text-white' : ''}`} />
+                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-emerald-500' : ''}`}>
+                                                            <ChevronRight className={`w-5 h-5 text-emerald-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1 text-white' : ''}`} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -638,12 +650,12 @@ export default function AgentsPage() {
             {/* Bottom CTA */}
             <section className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
                 <div className="container mx-auto max-w-5xl">
-                    <div className="relative bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 rounded-3xl p-8 lg:p-12 border border-white/10 overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent" />
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
+                    <div className="relative bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-600/20 rounded-3xl p-8 lg:p-12 border border-white/10 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
                         
                         <div className="relative text-center max-w-2xl mx-auto">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mx-auto mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-6">
                                 <Award className="w-8 h-8 text-white" />
                             </div>
                             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
@@ -654,7 +666,7 @@ export default function AgentsPage() {
                             </p>
                             <Link
                                 href="/register?type=agent"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40"
                             >
                                 <Sparkles className="w-5 h-5" />
                                 Apply Now

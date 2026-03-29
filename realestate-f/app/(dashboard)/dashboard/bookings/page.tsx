@@ -6,9 +6,11 @@ import { bookingsAPI } from '@/lib/api/bookings';
 import { Booking } from '@/lib/api/bookings';
 import { Calendar, Filter, Loader2, AlertCircle, Clock, MapPin, User, Home } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
+import { useRouter } from 'next/navigation';
 
 export default function BookingsPage() {
     const { user } = useAuth();
+    const router = useRouter();
     const { success, error: showError } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
@@ -16,6 +18,15 @@ export default function BookingsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [updatingId, setUpdatingId] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (!user) return;
+        if (user.user_type === 'agent') {
+            router.replace('/dashboard/agent/bookings');
+        } else if (user.user_type === 'management') {
+            router.replace('/dashboard/management');
+        }
+    }, [user, router]);
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -34,7 +45,9 @@ export default function BookingsPage() {
         };
 
         if (user) {
-            fetchBookings();
+            if (user.user_type !== 'agent' && user.user_type !== 'management') {
+                fetchBookings();
+            }
         }
     }, [user]);
 
@@ -65,6 +78,14 @@ export default function BookingsPage() {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (user.user_type === 'agent' || user.user_type === 'management') {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Redirecting...</p>
             </div>
         );
     }

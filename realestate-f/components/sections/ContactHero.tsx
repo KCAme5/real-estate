@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Mail, Phone } from 'lucide-react';
+import { ArrowRight, Mail, Phone, Clock, MapPin } from 'lucide-react';
 
 export default function ContactHero() {
     return (
@@ -71,6 +71,36 @@ export default function ContactHero() {
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                             Diaspora-friendly support
                         </span>
+                    </div>
+
+                    {/* Compact trust panel */}
+                    <div className="mt-10 max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="rounded-3xl border border-slate-800 bg-slate-950/45 backdrop-blur px-5 py-4 text-left">
+                                <div className="flex items-center gap-2 text-emerald-200">
+                                    <MapPin size={16} />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Office</p>
+                                </div>
+                                <p className="mt-2 text-sm font-bold text-white">Westlands, Nairobi</p>
+                                <p className="mt-1 text-xs text-slate-300">ABC Place, Waiyaki Way</p>
+                            </div>
+                            <div className="rounded-3xl border border-slate-800 bg-slate-950/45 backdrop-blur px-5 py-4 text-left">
+                                <div className="flex items-center gap-2 text-emerald-200">
+                                    <Clock size={16} />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Hours</p>
+                                </div>
+                                <p className="mt-2 text-sm font-bold text-white">Mon–Fri: 8am–6pm</p>
+                                <p className="mt-1 text-xs text-slate-300">Sat: 9am–2pm • Sun: Closed</p>
+                            </div>
+                            <div className="rounded-3xl border border-slate-800 bg-slate-950/45 backdrop-blur px-5 py-4 text-left">
+                                <div className="flex items-center gap-2 text-emerald-200">
+                                    <Mail size={16} />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Support</p>
+                                </div>
+                                <p className="mt-2 text-sm font-bold text-white">info@kenyaprime.co.ke</p>
+                                <p className="mt-1 text-xs text-slate-300">Sales • support • viewings</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

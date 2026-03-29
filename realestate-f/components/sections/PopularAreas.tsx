@@ -7,7 +7,9 @@ import { apiClient } from '@/lib/api/client';
 
 type City = {
     name: string;
-    count: string;
+    count: number | null;
+    percent: number | null;
+    total: number | null;
     image: string;
 };
 
@@ -19,27 +21,37 @@ type LocationStatsResponse = {
 const initialCities: City[] = [
     {
         name: 'Nairobi',
-        count: '...',
+        count: null,
+        percent: null,
+        total: null,
         image: 'https://images.unsplash.com/photo-1620549146396-9024d914cd99?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Mombasa',
-        count: '...',
+        count: null,
+        percent: null,
+        total: null,
         image: 'https://images.unsplash.com/photo-1547895056-bb6d0c733350?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Kisumu',
-        count: '...',
+        count: null,
+        percent: null,
+        total: null,
         image: 'https://images.unsplash.com/photo-1549247656-749448834d88?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Nakuru',
-        count: '...',
+        count: null,
+        percent: null,
+        total: null,
         image: 'https://images.unsplash.com/photo-1580974852860-19d26390a424?q=80&w=600&auto=format&fit=crop',
     },
     {
         name: 'Eldoret',
-        count: '...',
+        count: null,
+        percent: null,
+        total: null,
         image: 'https://images.unsplash.com/photo-1565514020176-db8a7fb99564?q=80&w=600&auto=format&fit=crop',
     },
 ];
@@ -55,19 +67,21 @@ const PopularAreas = () => {
                     params: { names },
                 });
 
-                const byName = new Map<string, number>(
-                    (data.locations || []).map((l) => [l.name, l.count])
+                const byName = new Map<string, { count: number }>(
+                    (data.locations || []).map((l) => [l.name, { count: l.count }])
                 );
 
                 setCities(
                     initialCities.map((city) => ({
                         ...city,
-                        count: String(byName.get(city.name) ?? 0),
+                        count: byName.get(city.name)?.count ?? 0,
+                        total: data.total ?? 0,
+                        percent: (data.total ?? 0) > 0 ? Math.round(((byName.get(city.name)?.count ?? 0) / (data.total ?? 0)) * 100) : 0,
                     }))
                 );
             } catch (error) {
                 console.error('Error fetching popular area counts:', error);
-                setCities(initialCities.map((city) => ({ ...city, count: '0' })));
+                setCities(initialCities.map((city) => ({ ...city, count: 0, percent: 0, total: 0 })));
             }
         };
 
@@ -114,7 +128,9 @@ const PopularAreas = () => {
                             <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
                                 <h3 className="text-xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">{city.name}</h3>
                                 <p className="text-xs font-bold text-slate-300 tracking-wider uppercase mb-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                                    {city.count} {parseInt(city.count) === 1 ? 'Property' : 'Properties'}
+                                    {city.count === null || city.percent === null || city.total === null
+                                        ? '...'
+                                        : `${city.count} ${city.count === 1 ? 'Property' : 'Properties'} • ${city.percent}% of listings`}
                                 </p>
                             </div>
                         </Link>

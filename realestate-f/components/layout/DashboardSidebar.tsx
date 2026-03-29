@@ -13,10 +13,10 @@ export default function DashboardSidebar({ compact = false }: { compact?: boolea
 
             <nav className="space-y-1">
                 <Link href="/dashboard" className="block px-3 py-2 rounded-md hover:bg-base-200">Overview</Link>
-                <Link href="/dashboard/agent" className="block px-3 py-2 rounded-md hover:bg-base-200">My Properties</Link>
-                <Link href="/dashboard/bookings" className="block px-3 py-2 rounded-md hover:bg-base-200">Bookings</Link>
-                <Link href="/dashboard/leads" className="block px-3 py-2 rounded-md hover:bg-base-200">Leads</Link>
-                <Link href="/dashboard/analytics" className="block px-3 py-2 rounded-md hover:bg-base-200">Analytics</Link>
+                <Link href="/dashboard/agent/properties" className="block px-3 py-2 rounded-md hover:bg-base-200">My Properties</Link>
+                <Link href="/dashboard/agent/bookings" className="block px-3 py-2 rounded-md hover:bg-base-200">Bookings</Link>
+                <Link href="/dashboard/agent/leads" className="block px-3 py-2 rounded-md hover:bg-base-200">Leads</Link>
+                <Link href="/dashboard/agent/analytics" className="block px-3 py-2 rounded-md hover:bg-base-200">Analytics</Link>
                 <Link href="/profile" className="block px-3 py-2 rounded-md hover:bg-base-200">Profile</Link>
                 <Link href="/settings" className="block px-3 py-2 rounded-md hover:bg-base-200">Settings</Link>
             </nav>

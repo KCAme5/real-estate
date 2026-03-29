@@ -6,6 +6,7 @@ import { bookingsAPI, Booking } from '@/lib/api/bookings';
 import { useToast } from '@/components/ui/toast';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import { Calendar, Clock, MapPin, User, Home, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const statusColors: Record<string, string> = {
     pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
@@ -16,6 +17,7 @@ const statusColors: Record<string, string> = {
 
 export default function BookingsPage() {
     const { user } = useAuth();
+    const router = useRouter();
     const { success, error: showError } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
@@ -35,10 +37,14 @@ export default function BookingsPage() {
     };
 
     useEffect(() => {
-        if (user?.user_type === 'agent') {
-            fetchBookings();
+        if (!user) return;
+        if (user.user_type !== 'agent') {
+            router.replace('/dashboard/bookings');
+            return;
         }
-    }, [user]);
+
+        fetchBookings();
+    }, [user, router]);
 
     const handleConfirmBooking = async (bookingId: number) => {
         setConfirmingId(bookingId);

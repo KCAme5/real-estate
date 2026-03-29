@@ -14,6 +14,7 @@ type TrendingArea = {
     rank: number;
     count: number | null;
     percent: number | null;
+    total: number | null;
 };
 
 type LocationStatsResponse = {
@@ -26,10 +27,10 @@ export default function PropertiesSidebar() {
     const [savedProperties, setSavedProperties] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [trendingAreas, setTrendingAreas] = useState<TrendingArea[]>([
-        { name: 'Westlands', rank: 1, count: null, percent: null },
-        { name: 'Karen', rank: 2, count: null, percent: null },
-        { name: 'Nyali', rank: 3, count: null, percent: null },
-        { name: 'Runda', rank: 4, count: null, percent: null },
+        { name: 'Westlands', rank: 1, count: null, percent: null, total: null },
+        { name: 'Karen', rank: 2, count: null, percent: null, total: null },
+        { name: 'Nyali', rank: 3, count: null, percent: null, total: null },
+        { name: 'Runda', rank: 4, count: null, percent: null, total: null },
     ]);
 
     useEffect(() => {
@@ -53,12 +54,15 @@ export default function PropertiesSidebar() {
                 setTrendingAreas((prev) =>
                     prev.map((area) => {
                         const stats = byName.get(area.name);
-                        return stats ? { ...area, count: stats.count, percent: stats.percent } : { ...area, count: 0, percent: 0 };
+                        const total = data.total ?? 0;
+                        if (!stats) return { ...area, count: 0, percent: 0, total };
+                        const computedPercent = total > 0 ? Math.round((stats.count / total) * 100) : 0;
+                        return { ...area, count: stats.count, percent: computedPercent, total };
                     })
                 );
             } catch (error) {
                 console.error('Error fetching location stats:', error);
-                setTrendingAreas((prev) => prev.map((a) => ({ ...a, count: 0, percent: 0 })));
+                setTrendingAreas((prev) => prev.map((a) => ({ ...a, count: 0, percent: 0, total: 0 })));
             }
         };
 
@@ -110,11 +114,11 @@ export default function PropertiesSidebar() {
                                 </span>
                             </div>
                             <span className="text-slate-400 text-sm font-bold tabular-nums">
-                                {area.count === null || area.percent === null ? (
+                                {area.count === null || area.percent === null || area.total === null ? (
                                     '...'
                                 ) : (
                                     <>
-                                        {area.count} • {area.percent}%
+                                        {area.count} / {area.total} ({area.percent}%)
                                     </>
                                 )}
                             </span>
