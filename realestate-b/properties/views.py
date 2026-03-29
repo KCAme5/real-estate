@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db import models
 from django.db.models import Q
 from .models import *
 from .serializers import *
@@ -56,10 +57,59 @@ class PropertyDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Property.objects.filter(is_verified=True)
 
+    def _create_property_view_activity(self, property_obj, user):
+        """Create LeadActivity for property view if user has a lead."""
+        from leads.models import Lead, LeadActivity
+        from django.utils import timezone
+        from django.contrib.auth import get_user_model
+
+        if not user or not user.is_authenticated:
+            return None
+
+        # Find leads where user is the client (not agent) - prioritize leads with this property
+        # First try leads that have this specific property
+        leads = Lead.objects.filter(user=user, property=property_obj)
+        
+        # If no lead with this property, check for any lead where user is the client
+        if not leads.exists():
+            leads = Lead.objects.filter(user=user)
+        
+        if not leads.exists():
+            return None
+
+        lead = leads.first()
+
+        # Check for recent activity to avoid duplicates (within last hour)
+        recent_activity = LeadActivity.objects.filter(
+            lead=lead,
+            activity_type="property_viewing",
+            created_at__gte=timezone.now() - timezone.timedelta(hours=1)
+        ).exists()
+
+        if recent_activity:
+            return None
+
+        # Create activity for the lead
+        activity = LeadActivity.objects.create(
+            lead=lead,
+            activity_type="property_viewing",
+            description=f"Viewed property: {property_obj.title}",
+            agent=lead.agent if lead.agent else None
+        )
+
+        # Update lead score
+        lead.update_score()
+
+        return activity
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.views += 1
         instance.save()
+
+        # Create lead activity for authenticated users
+        self._create_property_view_activity(instance, request.user)
+
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
@@ -522,3 +572,27 @@ class PropertyValuationView(APIView):
             'comparable_count': comparable_properties.count(),
             'currency': 'KES'
         })
+
+
+class FeaturedDevelopmentView(APIView):
+    """
+    Get the featured development project for homepage overlay banner.
+    Returns the property that is featured and is a development type.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        # Find featured development properties using is_development flag
+        featured = Property.objects.filter(
+            is_development=True,
+            is_featured=True,
+            is_verified=True,
+            status='available'
+        ).first()
+
+        if not featured:
+            return Response(None, status=status.HTTP_200_OK)
+
+        # Use PropertyDetailSerializer for full details
+        serializer = PropertyDetailSerializer(featured)
+        return Response(serializer.data)

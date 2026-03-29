@@ -95,6 +95,123 @@ class PropertyAPITest(TestCase):
         self.property.refresh_from_db()
         self.assertEqual(self.property.views, initial_views + 1)
 
+    def test_property_view_creates_lead_activity_for_authenticated_user(self):
+        """TDD: Property view should create LeadActivity for authenticated user with lead."""
+        from leads.models import Lead, LeadActivity
+
+        # Create a lead for this user with the property
+        lead = Lead.objects.create(
+            first_name="Test",
+            last_name="User",
+            email="testuser@test.com",
+            user=self.user,
+            agent=self.user,
+            property=self.property
+        )
+
+        # Initial activity count
+        initial_count = LeadActivity.objects.filter(lead=lead, activity_type="property_viewing").count()
+
+        # Authenticate and view the property
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/api/properties/{self.property.slug}/')
+        self.assertEqual(response.status_code, 200)
+
+        # Should create LeadActivity
+        new_count = LeadActivity.objects.filter(lead=lead, activity_type="property_viewing").count()
+        self.assertEqual(new_count, initial_count + 1)
+
+        # Verify activity details
+        activity = LeadActivity.objects.filter(lead=lead, activity_type="property_viewing").first()
+        self.assertIsNotNone(activity)
+        self.assertIn(self.property.title, activity.description)
+
+    def test_property_view_creates_lead_activity_for_client_with_lead(self):
+        """TDD: Property view should create LeadActivity for client users with existing leads."""
+        from leads.models import Lead, LeadActivity
+
+        # Create a client user
+        client = get_user_model().objects.create_user(
+            username="client_viewer",
+            email="client@test.com",
+            password="testpass123",
+            user_type="client"
+        )
+
+        # Create a lead for this client assigned to this agent with the property
+        lead = Lead.objects.create(
+            first_name="Client",
+            last_name="Viewer",
+            email="client@test.com",
+            user=client,
+            agent=self.user,
+            property=self.property
+        )
+
+        # View the property as client
+        self.client.force_authenticate(user=client)
+        response = self.client.get(f'/api/properties/{self.property.slug}/')
+        self.assertEqual(response.status_code, 200)
+
+        # Should create LeadActivity
+        activity = LeadActivity.objects.filter(
+            lead=lead,
+            activity_type="property_viewing"
+        ).first()
+        self.assertIsNotNone(activity)
+        self.assertEqual(activity.agent, self.user)
+
+    def test_property_view_does_not_duplicate_for_same_session(self):
+        """TDD: Property view should not create duplicate activities for same user within session."""
+        from leads.models import Lead, LeadActivity
+
+        lead = Lead.objects.create(
+            first_name="Session",
+            last_name="Test",
+            email="session@test.com",
+            user=self.user,
+            agent=self.user,
+            property=self.property
+        )
+
+        # Authenticate and view property multiple times
+        self.client.force_authenticate(user=self.user)
+        for _ in range(3):
+            response = self.client.get(f'/api/properties/{self.property.slug}/')
+            self.assertEqual(response.status_code, 200)
+
+        # Should only have 1 activity (first view counts, subsequent within session don't)
+        count = LeadActivity.objects.filter(
+            lead=lead,
+            activity_type="property_viewing"
+        ).count()
+        # This test expects 1 - we need to implement session-based deduplication
+        self.assertEqual(count, 1)
+
+    def test_property_view_updates_lead_score(self):
+        """TDD: Property view should trigger lead score update."""
+        from leads.models import Lead, LeadActivity
+
+        lead = Lead.objects.create(
+            first_name="Score",
+            last_name="Test",
+            email="score@test.com",
+            user=self.user,
+            agent=self.user,
+            property=self.property
+        )
+
+        initial_score = lead.score
+
+        # Authenticate and view the property
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/api/properties/{self.property.slug}/')
+        self.assertEqual(response.status_code, 200)
+
+        # Lead score should increase (property_viewing adds 15 points)
+        lead.refresh_from_db()
+        self.assertEqual(lead.score, initial_score + 15)
+
     def test_property_create_requires_authentication(self):
         """Test that creating a property requires login."""
         data = {
@@ -468,6 +585,74 @@ class PropertyRecommendationsTest(TestCase):
             latitude=-4.0435,
             longitude=39.6682
         )
+
+    def test_featured_development_returns_high_interest_project(self):
+        """TDD: Get featured development project for homepage overlay."""
+        # Create a featured development property
+        development = Property.objects.create(
+            title="Kezariruta Heights",
+            slug="kezariruta-heights",
+            description="Luxury apartments in Ruiru",
+            price=4500000,
+            currency="KES",
+            property_type="apartment",
+            is_development=True,
+            is_featured=True,
+            is_verified=True,
+            status="available",
+            location=self.nairobi_location,
+            agent=self.agent,
+            bedrooms=2,
+            bathrooms=2,
+            square_feet=1200
+        )
+
+        # Also create a non-featured property (should not be returned)
+        Property.objects.create(
+            title="Regular Apartment",
+            slug="regular-apartment",
+            price=3000000,
+            property_type="apartment",
+            is_development=False,
+            is_featured=False,
+            is_verified=True,
+            status="available",
+            location=self.nairobi_location,
+            agent=self.agent
+        )
+
+        response = self.client.get('/api/properties/featured-development/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.data)
+        self.assertEqual(response.data['title'], "Kezariruta Heights")
+        self.assertEqual(response.data['is_development'], True)
+        self.assertEqual(response.data['is_featured'], True)
+
+    def test_featured_development_returns_null_when_none_exists(self):
+        """TDD: Return null when no featured development exists."""
+        # No featured development properties - only regular properties
+        Property.objects.create(
+            title="Regular Sale Property",
+            slug="regular-sale-prop",
+            price=3000000,
+            property_type="apartment",
+            is_development=False,
+            is_featured=False,
+            is_verified=True,
+            status="available",
+            location=self.nairobi_location,
+            agent=self.agent
+        )
+
+        response = self.client.get('/api/properties/featured-development/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.data)
+
+    def test_featured_development_requires_no_auth(self):
+        """TDD: Featured development endpoint should be public (no auth required)."""
+        response = self.client.get('/api/properties/featured-development/')
+        # Should work without authentication
+        self.assertIn(response.status_code, [200, 404])
         
         # Create properties in Nairobi - similar to what user might like
         for i in range(3):
