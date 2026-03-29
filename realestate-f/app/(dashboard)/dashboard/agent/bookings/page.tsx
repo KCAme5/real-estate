@@ -95,7 +95,7 @@ export default function BookingsPage() {
                 setLoading(false);
             }
         })();
-    }, [user, router]);
+    }, [user]);
 
     const handleRefresh = async () => {
         try {

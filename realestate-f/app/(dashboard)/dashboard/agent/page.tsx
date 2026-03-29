@@ -1,276 +1,471 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowRight,
+  Calendar,
+  Clock,
+  Home,
+  MessageSquare,
+  Plus,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
+
+import { useAuth } from '@/hooks/useAuth';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
-import { AgentStatsCards, SimpleChart, PropertyPerformanceChart } from '@/components/dashboard/Charts';
+import { AgentStatsCards } from '@/components/dashboard/Charts';
 import { PropertyCardsContainer } from '@/components/dashboard/PropertyCard';
-import { RecentLeads } from '@/components/dashboard/LeadItem';
-import { Plus, MessageSquare, TrendingUp, BarChart3, Calendar, Users, ArrowRight, FileText, Send, Clock } from 'lucide-react';
 
 import { analyticsAPI } from '@/lib/api/analytics';
+import { bookingsAPI, Booking } from '@/lib/api/bookings';
 import { propertyAPI } from '@/lib/api/properties';
 import { leadsAPI } from '@/lib/api/leads';
 
-export default function AgentDashboard() {
-    const { user, loading: authLoading } = useAuth();
-    const router = useRouter();
-    const [stats, setStats] = React.useState<any>(null);
-    const [properties, setProperties] = React.useState<any[]>([]);
-    const [leads, setLeads] = React.useState<any[]>([]);
-    const [conversations, setConversations] = React.useState<any[]>([]);
-    const [loading, setLoading] = React.useState(true);
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [statsData, propsData, leadsData, convsData] = await Promise.all([
-                    analyticsAPI.getDashboardStats(),
-                    propertyAPI.getAgentProperties(),
-                    leadsAPI.getAll(),
-                    leadsAPI.getConversations()
-                ]);
-                setStats(statsData);
-                setProperties(propsData.results || propsData || []);
-                setLeads(leadsData.results || leadsData || []);
-                setConversations(convsData.results || convsData || []);
-            } catch (error) {
-                console.error('Failed to fetch agent dashboard data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (user && user.user_type === 'agent') {
-            fetchData();
-        }
-    }, [user]);
-
-    // Only redirect if user type is wrong, not for auth (middleware handles that)
-    useEffect(() => {
-        if (!authLoading && user && user.user_type !== 'agent') {
-            router.push('/dashboard');
-        }
-    }, [user, authLoading, router]);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-            </div>
-        );
-    }
-
-    if (!user || user.user_type !== 'agent') {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <p className="text-muted-foreground font-medium">Redirecting to your dashboard...</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="p-4 md:p-8 lg:p-10">
-            <div className="max-w-7xl mx-auto space-y-10">
-                {/* Breadcrumb & Welcome */}
-                <div className="space-y-4">
-                    <Breadcrumb />
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="space-y-1">
-                            <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
-                                Good morning, <span className="text-primary">{user.first_name || 'Sarah'}</span>
-                            </h1>
-                            <p className="text-sm text-muted-foreground font-medium">
-                                {formattedDate} — Performance overview this month
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            {conversations.some(c => c.unread_count > 0) && (
-                                <Link
-                                    href="/dashboard/messages"
-                                    className="flex items-center gap-3 px-6 py-3 bg-secondary text-white rounded-full text-sm font-black shadow-lg shadow-secondary/25 animate-bounce-subtle"
-                                >
-                                    <MessageSquare size={18} />
-                                    {conversations.reduce((acc, c) => acc + c.unread_count, 0)} New Messages
-                                </Link>
-                            )}
-                            <div className="hidden lg:flex items-center gap-2 px-6 py-3 bg-primary/10 text-primary rounded-full text-sm font-bold border border-primary/20">
-                                <TrendingUp size={16} />
-                                Top 5% Agent
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Performance Overview Stats */}
-                <AgentStatsCards stats={stats} />
-
-                {/* Charts & Analytics Section */}
-                <section className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold text-foreground">📈 Analytics Overview</h2>
-                        <Link
-                            href="/dashboard/agent/analytics"
-                            className="text-sm font-bold text-primary hover:underline"
-                        >
-                            View Full Analytics
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <PropertyPerformanceChart properties={properties} />
-                        <SimpleChart data={[0, 0, 0, 0, 0]} label="Monthly Leads" />
-                    </div>
-                </section>
-
-                {/* Main Content Grid - Recent Leads & Quick Actions */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Recent Leads */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold text-foreground tracking-tight">🎯 Recent Leads</h2>
-                            <Link
-                                href="/dashboard/agent/leads"
-                                className="text-sm font-bold text-primary hover:underline"
-                            >
-                                Manage All Leads
-                            </Link>
-                        </div>
-                        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm overflow-hidden">
-                            <RecentLeads leads={leads.slice(0, 5)} />
-                        </div>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="lg:col-span-1 space-y-6">
-                        <h2 className="text-2xl font-bold text-foreground tracking-tight">⚡ Quick Actions</h2>
-                        <div className="bg-card border border-border rounded-2xl p-8 sticky top-24 shadow-sm">
-                            <div className="space-y-3">
-                                {[
-                                    { icon: Plus, label: 'Add New Property', action: () => router.push('/dashboard/agent/properties/new') },
-                                    { icon: Users, label: 'Create New Lead', action: () => { } },
-                                    { icon: Calendar, label: 'Schedule Viewing', action: () => { } },
-                                    { icon: FileText, label: 'Generate Report', action: () => { } },
-                                    { icon: Send, label: 'Send Bulk Message', action: () => { } },
-                                    { icon: Clock, label: 'Update Availability', action: () => { } },
-                                ].map((btn, i) => (
-                                    <button
-                                        key={i}
-                                        onClick={btn.action}
-                                        className="w-full flex items-center justify-between p-4 bg-muted/10 hover:bg-primary hover:text-primary-foreground group rounded-xl transition-all duration-300 border border-border/50 text-left"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <btn.icon size={18} className="group-hover:scale-110 transition-transform" />
-                                            <span className="font-semibold">{btn.label}</span>
-                                        </div>
-                                        <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Today's Schedule */}
-                <section className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                            <h2 className="text-2xl font-bold text-foreground tracking-tight">📅 Today's Schedule</h2>
-                            <p className="text-sm text-muted-foreground font-medium">Your upcoming appointments</p>
-                        </div>
-                        <Link
-                            href="/dashboard/agent/bookings"
-                            className="group flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
-                        >
-                            Full Schedule
-                            <ArrowRight size={16} />
-                        </Link>
-                    </div>
-
-                    <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-muted/30 border-b border-border">
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Time</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Client</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Property</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Location</th>
-                                        <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-muted-foreground">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border">
-                                    {!loading && conversations.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
-                                                No appointments scheduled
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        conversations.slice(0, 5).map((booking: any, i) => {
-                                            const statusColors: Record<string, string> = {
-                                                pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
-                                                confirmed: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
-                                                cancelled: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
-                                                completed: 'bg-slate-100 dark:bg-slate-900/20 text-slate-800 dark:text-slate-300',
-                                            };
-                                            const booking_time = booking.updated_at ? new Date(booking.updated_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'TBD';
-                                            const status = (booking.status || 'pending').toLowerCase();
-
-                                            return (
-                                                <tr key={i} className="hover:bg-muted/20 transition-colors group">
-                                                    <td className="px-6 py-5 font-bold text-foreground">{booking_time}</td>
-                                                    <td className="px-6 py-5 text-muted-foreground font-medium">
-                                                        {booking.other_user?.name || 'Unknown Client'}
-                                                    </td>
-                                                    <td className="px-6 py-5 font-bold text-foreground group-hover:text-primary transition-colors">
-                                                        {booking.property_title || 'Property Inquiry'}
-                                                    </td>
-                                                    <td className="px-6 py-5 text-muted-foreground font-medium">
-                                                        {booking.property_location || 'Nairobi'}
-                                                    </td>
-                                                    <td className="px-6 py-5">
-                                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusColors[status] || statusColors.pending}`}>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                                            {status.toUpperCase()}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Active Listings */}
-                <section className="space-y-6 pb-20">
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                            <h2 className="text-2xl font-bold text-foreground tracking-tight">🏠 Active Listings</h2>
-                            <p className="text-sm text-muted-foreground font-medium">Managing {properties.length} total properties</p>
-                        </div>
-                        <Link
-                            href="/dashboard/agent/properties"
-                            className="group flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
-                        >
-                            Manage Listings
-                            <ArrowRight size={16} />
-                        </Link>
-                    </div>
-                    <PropertyCardsContainer properties={properties} />
-                </section>
-            </div>
-        </div>
-    );
+function pad2(n: number) {
+  return String(n).padStart(2, '0');
 }
+
+function localYYYYMMDD(d: Date) {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
+function toDateTime(dateString?: string, timeString?: string) {
+  if (!dateString) return null;
+  const t = (timeString || '').trim();
+  const iso = t ? `${dateString}T${t}` : dateString;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d;
+}
+
+const bookingStatusColors: Record<string, string> = {
+  pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300',
+  confirmed: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300',
+  cancelled: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300',
+  completed: 'bg-slate-100 dark:bg-slate-900/20 text-slate-800 dark:text-slate-300',
+};
+
+export default function AgentDashboard() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  const [stats, setStats] = useState<any>(null);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const formattedDate = useMemo(() => {
+    const today = new Date();
+    return today.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsData, propsData, leadsData, convsData, bookingsData] = await Promise.all([
+          analyticsAPI.getDashboardStats(),
+          propertyAPI.getAgentProperties(),
+          leadsAPI.getAll(),
+          leadsAPI.getConversations(),
+          bookingsAPI.getAll(),
+        ]);
+
+        setStats(statsData);
+        setProperties(propsData.results || propsData || []);
+        setLeads(leadsData.results || leadsData || []);
+        setConversations(convsData.results || convsData || []);
+        setBookings(bookingsData.results || bookingsData || []);
+      } catch (error) {
+        console.error('Failed to fetch agent dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user && user.user_type === 'agent') {
+      fetchData();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!authLoading && user && user.user_type !== 'agent') {
+      router.push('/dashboard');
+    }
+  }, [user, authLoading, router]);
+
+  const unreadMessages = useMemo(
+    () => conversations.reduce((acc, c) => acc + (c?.unread_count || 0), 0),
+    [conversations],
+  );
+
+  const todayKey = useMemo(() => localYYYYMMDD(new Date()), []);
+
+  const todaysBookings = useMemo(() => {
+    return (bookings || [])
+      .filter((b) => (b.booking_date || b.date) === todayKey)
+      .map((b) => ({ booking: b, dt: toDateTime(b.booking_date || b.date, b.booking_time) }))
+      .sort((a, b) => (a.dt?.getTime() ?? 0) - (b.dt?.getTime() ?? 0))
+      .slice(0, 6);
+  }, [bookings, todayKey]);
+
+  const upcomingBookings = useMemo(() => {
+    return (bookings || [])
+      .map((b) => ({ booking: b, dt: toDateTime(b.booking_date || b.date, b.booking_time) }))
+      .filter((x) => x.dt && x.dt.getTime() >= Date.now())
+      .sort((a, b) => a.dt!.getTime() - b.dt!.getTime())
+      .slice(0, 6);
+  }, [bookings]);
+
+  const topProperties = useMemo(() => {
+    return (properties || [])
+      .slice()
+      .sort((a, b) => (b?.views || 0) - (a?.views || 0))
+      .slice(0, 5);
+  }, [properties]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-4 md:p-8 lg:p-10">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="h-6 w-40 rounded-lg bg-muted animate-pulse" />
+          <div className="rounded-3xl border border-border bg-card p-6">
+            <div className="h-8 w-72 rounded-xl bg-muted animate-pulse" />
+            <div className="mt-3 h-4 w-96 rounded-lg bg-muted animate-pulse" />
+            <div className="mt-6 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-border bg-background/40 p-5">
+                  <div className="h-3 w-24 rounded bg-muted animate-pulse" />
+                  <div className="mt-4 h-7 w-16 rounded bg-muted animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            <div className="xl:col-span-8 rounded-3xl border border-border bg-card p-6">
+              <div className="h-5 w-52 rounded bg-muted animate-pulse" />
+              <div className="mt-6 space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-16 rounded-2xl bg-muted animate-pulse" />
+                ))}
+              </div>
+            </div>
+            <div className="xl:col-span-4 rounded-3xl border border-border bg-card p-6">
+              <div className="h-5 w-40 rounded bg-muted animate-pulse" />
+              <div className="mt-6 space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-14 rounded-2xl bg-muted animate-pulse" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || user.user_type !== 'agent') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground font-medium">Redirecting to your dashboard...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 md:p-8 lg:p-10">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <Breadcrumb />
+
+        <section className="rounded-3xl border border-border bg-card overflow-hidden relative">
+          <div className="absolute -top-32 -right-24 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-24 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl" />
+
+          <div className="relative p-6 md:p-8 space-y-6">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+              <div className="space-y-1">
+                <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
+                  Welcome back{user.first_name ? `, ${user.first_name}` : ''}
+                </h1>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {formattedDate} — here’s what’s happening with your listings.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/dashboard/agent/properties/new"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-primary text-primary-foreground px-4 py-2.5 font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
+                >
+                  <Plus size={16} />
+                  New Property
+                </Link>
+                <Link
+                  href="/dashboard/agent/bookings"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background/40 px-4 py-2.5 font-semibold text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  <Calendar size={16} />
+                  Bookings
+                </Link>
+                <Link
+                  href="/dashboard/agent/leads"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background/40 px-4 py-2.5 font-semibold text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  <Users size={16} />
+                  Leads
+                </Link>
+                <Link
+                  href="/dashboard/agent/messages"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background/40 px-4 py-2.5 font-semibold text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  <MessageSquare size={16} />
+                  Messages
+                  {unreadMessages > 0 && (
+                    <span className="ml-1 inline-flex items-center justify-center rounded-full bg-rose-500/15 text-rose-500 border border-rose-500/20 px-2 py-0.5 text-xs font-bold tabular-nums">
+                      {unreadMessages}
+                    </span>
+                  )}
+                </Link>
+              </div>
+            </div>
+
+            <AgentStatsCards stats={stats} />
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8 space-y-6">
+            <div className="rounded-3xl border border-border bg-card overflow-hidden">
+              <div className="p-6 flex items-end justify-between gap-4 border-b border-border bg-muted/10">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground tracking-tight">Recent leads</h2>
+                  <p className="text-sm text-muted-foreground">Newest inquiries assigned to you</p>
+                </div>
+                <Link
+                  href="/dashboard/agent/leads"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all"
+                >
+                  View all
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+
+              <div className="p-6">
+                {leads.length === 0 ? (
+                  <div className="rounded-3xl border border-border bg-background/40 p-10 text-center">
+                    <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/10 border border-primary/15 text-primary flex items-center justify-center mb-4">
+                      <Users size={18} />
+                    </div>
+                    <p className="text-foreground font-semibold">No leads yet</p>
+                    <p className="text-muted-foreground mt-2">When clients inquire, they’ll show up here.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {leads.slice(0, 6).map((lead: any) => (
+                      <div
+                        key={lead.id}
+                        className="rounded-3xl border border-border bg-background/40 p-5 hover:bg-muted/20 transition-colors"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-foreground truncate">
+                              {lead.full_name || lead.name || 'Anonymous'}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {lead.preferred_location || lead.location || 'Location not specified'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground">
+                              <TrendingUp size={14} className="text-primary" />
+                              {lead.property_type || lead.bedrooms || 'Inquiry'}
+                            </span>
+                            {(lead.budget || lead.budget_min || lead.budget_max) && (
+                              <span className="inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-400">
+                                {typeof lead.budget === 'number'
+                                  ? `KES ${lead.budget.toLocaleString()}`
+                                  : lead.budget || 'Budget set'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-border bg-card overflow-hidden">
+              <div className="p-6 flex items-end justify-between gap-4 border-b border-border bg-muted/10">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground tracking-tight">Active listings</h2>
+                  <p className="text-sm text-muted-foreground">Managing {properties.length} total properties</p>
+                </div>
+                <Link
+                  href="/dashboard/agent/properties"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all"
+                >
+                  Manage
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+              <div className="p-6">
+                <PropertyCardsContainer properties={properties} />
+              </div>
+            </div>
+          </div>
+
+          <div className="xl:col-span-4 space-y-6">
+            <div className="rounded-3xl border border-border bg-card overflow-hidden">
+              <div className="p-6 border-b border-border bg-muted/10 flex items-end justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground tracking-tight">Today</h2>
+                  <p className="text-sm text-muted-foreground">Appointments & quick glance</p>
+                </div>
+                <Link
+                  href="/dashboard/agent/bookings"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:gap-3 transition-all"
+                >
+                  Schedule
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+
+              <div className="p-6 space-y-3">
+                {todaysBookings.length === 0 ? (
+                  <div className="rounded-3xl border border-border bg-background/40 p-8 text-center">
+                    <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/10 border border-primary/15 text-primary flex items-center justify-center mb-4">
+                      <Calendar size={18} />
+                    </div>
+                    <p className="text-foreground font-semibold">No appointments today</p>
+                    <p className="text-muted-foreground mt-2">Upcoming bookings will appear here.</p>
+                  </div>
+                ) : (
+                  todaysBookings.map(({ booking, dt }) => {
+                    const timeLabel = dt
+                      ? dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                      : 'TBD';
+                    const status = (booking.status || 'pending').toLowerCase();
+                    return (
+                      <div
+                        key={booking.id}
+                        className="rounded-3xl border border-border bg-background/40 p-4 hover:bg-muted/20 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-foreground truncate">
+                              {booking.property_title || 'Property viewing'}
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1 truncate">
+                              {booking.client_name || 'Client'} • {booking.property_location || 'Location TBD'}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end gap-2 shrink-0">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground tabular-nums">
+                              <Clock size={14} className="text-primary" />
+                              {timeLabel}
+                            </span>
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${bookingStatusColors[status] || bookingStatusColors.pending}`}
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                              {status.toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+
+                {upcomingBookings.length > 0 && (
+                  <div className="pt-2">
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Next up</p>
+                    <div className="space-y-2">
+                      {upcomingBookings.slice(0, 3).map(({ booking, dt }) => (
+                        <div
+                          key={booking.id}
+                          className="rounded-2xl border border-border bg-background/30 px-4 py-3 flex items-center justify-between gap-3"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-foreground truncate">
+                              {booking.property_title || 'Viewing'}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">{booking.client_name || 'Client'}</p>
+                          </div>
+                          <span className="text-xs font-bold text-muted-foreground tabular-nums">
+                            {dt ? dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'TBD'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-border bg-card overflow-hidden">
+              <div className="p-6 border-b border-border bg-muted/10">
+                <h2 className="text-xl font-semibold text-foreground tracking-tight">Top listings</h2>
+                <p className="text-sm text-muted-foreground">Most viewed properties</p>
+              </div>
+
+              <div className="p-6 space-y-3">
+                {topProperties.length === 0 ? (
+                  <div className="rounded-3xl border border-border bg-background/40 p-8 text-center">
+                    <div className="mx-auto w-12 h-12 rounded-2xl bg-primary/10 border border-primary/15 text-primary flex items-center justify-center mb-4">
+                      <Home size={18} />
+                    </div>
+                    <p className="text-foreground font-semibold">No properties yet</p>
+                    <p className="text-muted-foreground mt-2">Create a listing to start tracking performance.</p>
+                  </div>
+                ) : (
+                  topProperties.map((p) => (
+                    <div
+                      key={p.id}
+                      className="rounded-3xl border border-border bg-background/40 p-4 hover:bg-muted/20 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-foreground truncate">{p.title || 'Property'}</p>
+                          <p className="text-sm text-muted-foreground mt-1 truncate">
+                            {p.location_name || p.location?.name || 'Location TBD'}
+                          </p>
+                        </div>
+                        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground tabular-nums">
+                          <TrendingUp size={14} className="text-primary" />
+                          {p.views || 0}
+                        </span>
+                      </div>
+                      <div className="mt-3 h-2 rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full bg-primary/60 rounded-full"
+                          style={{
+                            width: `${Math.min(((p.views || 0) / Math.max((topProperties[0]?.views || 1), 1)) * 100, 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="pb-16" />
+      </div>
+    </div>
+  );
+}
+

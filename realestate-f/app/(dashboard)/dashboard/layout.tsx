@@ -62,22 +62,21 @@ export default function DashboardLayout({
 
     // Role-based access control
     useEffect(() => {
-        if (!loading && user) {
-            const isAgentRoute = pathname.startsWith('/dashboard/agent');
-            const isManagementRoute = pathname.startsWith('/dashboard/management');
-            
-            // Check if user has access to the route
-            if (isAgentRoute && user.user_type !== 'agent') {
-                console.log('🔴 Access denied: User is not an agent');
-                logout();
-                router.push('/login');
-            } else if (isManagementRoute && user.user_type !== 'management') {
-                console.log('🔴 Access denied: User is not management');
-                logout();
-                router.push('/login');
-            }
+        if (loading) return;
+        if (!user) return;
+        
+        const isAgentRoute = pathname.startsWith('/dashboard/agent');
+        const isManagementRoute = pathname.startsWith('/dashboard/management');
+        
+        // Check if user has access to the route
+        if (isAgentRoute && user.user_type !== 'agent') {
+            console.log('🔴 Access denied: User is not an agent');
+            router.push('/login');
+        } else if (isManagementRoute && user.user_type !== 'management') {
+            console.log('🔴 Access denied: User is not management');
+            router.push('/login');
         }
-    }, [user, loading, pathname, logout, router]);
+    }, [user, loading, pathname, router]);
 
     const mobileQuickLinks = [
         { href: '/dashboard', label: 'Home', icon: Home },

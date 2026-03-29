@@ -10,6 +10,7 @@ export interface Booking {
     agent_name: string;
     client: number;
     client_name: string;
+    client_email?: string;
     booking_date: string;
     booking_time: string;
     date: string;
