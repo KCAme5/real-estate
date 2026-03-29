@@ -38,10 +38,9 @@ export default function Header() {
     }, [pathname]);
 
     const navLinks = [
-        { name: "Properties", href: "/properties" },
+        { name: "Listings", href: "/properties" },
         { name: "Map", href: "/map" },
         { name: "Agents", href: "/agents" },
-        { name: "Tools", href: "/tools" },
         { name: "About", href: "/about" },
         { name: "Contact", href: "/contact" },
         { name: "Diaspora Services", href: "/diaspora-services" },
@@ -135,7 +134,7 @@ export default function Header() {
                                 Tugai Realtors
                             </div>
                             <div className="text-sm text-primary font-medium tracking-wide">
-                                Properties
+                                Listings
                             </div>
                         </div>
                     </Link>
@@ -151,7 +150,7 @@ export default function Header() {
                                         : "text-muted-foreground hover:text-primary hover:bg-muted"
                                         }`}
                                 >
-                                    Properties
+                                    Listings
                                     <ChevronDown className="w-4 h-4" />
                                 </button>
                             </DropdownMenuTrigger>
@@ -230,7 +229,7 @@ export default function Header() {
 
                         {/* Other Navigation Links */}
                         {navLinks
-                            .filter((link) => link.name !== "Properties")
+                            .filter((link) => link.name !== "Listings")
                             .map((link) => (
                                 <Link
                                     key={link.name}
@@ -251,7 +250,7 @@ export default function Header() {
                         {user ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-900/20 hover:bg-emerald-900/40 transition-all duration-200 font-medium group border border-emerald-500/20">
+                                    <button className="flex items-center gap-3 px-1.5 py-1.5 rounded-full transition-colors duration-200 font-medium group hover:bg-white/5">
                                         <div className="w-8 h-8 rounded-full bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center overflow-hidden relative">
                                             {user.profile_picture ? (
                                                 <Image
@@ -270,14 +269,14 @@ export default function Header() {
                                             )}
                                         </div>
                                         <div className="flex flex-col items-start">
-                                            <span className="text-sm font-medium text-emerald-100 truncate max-w-[120px]">
+                                            <span className="text-sm font-medium text-foreground truncate max-w-[120px]">
                                                 {user.username || user.email?.split("@")[0]}
                                             </span>
-                                            <span className="text-xs text-emerald-400/70 capitalize">
+                                            <span className="text-xs text-muted-foreground capitalize">
                                                 {user.user_type}
                                             </span>
                                         </div>
-                                        <ChevronDown className="w-4 h-4 text-emerald-400/70" />
+                                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
@@ -355,7 +354,7 @@ export default function Header() {
                     <div className="container mx-auto px-4 py-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
                         <nav className="flex flex-col gap-1">
                             {navLinks.map((link) => {
-                                if (link.name === "Properties") {
+                                if (link.name === "Listings") {
                                     return (
                                         <div key={link.name} className="flex flex-col">
                                             <button
