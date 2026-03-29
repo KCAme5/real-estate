@@ -14,7 +14,7 @@ export default function ContactHero() {
                     className="object-cover"
                     sizes="100vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/70 to-slate-950" />
+
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.18),transparent_55%)]" />
 
             </div>

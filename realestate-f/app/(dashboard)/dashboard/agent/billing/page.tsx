@@ -44,9 +44,9 @@ export default function AgentBillingPage() {
         paymentsAPI.getPaymentPlans(),
         paymentsAPI.getMpesaTransactions(),
       ]);
-      setSubscription(subRes.data as AgentSubscription);
-      setPlans(plansRes.data as PaymentPlan[]);
-      setTransactions(txRes.data as MpesaTransaction[]);
+      setSubscription(subRes as unknown as AgentSubscription);
+      setPlans(plansRes as unknown as PaymentPlan[]);
+      setTransactions(txRes as unknown as MpesaTransaction[]);
     } catch (error: unknown) {
       console.error('Failed to load billing data:', error);
       // Use demo data for development
@@ -129,7 +129,8 @@ export default function AgentBillingPage() {
         description: `${selectedPlan.name} Subscription`,
       });
       
-      if ((response.data as { success?: boolean }).success) {
+      const respData = response as unknown as { success?: boolean };
+      if (respData.success) {
         toast.success('Payment Initiated', 'Check your phone for M-Pesa prompt');
         setShowPaymentModal(false);
         setPhoneNumber('');
