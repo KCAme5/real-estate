@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import { agentsAPI } from '@/lib/api/agents';
 import { Agent } from '@/types/agent';
-import { Search, Filter, Building2, UserCheck, ShieldCheck, Loader2, RefreshCw, Phone, Mail, MapPin, Star, Calendar, CheckCircle, MessageSquare } from 'lucide-react';
+import { Search, Filter, Building2, UserCheck, ShieldCheck, Loader2, RefreshCw, Phone, Mail, MapPin, Star, Calendar, CheckCircle, MessageSquare, Award, Users, Zap, ChevronRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AgentCardSkeleton from '@/components/agents/AgentCardSkeleton';
+
+type ViewMode = 'grid' | 'list';
+type SortOption = 'experience' | 'name' | 'rating';
 
 export default function AgentsPage() {
     const [agents, setAgents] = useState<Agent[]>([]);
@@ -16,24 +19,26 @@ export default function AgentsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
     const [selectedExperience, setSelectedExperience] = useState<string>('all');
+    const [viewMode, setViewMode] = useState<ViewMode>('grid');
+    const [sortBy, setSortBy] = useState<SortOption>('experience');
+    const [hoveredAgent, setHoveredAgent] = useState<number | null>(null);
 
     const specialties = [
-        'Residential',
-        'Commercial',
-        'Luxury',
-        'Investment',
-        'Rental',
-        'Industrial',
-        'Land',
-        'All'
+        { value: 'all', label: 'All Specialties', icon: '✨' },
+        { value: 'residential', label: 'Residential', icon: '🏠' },
+        { value: 'commercial', label: 'Commercial', icon: '🏢' },
+        { value: 'luxury', label: 'Luxury', icon: '💎' },
+        { value: 'investment', label: 'Investment', icon: '📈' },
+        { value: 'rental', label: 'Rental', icon: '🔑' },
+        { value: 'land', label: 'Land', icon: '🌍' },
     ];
 
     const experienceLevels = [
-        'All',
-        'Entry (0-2 years)',
-        'Mid (3-5 years)',
-        'Senior (5-10 years)',
-        'Expert (10+ years)'
+        { value: 'all', label: 'All Experience' },
+        { value: 'entry', label: 'Entry (0-2 yrs)' },
+        { value: 'mid', label: 'Mid (3-5 yrs)' },
+        { value: 'senior', label: 'Senior (5-10 yrs)' },
+        { value: 'expert', label: 'Expert (10+ yrs)' },
     ];
 
     useEffect(() => {
@@ -42,14 +47,13 @@ export default function AgentsPage() {
 
     useEffect(() => {
         filterAgents();
-    }, [agents, searchTerm, selectedSpecialty, selectedExperience]);
+    }, [agents, searchTerm, selectedSpecialty, selectedExperience, sortBy]);
 
     const fetchAgents = async () => {
         try {
             setLoading(true);
             setError('');
             const data = await agentsAPI.getAll();
-            // Handle both paginated and non-paginated responses
             if (Array.isArray(data)) {
                 setAgents(data);
                 setFilteredAgents(data);
@@ -71,7 +75,6 @@ export default function AgentsPage() {
     const filterAgents = () => {
         let filtered = [...agents];
 
-        // Search filter
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
             filtered = filtered.filter(agent =>
@@ -82,449 +85,584 @@ export default function AgentsPage() {
             );
         }
 
-        // Specialty filter
         if (selectedSpecialty !== 'all') {
             filtered = filtered.filter(agent =>
-                agent.specialties?.includes(selectedSpecialty)
+                agent.specialties?.some(s => s.toLowerCase() === selectedSpecialty)
             );
         }
 
-        // Experience filter (simplified example)
         if (selectedExperience !== 'all') {
             filtered = filtered.filter(agent => {
                 const exp = agent.years_of_experience || 0;
                 switch (selectedExperience) {
-                    case 'Entry (0-2 years)': return exp <= 2;
-                    case 'Mid (3-5 years)': return exp >= 3 && exp <= 5;
-                    case 'Senior (5-10 years)': return exp >= 5 && exp <= 10;
-                    case 'Expert (10+ years)': return exp > 10;
+                    case 'entry': return exp <= 2;
+                    case 'mid': return exp >= 3 && exp <= 5;
+                    case 'senior': return exp >= 5 && exp <= 10;
+                    case 'expert': return exp > 10;
                     default: return true;
                 }
             });
         }
 
-        // Strictly show only verified agents
         filtered = filtered.filter(agent => agent.is_verified);
+
+        // Sort
+        switch (sortBy) {
+            case 'experience':
+                filtered.sort((a, b) => (b.years_of_experience || 0) - (a.years_of_experience || 0));
+                break;
+            case 'name':
+                filtered.sort((a, b) => (a.user_name || '').localeCompare(b.user_name || ''));
+                break;
+            case 'rating':
+                filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+                break;
+        }
 
         setFilteredAgents(filtered);
     };
 
-    // Format experience text
     const getExperienceText = (years?: number) => {
         if (!years) return 'New Agent';
-        if (years === 1) return '1 year experience';
-        return `${years} years experience`;
+        if (years <= 2) return 'Entry Level';
+        if (years <= 5) return 'Mid Level';
+        if (years <= 10) return 'Senior';
+        return 'Expert';
     };
 
-
+    const getExperienceColor = (years?: number) => {
+        if (!years || years <= 2) return 'from-blue-500 to-cyan-500';
+        if (years <= 5) return 'from-emerald-500 to-teal-500';
+        if (years <= 10) return 'from-purple-500 to-pink-500';
+        return 'from-amber-500 to-orange-500';
+    };
 
     if (error) {
         return (
-            <div className="min-h-screen pt-24 pb-16 flex items-center justify-center bg-background">
-                <div className="max-w-md mx-4 text-center">
-                    <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ShieldCheck className="w-8 h-8 text-destructive" />
+            <div className="min-h-screen pt-24 pb-16 flex items-center justify-center bg-background relative overflow-hidden">
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
+                </div>
+                <div className="max-w-md mx-4 text-center relative z-10">
+                    <div className="w-20 h-20 bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+                        <ShieldCheck className="w-10 h-10 text-red-500" />
                     </div>
-                    <h2 className="text-2xl font-bold text-foreground mb-2">
-                        Connection Issue
+                    <h2 className="text-3xl font-black text-foreground mb-3">
+                        Connection Lost
                     </h2>
-                    <p className="text-muted-foreground mb-6">
+                    <p className="text-muted-foreground mb-8">
                         {error}
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <button
-                            onClick={fetchAgents}
-                            className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-                        >
-                            <RefreshCw className="w-4 h-4" />
-                            Try Again
-                        </button>
-                        <button
-                            onClick={() => window.location.reload()}
-                            className="px-6 py-3 bg-muted hover:bg-muted/80 text-muted-foreground font-medium rounded-lg transition-colors"
-                        >
-                            Refresh Page
-                        </button>
-                    </div>
+                    <button
+                        onClick={fetchAgents}
+                        className="px-8 py-4 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-red-500/20 hover:shadow-red-500/40 flex items-center gap-2 mx-auto"
+                    >
+                        <RefreshCw className="w-5 h-5" />
+                        Try Again
+                    </button>
                 </div>
             </div>
         );
     }
 
     return (
-        <main className="min-h-screen pt-24 pb-16 bg-background">
+        <main className="min-h-screen bg-background relative overflow-hidden">
+            {/* Animated Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/10 via-cyan-500/5 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-violet-500/5 to-fuchsia-500/5 rounded-full blur-3xl" />
+            </div>
+
             {/* Hero Section */}
-            <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-secondary/5" />
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-                    <div className="max-w-4xl mx-auto text-center py-12 lg:py-16">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
-                            <UserCheck className="w-4 h-4 text-primary" />
-                            <span className="text-sm font-medium text-primary">
-                                Professional Network
+            <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center max-w-5xl mx-auto">
+                        {/* Badge */}
+                        <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-full border border-white/10 mb-8 backdrop-blur-sm">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                            <span className="text-sm font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                Trusted by 500+ Clients
                             </span>
                         </div>
-                        <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4 leading-tight">
-                            Meet Our Expert
-                            <span className="text-primary"> Real Estate </span>
-                            Agents
+
+                        {/* Title */}
+                        <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-[1.1]">
+                            <span className="bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
+                                Meet Our
+                            </span>
+                            <br />
+                            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                Elite Agents
+                            </span>
                         </h1>
-                        <p className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-                            Connect with our verified professional agents who specialize in helping you find,
-                            buy, sell, or invest in properties across Kenya.
+
+                        <p className="text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
+                            Connect with Kenya's top real estate professionals. 
+                            <span className="text-foreground font-semibold"> Verified expertise,</span> 
+                            <span className="text-foreground font-semibold"> local knowledge,</span> 
+                            and <span className="text-foreground font-semibold"> proven results.</span>
                         </p>
-                        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span>Verified Profiles</span>
+
+                        {/* Stats Row */}
+                        <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-12">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center border border-blue-500/20">
+                                    <Users className="w-6 h-6 text-blue-400" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-2xl font-black text-foreground">{agents.length}+</p>
+                                    <p className="text-xs text-muted-foreground">Expert Agents</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                <span>24/7 Support</span>
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-emerald-500/20">
+                                    <CheckCircle className="w-6 h-6 text-emerald-400" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-2xl font-black text-foreground">{agents.filter(a => a.is_verified).length}</p>
+                                    <p className="text-xs text-muted-foreground">Verified</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                <span>Local Expertise</span>
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center border border-purple-500/20">
+                                    <Star className="w-6 h-6 text-purple-400" />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-2xl font-black text-foreground">4.9</p>
+                                    <p className="text-xs text-muted-foreground">Avg Rating</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* Search and Filters Section */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-                <div className="bg-card rounded-2xl shadow-xl p-6 mb-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        {/* Search Bar */}
-                        <div className="relative">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <input
-                                type="text"
-                                placeholder="Search agents by name, email, or specialty..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-muted border border-border rounded-lg focus:ring-2 focus:ring-ring/20 focus:border-transparent outline-none transition-all text-foreground"
-                            />
-                        </div>
-
-                        {/* Specialty Filter */}
-                        <div className="relative">
-                            <Building2 className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <select
-                                value={selectedSpecialty}
-                                onChange={(e) => setSelectedSpecialty(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-muted border border-border rounded-lg focus:ring-2 focus:ring-ring/20 focus:border-transparent outline-none appearance-none transition-all text-foreground"
-                            >
-                                {specialties.map((specialty) => (
-                                    <option key={specialty} value={specialty.toLowerCase()}>
-                                        {specialty === 'all' ? 'All Specialties' : specialty}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Experience Filter */}
-                        <div className="relative">
-                            <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <select
-                                value={selectedExperience}
-                                onChange={(e) => setSelectedExperience(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-muted border border-border rounded-lg focus:ring-2 focus:ring-ring/20 focus:border-transparent outline-none appearance-none transition-all text-foreground"
-                            >
-                                {experienceLevels.map((level) => (
-                                    <option key={level} value={level}>
-                                        {level === 'all' ? 'All Experience Levels' : level}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Active Filters Display */}
-                    {(searchTerm || selectedSpecialty !== 'all' || selectedExperience !== 'all') && (
-                        <div className="mt-4 flex flex-wrap items-center gap-2">
-                            <span className="text-sm text-muted-foreground">Active filters:</span>
-                            {searchTerm && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full">
-                                    Search: "{searchTerm}"
-                                    <button
-                                        onClick={() => setSearchTerm('')}
-                                        className="ml-1 text-primary/70 hover:text-primary"
-                                    >
-                                        ×
-                                    </button>
-                                </span>
-                            )}
-                            {selectedSpecialty !== 'all' && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm rounded-full">
-                                    {selectedSpecialty}
-                                    <button
-                                        onClick={() => setSelectedSpecialty('all')}
-                                        className="ml-1 text-emerald-500 hover:text-emerald-600"
-                                    >
-                                        ×
-                                    </button>
-                                </span>
-                            )}
-                            {selectedExperience !== 'all' && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm rounded-full">
-                                    {selectedExperience}
-                                    <button
-                                        onClick={() => setSelectedExperience('all')}
-                                        className="ml-1 text-purple-500 hover:text-purple-600"
-                                    >
-                                        ×
-                                    </button>
-                                </span>
-                            )}
-                            <button
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setSelectedSpecialty('all');
-                                    setSelectedExperience('all');
-                                }}
-                                className="text-sm text-muted-foreground hover:text-foreground underline"
-                            >
-                                Clear all
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
-            {/* Agents List */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                {loading ? (
-                    <div className="space-y-6">
-                        {[...Array(5)].map((_, i) => (
-                            <AgentCardSkeleton key={i} />
-                        ))}
-                    </div>
-                ) : filteredAgents.length === 0 ? (
-                    <div className="bg-card rounded-2xl shadow-lg p-12 text-center">
-                        <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                            <UserCheck className="w-10 h-10 text-muted-foreground" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground mb-2">
-                            No Agents Found
-                        </h3>
-                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                            {agents.length === 0
-                                ? "We're currently expanding our network of professional agents. Check back soon!"
-                                : "No agents match your search criteria. Try adjusting your filters."}
-                        </p>
-                        {agents.length > 0 && (
-                            <button
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setSelectedSpecialty('all');
-                                    setSelectedExperience('all');
-                                }}
-                                className="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg transition-colors"
-                            >
-                                Clear Filters
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <>
-                        {/* Results Summary */}
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                            <div>
-                                <h2 className="text-2xl font-bold text-foreground">
-                                    Available Agents
-                                </h2>
-                                <p className="text-muted-foreground">
-                                    Showing {filteredAgents.length} of {agents.length} professional agents
-                                </p>
+            {/* Search & Filters Section */}
+            <section className="relative z-10 -mt-4 px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto max-w-7xl">
+                    <div className="bg-gradient-to-br from-slate-900/95 to-slate-900/80 backdrop-blur-2xl rounded-3xl p-6 lg:p-8 border border-white/10 shadow-2xl shadow-black/20">
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                            {/* Search */}
+                            <div className="lg:col-span-5 relative">
+                                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Search agents by name or specialty..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-14 pr-5 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all text-white placeholder:text-slate-500"
+                                />
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <span>Sorted by:</span>
-                                <span className="font-medium text-foreground">Verified Status</span>
-                            </div>
-                        </div>
 
-                        {/* Horizontal Agents List */}
-                        <div className="space-y-6">
-                            {filteredAgents.map((agent) => (
-                                <Link
-                                    key={agent.id}
-                                    href={`/agents/${agent.slug}`}
-                                    className="block group bg-card rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-border hover:border-primary/50"
+                            {/* Specialty */}
+                            <div className="lg:col-span-4 relative">
+                                <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                <select
+                                    value={selectedSpecialty}
+                                    onChange={(e) => setSelectedSpecialty(e.target.value)}
+                                    className="w-full pl-14 pr-10 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all text-white appearance-none cursor-pointer"
                                 >
-                                    <div className="p-4 md:p-6">
-                                        <div className="flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-6">
-                                            {/* Agent Avatar & Basic Info */}
-                                            <div className="shrink-0">
-                                                <div className="relative">
-                                                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden bg-linear-to-br from-blue-100 to-emerald-100 dark:from-blue-900/30 dark:to-emerald-900/30 p-1">
-                                                        {agent.user_avatar ? (
-                                                            <div className="w-full h-full rounded-xl overflow-hidden">
-                                                                <Image
-                                                                    src={agent.user_avatar}
-                                                                    alt={agent.user_name || 'Agent'}
-                                                                    fill
-                                                                    className="object-cover"
-                                                                />
+                                    {specialties.map((s) => (
+                                        <option key={s.value} value={s.value}>{s.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Experience */}
+                            <div className="lg:col-span-3 relative">
+                                <Filter className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                <select
+                                    value={selectedExperience}
+                                    onChange={(e) => setSelectedExperience(e.target.value)}
+                                    className="w-full pl-14 pr-10 py-4 bg-slate-800/50 border border-slate-700/50 rounded-2xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all text-white appearance-none cursor-pointer"
+                                >
+                                    {experienceLevels.map((level) => (
+                                        <option key={level.value} value={level.value}>{level.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Active Filters & Controls */}
+                        <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex flex-wrap items-center gap-3">
+                                {(searchTerm || selectedSpecialty !== 'all' || selectedExperience !== 'all') && (
+                                    <>
+                                        {searchTerm && (
+                                            <button
+                                                onClick={() => setSearchTerm('')}
+                                                className="px-4 py-2 bg-blue-500/10 text-blue-400 rounded-xl text-sm font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20"
+                                            >
+                                                "{searchTerm}" ×
+                                            </button>
+                                        )}
+                                        {selectedSpecialty !== 'all' && (
+                                            <button
+                                                onClick={() => setSelectedSpecialty('all')}
+                                                className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
+                                            >
+                                                {selectedSpecialty} ×
+                                            </button>
+                                        )}
+                                        {selectedExperience !== 'all' && (
+                                            <button
+                                                onClick={() => setSelectedExperience('all')}
+                                                className="px-4 py-2 bg-purple-500/10 text-purple-400 rounded-xl text-sm font-medium hover:bg-purple-500/20 transition-colors border border-purple-500/20"
+                                            >
+                                                {experienceLevels.find(l => l.value === selectedExperience)?.label} ×
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => { setSearchTerm(''); setSelectedSpecialty('all'); setSelectedExperience('all'); }}
+                                            className="px-4 py-2 text-slate-400 hover:text-white text-sm font-medium transition-colors"
+                                        >
+                                            Clear all
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                {/* Sort */}
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value as SortOption)}
+                                    className="px-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white outline-none cursor-pointer"
+                                >
+                                    <option value="experience">Sort: Experience</option>
+                                    <option value="name">Sort: Name</option>
+                                    <option value="rating">Sort: Rating</option>
+                                </select>
+
+                                {/* View Mode */}
+                                <div className="flex items-center gap-1 p-1.5 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                                    <button
+                                        onClick={() => setViewMode('grid')}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                    >
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('list')}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                    >
+                                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Results Section */}
+            <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-12">
+                <div className="container mx-auto max-w-7xl">
+                    {/* Results Header */}
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-2xl font-bold text-foreground">
+                                {filteredAgents.length} Agents Available
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                                All agents are verified professionals
+                            </p>
+                        </div>
+                        <button
+                            onClick={fetchAgents}
+                            className="p-3 bg-slate-800/50 hover:bg-slate-700/50 rounded-xl border border-slate-700/50 transition-all"
+                        >
+                            <RefreshCw className="w-5 h-5 text-slate-400" />
+                        </button>
+                    </div>
+
+                    {loading ? (
+                        <div className={viewMode === 'grid' 
+                            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+                            : 'space-y-4'
+                        }>
+                            {[...Array(6)].map((_, i) => (
+                                <AgentCardSkeleton key={i} viewMode={viewMode} />
+                            ))}
+                        </div>
+                    ) : filteredAgents.length === 0 ? (
+                        <div className="bg-gradient-to-br from-slate-900/80 to-slate-900/50 backdrop-blur-xl rounded-3xl p-16 text-center border border-white/10">
+                            <div className="w-24 h-24 bg-gradient-to-br from-slate-800 to-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                <UserCheck className="w-12 h-12 text-slate-500" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-foreground mb-3">
+                                No Agents Found
+                            </h3>
+                            <p className="text-muted-foreground max-w-md mx-auto mb-8">
+                                {agents.length === 0
+                                    ? "We're expanding our network. Check back soon!"
+                                    : "No agents match your criteria. Try adjusting filters."}
+                            </p>
+                            {agents.length > 0 && (
+                                <button
+                                    onClick={() => { setSearchTerm(''); setSelectedSpecialty('all'); setSelectedExperience('all'); }}
+                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold rounded-2xl transition-all"
+                                >
+                                    Clear All Filters
+                                </button>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            {/* Grid View */}
+                            {viewMode === 'grid' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {filteredAgents.map((agent) => (
+                                        <Link
+                                            key={agent.id}
+                                            href={`/agents/${agent.slug}`}
+                                            className="group block"
+                                            onMouseEnter={() => setHoveredAgent(agent.id)}
+                                            onMouseLeave={() => setHoveredAgent(null)}
+                                        >
+                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-blue-500/30 shadow-2xl shadow-blue-500/10 -translate-y-2' : ''}`}>
+                                                {/* Decorative Gradient */}
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/5 rounded-full blur-2xl" />
+                                                
+                                                <div className="p-6">
+                                                    {/* Header */}
+                                                    <div className="flex items-start gap-4 mb-5">
+                                                        {/* Avatar */}
+                                                        <div className="relative shrink-0">
+                                                            <div className={`w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br ${getExperienceColor(agent.years_of_experience)} p-0.5 transition-transform duration-500 ${hoveredAgent === agent.id ? 'scale-105' : ''}`}>
+                                                                <div className="w-full h-full rounded-xl overflow-hidden bg-slate-900">
+                                                                    {agent.user_avatar ? (
+                                                                        <Image
+                                                                            src={agent.user_avatar}
+                                                                            alt={agent.user_name || 'Agent'}
+                                                                            fill
+                                                                            className="object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                                                                            <span className="text-2xl font-black text-white">
+                                                                                {agent.user_name?.[0]?.toUpperCase() || 'A'}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </div>
-                                                        ) : (
-                                                            <div className="w-full h-full rounded-xl bg-linear-to-br from-blue-500 to-emerald-500 flex items-center justify-center">
-                                                                <span className="text-2xl font-bold text-white">
-                                                                    {agent.user_name?.[0]?.toUpperCase() || 'A'}
+                                                            {agent.is_verified && (
+                                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center border-2 border-slate-900">
+                                                                    <CheckCircle className="w-4 h-4 text-white" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Info */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <h3 className={`text-lg font-bold text-white truncate transition-colors ${hoveredAgent === agent.id ? 'text-blue-400' : ''}`}>
+                                                                {agent.user_name}
+                                                            </h3>
+                                                            <div className="flex items-center gap-2 mt-1">
+                                                                <span className="text-xs font-semibold text-slate-400">
+                                                                    {getExperienceText(agent.years_of_experience)}
                                                                 </span>
+                                                                <span className="text-slate-600">•</span>
+                                                                <span className="text-xs text-slate-500">
+                                                                    {agent.years_of_experience || 0} yrs
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Specialties */}
+                                                    <div className="flex flex-wrap gap-2 mb-5">
+                                                        {agent.specialties?.slice(0, 2).map((specialty, i) => (
+                                                            <span
+                                                                key={i}
+                                                                className="px-3 py-1.5 bg-slate-800/80 text-slate-300 text-xs font-medium rounded-lg border border-slate-700/50"
+                                                            >
+                                                                {specialty}
+                                                            </span>
+                                                        ))}
+                                                        {agent.specialties && agent.specialties.length > 2 && (
+                                                            <span className="px-3 py-1.5 bg-slate-800/50 text-slate-500 text-xs font-medium rounded-lg">
+                                                                +{agent.specialties.length - 2}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Bio */}
+                                                    <p className="text-sm text-slate-400 line-clamp-2 mb-5">
+                                                        {agent.bio || 'Passionate about helping clients find their dream properties across Kenya.'}
+                                                    </p>
+
+                                                    {/* Contact */}
+                                                    <div className="space-y-2 mb-5">
+                                                        {agent.user_phone && (
+                                                            <div className="flex items-center gap-3 text-sm text-slate-400">
+                                                                <Phone className="w-4 h-4 text-slate-500" />
+                                                                <span className="truncate">{agent.user_phone}</span>
+                                                            </div>
+                                                        )}
+                                                        {agent.user_email && (
+                                                            <div className="flex items-center gap-3 text-sm text-slate-400">
+                                                                <Mail className="w-4 h-4 text-slate-500" />
+                                                                <span className="truncate">{agent.user_email}</span>
+                                                            </div>
+                                                        )}
+                                                        {agent.office_address && (
+                                                            <div className="flex items-center gap-3 text-sm text-slate-400">
+                                                                <MapPin className="w-4 h-4 text-slate-500" />
+                                                                <span className="truncate">{agent.office_address}</span>
                                                             </div>
                                                         )}
                                                     </div>
-                                                    {agent.is_verified && (
-                                                        <div className="absolute -top-2 -right-2 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800">
-                                                            <CheckCircle className="w-5 h-5 text-white" />
+
+                                                    {/* CTA */}
+                                                    <div className={`flex items-center justify-between pt-4 border-t border-slate-800/50 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-slate-700/50' : ''}`}>
+                                                        <span className="text-sm font-semibold text-slate-400 group-hover:text-blue-400 transition-colors">
+                                                            View Profile
+                                                        </span>
+                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-blue-500 scale-110' : ''}`}>
+                                                            <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1' : ''}`} />
                                                         </div>
-                                                    )}
+                                                    </div>
                                                 </div>
                                             </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
 
-                                            {/* Agent Details */}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+                            {/* List View */}
+                            {viewMode === 'list' && (
+                                <div className="space-y-4">
+                                    {filteredAgents.map((agent) => (
+                                        <Link
+                                            key={agent.id}
+                                            href={`/agents/${agent.slug}`}
+                                            className="group block"
+                                            onMouseEnter={() => setHoveredAgent(agent.id)}
+                                            onMouseLeave={() => setHoveredAgent(null)}
+                                        >
+                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-2xl p-6 border transition-all duration-500 ${hoveredAgent === agent.id ? 'border-blue-500/30 shadow-xl shadow-blue-500/5 -translate-y-1' : 'border-white/5'}`}>
+                                                <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+                                                    {/* Avatar */}
+                                                    <div className="shrink-0">
+                                                        <div className={`w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br ${getExperienceColor(agent.years_of_experience)} p-0.5 transition-transform duration-500 ${hoveredAgent === agent.id ? 'scale-105' : ''}`}>
+                                                            <div className="w-full h-full rounded-xl overflow-hidden bg-slate-900">
+                                                                {agent.user_avatar ? (
+                                                                    <Image
+                                                                        src={agent.user_avatar}
+                                                                        alt={agent.user_name || 'Agent'}
+                                                                        fill
+                                                                        className="object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                                                                        <span className="text-3xl font-black text-white">
+                                                                            {agent.user_name?.[0]?.toUpperCase() || 'A'}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Info */}
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-3 mb-2">
-                                                            <h3 className="text-xl md:text-2xl font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                                                        <div className="flex flex-wrap items-center gap-3 mb-2">
+                                                            <h3 className={`text-xl font-bold text-white transition-colors ${hoveredAgent === agent.id ? 'text-blue-400' : ''}`}>
                                                                 {agent.user_name}
                                                             </h3>
                                                             {agent.is_verified && (
-                                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm font-medium rounded-full">
+                                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/20">
                                                                     <CheckCircle className="w-3 h-3" />
                                                                     Verified
                                                                 </span>
                                                             )}
                                                         </div>
 
-                                                        <div className="flex flex-wrap items-center gap-3 mb-3">
-                                                            {agent.specialties?.[0] && (
-                                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
-                                                                    <Building2 className="w-3 h-3" />
-                                                                    {agent.specialties[0]}
-                                                                </span>
-                                                            )}
-                                                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm font-medium rounded-full">
-                                                                <Calendar className="w-3 h-3" />
-                                                                {getExperienceText(agent.years_of_experience)}
+                                                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400 mb-3">
+                                                            <span className={`px-3 py-1 bg-gradient-to-r ${getExperienceColor(agent.years_of_experience)}/10 text-white/80 text-xs font-semibold rounded-lg`}>
+                                                                {getExperienceText(agent.years_of_experience)} • {agent.years_of_experience || 0} yrs
                                                             </span>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {agent.specialties?.slice(0, 3).map((s, i) => (
+                                                                    <span key={i} className="px-2 py-1 bg-slate-800/50 text-slate-400 text-xs rounded-lg">
+                                                                        {s}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
                                                         </div>
 
-                                                        <p className="text-muted-foreground line-clamp-1 md:line-clamp-2 text-sm mb-3">
-                                                            {agent.bio}
+                                                        <p className="text-sm text-slate-400 line-clamp-1 max-w-2xl">
+                                                            {agent.bio || 'Passionate about helping clients find their dream properties.'}
                                                         </p>
                                                     </div>
 
-                                                    {/* Contact & Action Buttons removed for listing view */}
-                                                </div>
-
-                                                {/* Contact Info & Specialties */}
-                                                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-3 border-t border-border">
-                                                    <div className="flex flex-wrap items-center gap-4">
-                                                        {agent.user_email && (
-                                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                                <Mail className="w-4 h-4" />
-                                                                <span className="text-sm truncate max-w-[200px]">{agent.user_email}</span>
-                                                            </div>
-                                                        )}
-                                                        {agent.user_phone && (
-                                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                                <Phone className="w-4 h-4" />
-                                                                <span className="text-sm">{agent.user_phone}</span>
-                                                            </div>
-                                                        )}
-                                                        {agent.office_address && (
-                                                            <div className="flex items-center gap-2 text-muted-foreground">
-                                                                <MapPin className="w-4 h-4" />
-                                                                <span className="text-sm truncate max-w-[200px]">{agent.office_address}</span>
-                                                            </div>
-                                                        )}
+                                                    {/* Contact */}
+                                                    <div className="flex flex-wrap items-center gap-6 shrink-0">
+                                                        <div className="flex items-center gap-4 text-sm text-slate-400">
+                                                            {agent.user_phone && (
+                                                                <div className="flex items-center gap-2">
+                                                                    <Phone className="w-4 h-4" />
+                                                                    <span>{agent.user_phone}</span>
+                                                                </div>
+                                                            )}
+                                                            {agent.user_email && (
+                                                                <div className="flex items-center gap-2">
+                                                                    <Mail className="w-4 h-4" />
+                                                                    <span className="hidden sm:inline">{agent.user_email}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-blue-500' : ''}`}>
+                                                            <ChevronRight className={`w-5 h-5 text-blue-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1 text-white' : ''}`} />
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                {/* Specialties Tags */}
-                                                <div className="flex flex-wrap gap-2">
-                                                    {agent.specialties?.slice(0, 3).map((specialty, index) => (
-                                                        <span
-                                                            key={index}
-                                                            className="px-3 py-1 bg-muted text-muted-foreground text-xs font-medium rounded-full"
-                                                        >
-                                                            {specialty}
-                                                        </span>
-                                                    ))}
-                                                    {agent.specialties && agent.specialties.length > 3 && (
-                                                        <span className="px-3 py-1 bg-muted text-muted-foreground/70 text-xs font-medium rounded-full">
-                                                            +{agent.specialties.length - 3} more
-                                                        </span>
-                                                    )}
-                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </section>
 
-                        {/* Stats Footer */}
-                        <div className="mt-12 pt-8 border-t border-border">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="text-center p-6 bg-card rounded-xl shadow-sm">
-                                    <div className="text-3xl font-bold text-primary mb-2">
-                                        {agents.length}+
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        Professional Agents
-                                    </div>
-                                </div>
-                                <div className="text-center p-6 bg-card rounded-xl shadow-sm">
-                                    <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
-                                        {agents.filter(a => a.is_verified).length}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        Verified Agents
-                                    </div>
-                                </div>
-                                <div className="text-center p-6 bg-card rounded-xl shadow-sm">
-                                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                                        24/7
-                                    </div>
-                                    <div className="text-sm text-muted-foreground">
-                                        Support Available
-                                    </div>
-                                </div>
+            {/* Bottom CTA */}
+            <section className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
+                <div className="container mx-auto max-w-5xl">
+                    <div className="relative bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 rounded-3xl p-8 lg:p-12 border border-white/10 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
+                        
+                        <div className="relative text-center max-w-2xl mx-auto">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mx-auto mb-6">
+                                <Award className="w-8 h-8 text-white" />
                             </div>
+                            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+                                Become an Agent
+                            </h2>
+                            <p className="text-lg text-slate-300 mb-8">
+                                Join our network of elite real estate professionals and unlock your potential.
+                            </p>
+                            <Link
+                                href="/register?type=agent"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40"
+                            >
+                                <Sparkles className="w-5 h-5" />
+                                Apply Now
+                            </Link>
                         </div>
-                    </>
-                )}
-            </div>
-
-            {/* CTA Section */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-                <div className="bg-linear-to-r from-primary to-secondary rounded-2xl p-8 lg:p-12 text-center text-white">
-                    <h3 className="text-2xl lg:text-3xl font-bold mb-4">
-                        Want to Join Our Network of Agents?
-                    </h3>
-                    <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-                        Partner with KenyaPrime Properties and reach thousands of potential clients.
-                        Join our network of trusted real estate professionals.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link
-                            href="/register?user_type=agent"
-                            className="px-6 py-3 bg-white text-blue-600 hover:bg-blue-50 font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
-                        >
-                            Become an Agent
-                        </Link>
-                        <Link
-                            href="/contact"
-                            className="px-6 py-3 bg-transparent border-2 border-white hover:bg-white/10 font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
-                        >
-                            Contact Our Team
-                        </Link>
                     </div>
                 </div>
-            </div>
-        </main >
+            </section>
+        </main>
     );
 }
