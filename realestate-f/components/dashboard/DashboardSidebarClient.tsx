@@ -26,7 +26,7 @@ export default function DashboardSidebarClient() {
         { href: '/dashboard/agent/messages', label: 'Messages', icon: MessageSquare },
         { href: '/dashboard/agent/analytics', label: 'Analytics', icon: TrendingUp },
         { href: '/dashboard/agent/billing', label: 'Billing', icon: CreditCard },
-        { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+        { href: '/dashboard/agent/settings', label: 'Settings', icon: Settings },
     ];
 
     const managementNavigation = [
@@ -34,7 +34,7 @@ export default function DashboardSidebarClient() {
         { href: '/dashboard/management/properties', label: 'All Properties', icon: Home },
         { href: '/dashboard/management/agents', label: 'Agents', icon: Users },
         { href: '/dashboard/management/analytics', label: 'Analytics', icon: TrendingUp },
-        { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+        { href: '/dashboard/management/settings', label: 'Settings', icon: Settings },
     ];
 
     let navigation;
