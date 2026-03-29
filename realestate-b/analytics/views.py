@@ -274,3 +274,267 @@ def management_analytics(request):
     }
 
     return Response(data)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def lead_score_distribution(request):
+    """
+    Returns lead score distribution for charts.
+    For agents: their own leads.
+    For management/admin: all leads.
+    """
+    user = request.user
+    
+    if user.user_type == "agent":
+        leads = Lead.objects.filter(agent=user)
+    elif user.user_type in ["management", "admin"]:
+        leads = Lead.objects.all()
+    else:
+        return Response({"error": "Permission denied"}, status=403)
+    
+    # Define score ranges: Cold (0-25), Warm (26-50), Hot (51-75), Very Hot (76-100)
+    distribution = {
+        "cold": leads.filter(score__lte=25).count(),
+        "warm": leads.filter(score__gt=25, score__lte=50).count(),
+        "hot": leads.filter(score__gt=50, score__lte=75).count(),
+        "very_hot": leads.filter(score__gt=75).count(),
+    }
+    
+    # For histogram: buckets of 10 points each
+    histogram = []
+    for i in range(0, 100, 10):
+        bucket_count = leads.filter(score__gt=i, score__lte=i+10).count()
+        histogram.append({
+            "range": f"{i+1}-{i+10}",
+            "count": bucket_count,
+            "min": i + 1,
+            "max": i + 10,
+        })
+    
+    return Response({
+        "distribution": distribution,
+        "histogram": histogram,
+        "average_score": leads.aggregate(avg=Avg("score"))["avg"] or 0,
+        "total_leads": leads.count(),
+    })
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def lead_trends_agent(request):
+    """
+    Returns weekly lead trends for agent dashboard.
+    Supports days parameter (default 28 = 4 weeks).
+    """
+    user = request.user
+    if user.user_type != "agent":
+        return Response({"error": "Agents only"}, status=403)
+    
+    days = int(request.GET.get("days", 28))
+    today = timezone.now().date()
+    start_date = today - timedelta(days=days-1)
+    
+    leads = Lead.objects.filter(agent=user, created_at__date__gte=start_date)
+    
+    # Group by date
+    trends = []
+    for i in range(days):
+        date = start_date + timedelta(days=i)
+        count = leads.filter(created_at__date=date).count()
+        
+        # Also get source breakdown for each day
+        day_leads = leads.filter(created_at__date=date)
+        sources = {}
+        for src, _ in Lead.SOURCE_CHOICES:
+            src_count = day_leads.filter(source=src).count()
+            if src_count > 0:
+                sources[src] = src_count
+        
+        trends.append({
+            "date": date.strftime("%Y-%m-%d"),
+            "count": count,
+            "sources": sources,
+        })
+    
+    return Response({
+        "trends": trends,
+        "period_days": days,
+        "total_leads": sum(t["count"] for t in trends),
+    })
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def lead_source_distribution(request):
+    """
+    Returns lead source distribution.
+    For agents: their own leads.
+    For management: all leads.
+    """
+    user = request.user
+    
+    if user.user_type == "agent":
+        leads = Lead.objects.filter(agent=user)
+    elif user.user_type in ["management", "admin"]:
+        leads = Lead.objects.all()
+    else:
+        return Response({"error": "Permission denied"}, status=403)
+    
+    distribution = []
+    total = leads.count()
+    
+    for src, label in Lead.SOURCE_CHOICES:
+        count = leads.filter(source=src).count()
+        if count > 0:
+            distribution.append({
+                "source": src,
+                "label": label,
+                "count": count,
+                "percentage": round((count / total * 100) if total > 0 else 0, 1),
+            })
+    
+    return Response({
+        "distribution": distribution,
+        "total": total,
+    })
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def management_metrics(request):
+    """
+    Returns calculated management metrics including real conversion rate.
+    """
+    if request.user.user_type != "management":
+        return Response({"error": "Management privileges required"}, status=403)
+    
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    start_of_month = timezone.now().replace(day=1).date()
+    
+    # Calculate conversion rate: closed_won / (closed_won + closed_lost)
+    won_leads = Lead.objects.filter(
+        status="closed_won",
+        updated_at__date__gte=start_of_month
+    ).count()
+    lost_leads = Lead.objects.filter(
+        status="closed_lost",
+        updated_at__date__gte=start_of_month
+    ).count()
+    
+    total_closed = won_leads + lost_leads
+    conversion_rate = round((won_leads / total_closed * 100) if total_closed > 0 else 0, 2)
+    
+    # Lead source performance
+    source_performance = []
+    for src, label in Lead.SOURCE_CHOICES:
+        total = Lead.objects.filter(source=src, created_at__date__gte=start_of_month).count()
+        converted = Lead.objects.filter(
+            source=src, status="closed_won", updated_at__date__gte=start_of_month
+        ).count()
+        if total > 0:
+            source_performance.append({
+                "source": src,
+                "label": label,
+                "total_leads": total,
+                "conversions": converted,
+                "rate": round((converted / total * 100), 2),
+            })
+    
+    return Response({
+        "this_month": {
+            "new_agents": User.objects.filter(
+                user_type="agent", date_joined__gte=start_of_month
+            ).count(),
+            "conversion_rate": conversion_rate,
+            "won_leads": won_leads,
+            "lost_leads": lost_leads,
+        },
+        "source_performance": source_performance,
+    })
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def property_views(request):
+    """Returns list of property views with optional filtering."""
+    user = request.user
+    property_id = request.GET.get('property')
+    
+    # Build query
+    views_qs = PropertyView.objects.all()
+    
+    if user.user_type == "agent":
+        # Agents only see views of their own properties
+        views_qs = views_qs.filter(property__agent=user)
+    
+    if property_id:
+        views_qs = views_qs.filter(property_id=property_id)
+    
+    # Order by most recent
+    views_qs = views_qs.select_related('property').order_by('-viewed_at')[:100]
+    
+    data = []
+    for view in views_qs:
+        data.append({
+            "id": view.id,
+            "property": view.property_id,
+            "property_title": view.property.title if view.property else None,
+            "user": view.user_id,
+            "ip_address": view.ip_address,
+            "viewed_at": view.viewed_at.isoformat(),
+        })
+    
+    return Response(data)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def property_views_summary(request):
+    """Returns summary of property views."""
+    user = request.user
+    
+    if user.user_type == "agent":
+        properties = Property.objects.filter(agent=user)
+        total_views = PropertyView.objects.filter(property__in=properties).count()
+        unique_visitors = PropertyView.objects.filter(
+            property__in=properties
+        ).values('ip_address').distinct().count()
+    else:
+        total_views = PropertyView.objects.count()
+        unique_visitors = PropertyView.objects.values('ip_address').distinct().count()
+    
+    return Response({
+        "total_views": total_views,
+        "unique_visitors": unique_visitors,
+    })
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def search_analytics(request):
+    """Returns search analytics data."""
+    user = request.user
+    
+    if user.user_type not in ["management", "admin"]:
+        return Response({"error": "Management privileges required"}, status=403)
+    
+    # Get recent searches
+    searches = SearchAnalytics.objects.all().order_by('-searched_at')[:50]
+    
+    # Group by query for popularity
+    query_counts = (
+        SearchAnalytics.objects.values('search_query')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:20]
+    )
+    
+    return Response([
+        {
+            "query": item['search_query'],
+            "count": item['count'],
+        }
+        for item in query_counts
+    ])

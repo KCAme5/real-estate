@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { analyticsAPI } from '@/lib/api/analytics';
+import { analyticsAPI, LeadScoreDistribution, LeadTrends, LeadSourceDistribution } from '@/lib/api/analytics';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import {
     BarChart3,
@@ -36,6 +36,9 @@ export default function AnalyticsDashboard() {
     const [stats, setStats] = useState<any>(null);
     const [properties, setProperties] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [leadScoreDistribution, setLeadScoreDistribution] = useState<LeadScoreDistribution | null>(null);
+    const [leadTrends, setLeadTrends] = useState<LeadTrends | null>(null);
+    const [leadSourceDistribution, setLeadSourceDistribution] = useState<LeadSourceDistribution | null>(null);
 
     useEffect(() => {
         const fetchAllData = async () => {
@@ -43,6 +46,30 @@ export default function AnalyticsDashboard() {
                 // Fetch dashboard stats
                 const statsRes = await analyticsAPI.getDashboardStats();
                 setStats(statsRes);
+
+                // Fetch real lead score distribution
+                try {
+                    const scoreData = await analyticsAPI.getLeadScoreDistribution();
+                    setLeadScoreDistribution(scoreData);
+                } catch (e) {
+                    console.error('Failed to fetch lead score distribution:', e);
+                }
+
+                // Fetch real lead trends (last 28 days)
+                try {
+                    const trendsData = await analyticsAPI.getLeadTrends(28);
+                    setLeadTrends(trendsData);
+                } catch (e) {
+                    console.error('Failed to fetch lead trends:', e);
+                }
+
+                // Fetch real lead source distribution
+                try {
+                    const sourceData = await analyticsAPI.getLeadSourceDistribution();
+                    setLeadSourceDistribution(sourceData);
+                } catch (e) {
+                    console.error('Failed to fetch lead source distribution:', e);
+                }
 
                 // Fetch agent properties for performance data
                 const propsRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/properties/my-properties/`, {
@@ -100,26 +127,37 @@ export default function AnalyticsDashboard() {
 
     const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
 
-    // Calculate trend data from actual stats
+    // Calculate trend data from actual stats - use real lead trends if available
     const totalLeads = stats?.total_leads || 0;
     const totalViews = stats?.property_views || 0;
     const recentLeads = stats?.recent_leads || 0;
 
-    // Build simple 4-week trend (simulate by dividing total by 4)
-    const trendData = [
-        { name: 'Week 1', leads: Math.floor(totalLeads * 0.2), views: Math.floor(totalViews * 0.2) },
-        { name: 'Week 2', leads: Math.floor(totalLeads * 0.25), views: Math.floor(totalViews * 0.25) },
-        { name: 'Week 3', leads: Math.floor(totalLeads * 0.3), views: Math.floor(totalViews * 0.3) },
-        { name: 'Week 4', leads: Math.floor(totalLeads * 0.25), views: Math.floor(totalViews * 0.25) },
-    ];
+    // Use real trend data if available, otherwise calculate from stats
+    const trendData = leadTrends?.trends
+        ? leadTrends.trends.map(t => ({
+            name: new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            leads: t.count,
+            views: 0, // views not in the current endpoint
+          }))
+        : [
+            { name: 'Week 1', leads: Math.floor(totalLeads * 0.2), views: Math.floor(totalViews * 0.2) },
+            { name: 'Week 2', leads: Math.floor(totalLeads * 0.25), views: Math.floor(totalViews * 0.25) },
+            { name: 'Week 3', leads: Math.floor(totalLeads * 0.3), views: Math.floor(totalViews * 0.3) },
+            { name: 'Week 4', leads: Math.floor(totalLeads * 0.25), views: Math.floor(totalViews * 0.25) },
+          ];
 
-    // Calculate source distribution (mock for now as backend doesn't have this)
-    const sourceData = [
-        { name: 'Website', value: Math.floor(stats?.total_leads * 0.35) || 0 },
-        { name: 'WhatsApp', value: Math.floor(stats?.total_leads * 0.25) || 0 },
-        { name: 'Referral', value: Math.floor(stats?.total_leads * 0.25) || 0 },
-        { name: 'Phone', value: Math.floor(stats?.total_leads * 0.15) || 0 },
-    ];
+    // Use real source distribution if available
+    const sourceData = leadSourceDistribution?.distribution
+        ? leadSourceDistribution.distribution.map(s => ({
+            name: s.label || s.source,
+            value: s.count,
+          }))
+        : [
+            { name: 'Website', value: Math.floor(stats?.total_leads * 0.35) || 0 },
+            { name: 'WhatsApp', value: Math.floor(stats?.total_leads * 0.25) || 0 },
+            { name: 'Referral', value: Math.floor(stats?.total_leads * 0.25) || 0 },
+            { name: 'Phone', value: Math.floor(stats?.total_leads * 0.15) || 0 },
+        ];
 
     // Calculate actual total for percentages
     const sourceTotal = sourceData.reduce((sum, item) => sum + item.value, 0);
@@ -311,6 +349,85 @@ export default function AnalyticsDashboard() {
                         )}
                     </div>
                 </div>
+
+                {/* Lead Score Distribution Section */}
+                {leadScoreDistribution && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Lead Score Pie Chart */}
+                        <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl">
+                            <div className="mb-10 text-center">
+                                <h3 className="text-xl font-black text-white uppercase tracking-tight">Lead Score Distribution</h3>
+                                <p className="text-slate-500 text-xs font-medium">Leads by temperature level</p>
+                            </div>
+                            <div className="h-[300px] relative">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={[
+                                                { name: 'Cold (0-25)', value: leadScoreDistribution.distribution.cold },
+                                                { name: 'Warm (26-50)', value: leadScoreDistribution.distribution.warm },
+                                                { name: 'Hot (51-75)', value: leadScoreDistribution.distribution.hot },
+                                                { name: 'Very Hot (76-100)', value: leadScoreDistribution.distribution.very_hot },
+                                            ]}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={80}
+                                            outerRadius={100}
+                                            paddingAngle={8}
+                                            dataKey="value"
+                                        >
+                                            {['#6b7280', '#f59e0b', '#ef4444', '#10b981'].map((color, index) => (
+                                                <Cell key={`score-${index}`} fill={color} />
+                                            ))}
+                                        </Pie>
+                                    </PieChart>
+                                </ResponsiveContainer>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                    <h4 className="text-3xl font-black text-white">{leadScoreDistribution.total_leads}</h4>
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total</p>
+                                </div>
+                            </div>
+                            <div className="mt-8 space-y-4">
+                                {[
+                                    { name: 'Cold', value: leadScoreDistribution.distribution.cold, color: '#6b7280' },
+                                    { name: 'Warm', value: leadScoreDistribution.distribution.warm, color: '#f59e0b' },
+                                    { name: 'Hot', value: leadScoreDistribution.distribution.hot, color: '#ef4444' },
+                                    { name: 'Very Hot', value: leadScoreDistribution.distribution.very_hot, color: '#10b981' },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                                            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{item.name}</span>
+                                        </div>
+                                        <span className="text-xs font-black text-white">{item.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Lead Score Histogram */}
+                        <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl">
+                            <div className="mb-10 text-center">
+                                <h3 className="text-xl font-black text-white uppercase tracking-tight">Score Histogram</h3>
+                                <p className="text-slate-500 text-xs font-medium">Average: {Math.round(leadScoreDistribution.average_score || 0)}</p>
+                            </div>
+                            <div className="h-[300px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={leadScoreDistribution.histogram}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                                        <XAxis dataKey="range" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
+                                            itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                                        />
+                                        <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Popular Properties Section */}
                 <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl">

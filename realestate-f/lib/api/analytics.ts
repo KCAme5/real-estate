@@ -110,6 +110,59 @@ export interface PropertyAnalytics {
     };
 }
 
+export interface LeadScoreDistribution {
+    distribution: {
+        cold: number;
+        warm: number;
+        hot: number;
+        very_hot: number;
+    };
+    histogram: Array<{
+        range: string;
+        count: number;
+        min: number;
+        max: number;
+    }>;
+    average_score: number;
+    total_leads: number;
+}
+
+export interface LeadTrends {
+    trends: Array<{
+        date: string;
+        count: number;
+        sources: Record<string, number>;
+    }>;
+    period_days: number;
+    total_leads: number;
+}
+
+export interface LeadSourceDistribution {
+    distribution: Array<{
+        source: string;
+        label: string;
+        count: number;
+        percentage: number;
+    }>;
+    total: number;
+}
+
+export interface ManagementMetrics {
+    this_month: {
+        new_agents: number;
+        conversion_rate: number;
+        won_leads: number;
+        lost_leads: number;
+    };
+    source_performance: Array<{
+        source: string;
+        label: string;
+        total_leads: number;
+        conversions: number;
+        rate: number;
+    }>;
+}
+
 export const analyticsAPI = {
     // Dashboard Analytics
     getDashboardStats: async () => {
@@ -143,4 +196,17 @@ export const analyticsAPI = {
     // Search Analytics
     getSearchAnalytics: () =>
         apiClient.get('/analytics/search-analytics/'),
+
+    // Lead Analytics (Real Data)
+    getLeadScoreDistribution: () =>
+        apiClient.get<LeadScoreDistribution>('/analytics/lead-score-distribution/'),
+
+    getLeadTrends: (days: number = 28) =>
+        apiClient.get<LeadTrends>(`/analytics/lead-trends/?days=${days}`),
+
+    getLeadSourceDistribution: () =>
+        apiClient.get<LeadSourceDistribution>('/analytics/lead-source-distribution/'),
+
+    getManagementMetrics: () =>
+        apiClient.get<ManagementMetrics>('/analytics/management-metrics/'),
 };

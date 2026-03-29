@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { analyticsAPI, ManagementAnalytics } from '@/lib/api/analytics';
+import { analyticsAPI, ManagementAnalytics, ManagementMetrics } from '@/lib/api/analytics';
 import { useAuth } from '@/hooks/useAuth';
 import Breadcrumb from '@/components/dashboard/Breadcrumb';
 import {
@@ -33,6 +33,7 @@ export default function ManagementAnalyticsPage() {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [analytics, setAnalytics] = useState<ManagementAnalytics | null>(null);
+    const [metrics, setMetrics] = useState<ManagementMetrics | null>(null);
     const [showAllAgents, setShowAllAgents] = useState(false);
 
     useEffect(() => {
@@ -45,6 +46,14 @@ export default function ManagementAnalyticsPage() {
         try {
             const data = await analyticsAPI.getManagementAnalytics();
             setAnalytics(data);
+            
+            // Fetch real management metrics
+            try {
+                const metricsData = await analyticsAPI.getManagementMetrics();
+                setMetrics(metricsData);
+            } catch (e) {
+                console.error('Failed to fetch management metrics:', e);
+            }
         } catch (error) {
             console.error('Failed to fetch analytics:', error);
         } finally {
@@ -119,7 +128,7 @@ export default function ManagementAnalyticsPage() {
                             <span className="text-sm font-bold text-muted-foreground">Conversion Rate</span>
                         </div>
                         <p className="text-3xl font-black text-foreground">
-                            {analytics.this_month.conversion_rate}%
+                            {metrics?.this_month?.conversion_rate || analytics?.this_month?.conversion_rate || 0}%
                         </p>
                     </div>
                     <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">

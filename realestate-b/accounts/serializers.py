@@ -14,6 +14,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
     profile_picture = serializers.SerializerMethodField()
+    # Add explicit ImageField for PATCH requests to handle file uploads
+    _profile_picture = serializers.ImageField(
+        source="profile_picture", required=False, allow_null=True, write_only=True
+    )
 
     class Meta:
         model = CustomUser
@@ -88,19 +92,20 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         validated_data.pop("password2")
         user_type = validated_data.get("user_type", "client")
         user = CustomUser.objects.create_user(**validated_data)
-        
+
         # Create user profile
         UserProfile.objects.create(user=user)
-        
+
         # Create agent profile if user is an agent
         if user_type == "agent":
             from agents.models import AgentProfile
+
             AgentProfile.objects.create(
                 user=user,
                 bio=f"Professional agent {user.get_full_name() or user.username}",
-                license_number=f"PENDING-{user.id}"
+                license_number=f"PENDING-{user.id}",
             )
-            
+
         return user
 
 
