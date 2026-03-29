@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Bell, MessageSquare, User, LogOut, Settings, Search } from 'lucide-react';
+import Image from 'next/image';
 
 export default function DashboardHeader() {
     const { user, logout } = useAuth();
@@ -99,8 +100,20 @@ export default function DashboardHeader() {
                                 className="flex items-center gap-3 p-1.5 sm:pl-1.5 sm:pr-4 bg-slate-900/50 border border-slate-800/50 hover:border-slate-700 rounded-full transition-all group shadow-inner"
                                 onClick={() => setShowUserMenu(!showUserMenu)}
                             >
-                                <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white text-base font-black shadow-lg ring-4 ring-blue-500/10 group-hover:scale-110 transition-transform duration-500">
-                                    {user?.first_name?.charAt(0) || 'U'}
+                                <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center text-white text-base font-black shadow-lg ring-4 ring-blue-500/10 group-hover:scale-110 transition-transform duration-500 overflow-hidden relative">
+                                    {user?.profile_picture ? (
+                                        <Image
+                                            src={user.profile_picture}
+                                            alt="Profile"
+                                            fill
+                                            className="object-cover"
+                                            sizes="40px"
+                                        />
+                                    ) : (
+                                        <>
+                                            {user?.first_name?.charAt(0) || 'U'}
+                                        </>
+                                    )}
                                 </div>
                                 <div className="hidden sm:flex flex-col text-left">
                                     <p className="text-xs font-black text-white leading-none tracking-tight">{user?.first_name} {user?.last_name?.charAt(0)}.</p>

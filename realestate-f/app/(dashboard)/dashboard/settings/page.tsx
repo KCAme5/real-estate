@@ -9,6 +9,7 @@ import {
     CheckCircle, AlertCircle, X, Bed, Bath, Home
 } from 'lucide-react';
 import Image from 'next/image';
+import { userAccountAPI } from '@/lib/api/settings';
 
 type TabId = 'profile' | 'preferences' | 'notifications' | 'security' | 'saved';
 
@@ -24,7 +25,7 @@ interface SavedSearch {
 }
 
 export default function ClientSettingsPage() {
-    const { user } = useAuth();
+    const { user, refreshUser, updateUser } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     // Active tab state
@@ -122,19 +123,24 @@ export default function ClientSettingsPage() {
         setUploadingPhoto(true);
         try {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = (evt) => {
                 setProfileForm(prev => ({
                     ...prev,
-                    avatar_preview: e.target?.result as string
+                    avatar_preview: evt.target?.result as string
                 }));
             };
             reader.readAsDataURL(file);
-            
-            showSuccess('Photo updated successfully');
-        } catch (error) {
-            showError('Failed to upload photo');
+
+            const updated = await userAccountAPI.uploadProfilePicture(file);
+            updateUser({ profile_picture: updated.profile_picture || undefined });
+            showSuccess('Image uploaded successfully');
+        } catch (error: any) {
+            console.error('Avatar upload failed:', error);
+            showError(error?.message || 'Failed to upload image');
+            setProfileForm(prev => ({ ...prev, avatar_preview: null }));
         } finally {
             setUploadingPhoto(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
@@ -142,10 +148,23 @@ export default function ClientSettingsPage() {
     const handleSaveProfile = async () => {
         setSaving(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const updated = await userAccountAPI.updateMe({
+                first_name: profileForm.first_name,
+                last_name: profileForm.last_name,
+                email: profileForm.email,
+                phone_number: profileForm.phone_number,
+            });
+            updateUser({
+                first_name: updated.first_name,
+                last_name: updated.last_name,
+                email: updated.email,
+                phone_number: updated.phone_number,
+            });
             showSuccess('Profile updated successfully');
-        } catch (error) {
-            showError('Failed to update profile');
+            await refreshUser();
+        } catch (error: any) {
+            console.error('Profile update failed:', error);
+            showError(error?.message || 'Failed to update profile');
         } finally {
             setSaving(false);
         }

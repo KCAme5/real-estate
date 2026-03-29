@@ -32,11 +32,30 @@ interface User {
     profile_picture?: string;
 }
 
+const normalizeProfilePictureUrl = (url?: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return url;
+
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+    const origin = apiBase.replace(/\/api\/?$/, '');
+    if (url.startsWith('/')) return `${origin}${url}`;
+    return `${origin}/${url}`;
+};
+
+const normalizeUser = (u: any): User => {
+    return {
+        ...u,
+        profile_picture: normalizeProfilePictureUrl(u?.profile_picture),
+    };
+};
+
 export interface AuthContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<any>;
     register: (userData: any) => Promise<any>;
     logout: () => Promise<void>;
+    refreshUser: () => Promise<void>;
+    updateUser: (patch: Partial<User>) => void;
     loading: boolean;
     isAuthenticated: boolean;
 }
@@ -91,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     apiClient.setAccessToken(token);
                     // Fetch user profile to validate token and get user details
                     const response = await apiClient.get('/auth/user/');
-                    setUser(response);
+                    setUser(normalizeUser(response));
                     console.log('🟢 Session restored:', response);
                 } catch (error) {
                     console.error('🔴 Failed to restore session:', error);
@@ -116,6 +135,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const refreshUser = useCallback(async () => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return;
+        try {
+            apiClient.setAccessToken(token);
+            const response = await apiClient.get('/auth/user/');
+            setUser(normalizeUser(response));
+        } catch (error) {
+            console.error('Failed to refresh user:', error);
+        }
+    }, []);
+
+    const updateUser = useCallback((patch: Partial<User>) => {
+        setUser((prev) => {
+            if (!prev) return prev;
+            const next = { ...prev, ...patch };
+            next.profile_picture = normalizeProfilePictureUrl(next.profile_picture);
+            return next;
+        });
+    }, []);
+
     const register = async (userData: any) => {
         setLoading(true);
         try {
@@ -132,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     localStorage.setItem('refreshToken', response.refresh);
                     apiClient.setRefreshToken(response.refresh);
                 }
-                setUser(response.user);
+                setUser(normalizeUser(response.user));
                 // Trigger redirection via useEffect
                 setShouldRedirect(true);
             } else {
@@ -171,7 +211,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     apiClient.setRefreshToken(response.refresh);
                 }
 
-                setUser(response.user);
+                setUser(normalizeUser(response.user));
                 console.log('🟢 User set:', response.user);
 
                 // Trigger redirection via useEffect
@@ -209,6 +249,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
+        refreshUser,
+        updateUser,
         loading,
         isAuthenticated: !!user,
     };

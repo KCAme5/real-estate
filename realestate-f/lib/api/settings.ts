@@ -10,6 +10,38 @@ export interface ProfileUpdateData {
     avatar?: File | null;
 }
 
+export type UserAccount = {
+    id: number;
+    username?: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    user_type: 'client' | 'agent' | 'management';
+    phone_number?: string;
+    profile_picture?: string | null;
+};
+
+export const userAccountAPI = {
+    async getMe() {
+        return apiClient.get<UserAccount>('/auth/user/');
+    },
+
+    async updateMe(data: Partial<UserAccount>) {
+        return apiClient.patch<UserAccount>('/auth/user/', data);
+    },
+
+    async uploadProfilePicture(file: File) {
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        return apiClient.patch<UserAccount>('/auth/user/', formData);
+    },
+
+    async clearProfilePicture() {
+        // DRF ImageField clearing typically accepts empty string.
+        return apiClient.patch<UserAccount>('/auth/user/', { profile_picture: '' as any });
+    },
+};
+
 // Agent profile additional fields
 export interface AgentProfileData {
     bio?: string;
@@ -136,14 +168,15 @@ export const agentSettingsAPI = {
 export const clientSettingsAPI = {
     // Update profile
     async updateProfile(data: ProfileUpdateData) {
-        return apiClient.patch<ProfileUpdateData>('/auth/profile/', data);
+        // Basic identity fields live on the user model, not the profile model.
+        return apiClient.patch('/auth/user/', data);
     },
 
     // Upload avatar
     async uploadAvatar(file: File) {
         const formData = new FormData();
-        formData.append('avatar', file);
-        return apiClient.patch<{ avatar: string }>('/auth/profile/', formData);
+        formData.append('profile_picture', file);
+        return apiClient.patch('/auth/user/', formData);
     },
 
     // Get preferences

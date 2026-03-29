@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { LayoutDashboard, Heart, Calendar, MessageSquare, Settings, TrendingUp, Users, Home, CreditCard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 export default function DashboardSidebarClient() {
     const { user } = useAuth();
@@ -111,8 +112,20 @@ export default function DashboardSidebarClient() {
 
             <div className="p-6 border-t border-slate-800/50 bg-slate-950/50 backdrop-blur-xl">
                 <div className="p-4 bg-slate-900/50 rounded-2xl flex items-center gap-3 border border-slate-800/30">
-                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center font-black text-lg border border-blue-500/20 shadow-inner">
-                        {user?.first_name?.charAt(0) || 'U'}
+                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center font-black text-lg border border-blue-500/20 shadow-inner overflow-hidden relative">
+                        {user?.profile_picture ? (
+                            <Image
+                                src={user.profile_picture}
+                                alt="Profile"
+                                fill
+                                className="object-cover"
+                                sizes="40px"
+                            />
+                        ) : (
+                            <>
+                                {user?.first_name?.charAt(0) || 'U'}
+                            </>
+                        )}
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-black text-white truncate tracking-tight">{user?.first_name} {user?.last_name}</p>

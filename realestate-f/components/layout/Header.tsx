@@ -252,12 +252,22 @@ export default function Header() {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-emerald-900/20 hover:bg-emerald-900/40 transition-all duration-200 font-medium group border border-emerald-500/20">
-                                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                                            <span className="text-sm font-semibold text-white">
-                                                {user.username?.[0]?.toUpperCase() ||
-                                                    user.email?.[0]?.toUpperCase() ||
-                                                    "U"}
-                                            </span>
+                                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center overflow-hidden relative">
+                                            {user.profile_picture ? (
+                                                <Image
+                                                    src={user.profile_picture}
+                                                    alt="Profile"
+                                                    fill
+                                                    className="object-cover"
+                                                    sizes="32px"
+                                                />
+                                            ) : (
+                                                <span className="text-sm font-semibold text-white">
+                                                    {user.username?.[0]?.toUpperCase() ||
+                                                        user.email?.[0]?.toUpperCase() ||
+                                                        "U"}
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="flex flex-col items-start">
                                             <span className="text-sm font-medium text-emerald-100 truncate max-w-[120px]">
@@ -437,12 +447,22 @@ export default function Header() {
                                     <>
                                         <div className="px-4 py-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                                    <span className="text-sm font-semibold text-white">
-                                                        {user.username?.[0]?.toUpperCase() ||
-                                                            user.email?.[0]?.toUpperCase() ||
-                                                            "U"}
-                                                    </span>
+                                                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center overflow-hidden relative">
+                                                    {user.profile_picture ? (
+                                                        <Image
+                                                            src={user.profile_picture}
+                                                            alt="Profile"
+                                                            fill
+                                                            className="object-cover"
+                                                            sizes="40px"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-sm font-semibold text-white">
+                                                            {user.username?.[0]?.toUpperCase() ||
+                                                                user.email?.[0]?.toUpperCase() ||
+                                                                "U"}
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium text-foreground truncate">

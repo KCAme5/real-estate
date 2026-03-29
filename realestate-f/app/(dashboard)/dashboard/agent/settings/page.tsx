@@ -9,6 +9,7 @@ import {
     DollarSign, Languages, Award, CheckCircle, AlertCircle, Upload, X
 } from 'lucide-react';
 import Image from 'next/image';
+import { userAccountAPI } from '@/lib/api/settings';
 
 type TabId = 'profile' | 'availability' | 'notifications' | 'security' | 'payment';
 
@@ -60,7 +61,7 @@ const LANGUAGE_OPTIONS = [
 ];
 
 export default function AgentSettingsPage() {
-    const { user } = useAuth();
+    const { user, refreshUser, updateUser } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     // Active tab state
@@ -84,6 +85,7 @@ export default function AgentSettingsPage() {
         last_name: '',
         email: '',
         phone_number: '',
+        avatar_preview: null as string | null,
         bio: '',
         specialties: [] as string[],
         office_address: '',
@@ -166,26 +168,26 @@ export default function AgentSettingsPage() {
         
         setUploadingPhoto(true);
         try {
-            // Create preview
+            // Optimistic preview
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = (evt) => {
                 setProfileForm(prev => ({
                     ...prev,
-                    avatar_preview: e.target?.result as string
+                    avatar_preview: evt.target?.result as string
                 }));
             };
             reader.readAsDataURL(file);
-            
-            // In production, upload to API
-            // const formData = new FormData();
-            // formData.append('avatar', file);
-            // await agentSettingsAPI.updatePhoto(formData);
-            
-            showSuccess('Photo updated successfully');
-        } catch (error) {
-            showError('Failed to upload photo');
+
+            const updated = await userAccountAPI.uploadProfilePicture(file);
+            updateUser({ profile_picture: updated.profile_picture || undefined });
+            showSuccess('Image uploaded successfully');
+        } catch (error: any) {
+            console.error('Avatar upload failed:', error);
+            showError(error?.message || 'Failed to upload image');
+            setProfileForm(prev => ({ ...prev, avatar_preview: null }));
         } finally {
             setUploadingPhoto(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         }
     };
 
@@ -193,10 +195,20 @@ export default function AgentSettingsPage() {
     const handleSaveProfile = async () => {
         setSaving(true);
         try {
-            // In production: await agentSettingsAPI.updateProfile(profileForm);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+            const updated = await userAccountAPI.updateMe({
+                first_name: profileForm.first_name,
+                last_name: profileForm.last_name,
+                email: profileForm.email,
+                phone_number: profileForm.phone_number,
+            });
+            updateUser({
+                first_name: updated.first_name,
+                last_name: updated.last_name,
+                email: updated.email,
+                phone_number: updated.phone_number,
+            });
             showSuccess('Profile updated successfully');
-            refreshUser?.();
+            await refreshUser();
         } catch (error) {
             showError('Failed to update profile');
         } finally {

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -92,8 +93,18 @@ export default function AgentSidebar() {
             <div className="p-4 border-t border-border">
                 <div className="flex items-center gap-3">
                     <div className="avatar">
-                        <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
-                            <span className="font-bold text-sm">{getInitials()}</span>
+                        <div className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center overflow-hidden relative">
+                            {user?.profile_picture ? (
+                                <Image
+                                    src={user.profile_picture}
+                                    alt="Profile"
+                                    fill
+                                    className="object-cover"
+                                    sizes="40px"
+                                />
+                            ) : (
+                                <span className="font-bold text-sm">{getInitials()}</span>
+                            )}
                         </div>
                     </div>
                     {!isCollapsed && (
