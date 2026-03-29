@@ -13,10 +13,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
-    profile_picture = serializers.SerializerMethodField()
-    # Add explicit ImageField for PATCH requests to handle file uploads
-    _profile_picture = serializers.ImageField(
-        source="profile_picture", required=False, allow_null=True, write_only=True
+    # Use ImageField for both reading and writing (SerializerMethodField is read-only)
+    profile_picture = serializers.ImageField(
+        required=False, allow_null=True, read_only=False
     )
 
     class Meta:
@@ -34,18 +33,24 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "profile",
         )
-        read_only_fields = ("id", "date_joined", "is_verified")
+        read_only_fields = ("id", "date_joined", "is_verified", "username")
+        # Ensure profile_picture can be written
+        extra_kwargs = {
+            "profile_picture": {"required": False, "allow_null": True},
+        }
 
-    def get_profile_picture(self, obj):
-        if not getattr(obj, "profile_picture", None):
-            return None
-
-        request = self.context.get("request")
-        if not request:
-            return None
-
-        url = reverse("user-profile-picture", kwargs={"user_id": obj.id})
-        return request.build_absolute_uri(url)
+    def to_representation(self, instance):
+        # Get the serialized data including the file object
+        data = super().to_representation(instance)
+        # Replace the raw file path with the URL to serve the image
+        if instance.profile_picture:
+            request = self.context.get("request")
+            if request:
+                url = request.build_absolute_uri(
+                    reverse("user-profile-picture", kwargs={"user_id": instance.id})
+                )
+                data["profile_picture"] = url
+        return data
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
