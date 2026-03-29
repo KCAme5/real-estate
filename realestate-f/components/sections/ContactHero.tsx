@@ -1,46 +1,75 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, Mail, Phone } from 'lucide-react';
+
 export default function ContactHero() {
     return (
-        <section className="relative pt-32 pb-24 overflow-hidden min-h-[50vh] flex items-center">
-            {/* Background Image */}
+        <section className="relative isolate overflow-hidden bg-slate-950 pt-28 sm:pt-32 pb-16 sm:pb-24">
             <div className="absolute inset-0">
-                <img
+                <Image
                     src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=1920"
-                    alt="Contact Us Background"
-                    className="w-full h-full object-cover"
+                    alt="Contact"
+                    fill
+                    priority
+                    className="object-cover"
+                    sizes="100vw"
                 />
-                <div className="absolute inset-0 bg-black/65"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/70 to-slate-950" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.18),transparent_55%)]" />
+                <div className="absolute inset-0 opacity-20 [mask-image:radial-gradient(closest-side,white,transparent)] bg-[linear-gradient(to_right,rgba(148,163,184,0.25)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.25)_1px,transparent_1px)] bg-[size:56px_56px]" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center max-w-3xl mx-auto">
-                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        Get in Touch
+                <div className="max-w-3xl mx-auto text-center">
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide mb-6 backdrop-blur-sm">
+                        <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                        Support, sales, and viewings
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-                        Contact <span className="text-emerald-400">KenyaPrime</span>
+
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
+                        Contact <span className="text-emerald-300">KenyaPrime</span>
                     </h1>
-                    <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                        We're here to help you with your real estate journey. Whether you're looking to buy, sell, or just have questions, our team is ready to assist you.
+
+                    <p className="mt-6 text-base sm:text-lg md:text-xl text-slate-200/90 leading-relaxed">
+                        Get expert help buying, selling, or scheduling a viewing. We’ll respond within 24 hours on business days.
                     </p>
-                    <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+
+                    <div className="mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+                        <a
+                            href="tel:+254712345678"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-slate-950 px-6 py-4 font-bold shadow-xl shadow-black/20 hover:bg-slate-100 transition-colors"
+                        >
+                            <Phone size={18} />
+                            Call Us
+                        </a>
+                        <a
+                            href="mailto:info@kenyaprime.co.ke"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500/15 text-emerald-200 border border-emerald-500/25 px-6 py-4 font-bold hover:bg-emerald-500/20 transition-colors"
+                        >
+                            <Mail size={18} />
+                            Email Us
+                        </a>
+                        <Link
+                            href="/properties"
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900/60 text-white border border-slate-800 px-6 py-4 font-bold hover:bg-slate-900 transition-colors"
+                        >
+                            Browse Listings
+                            <ArrowRight size={18} className="opacity-80" />
+                        </Link>
+                    </div>
+
+                    <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs sm:text-sm text-slate-300">
+                        <span className="inline-flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                             Response within 24 hours
                         </span>
-                        <span className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Expert advice guaranteed
+                        <span className="inline-flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            Trusted local expertise
                         </span>
-                        <span className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-                            </svg>
-                            24/7 support available
+                        <span className="inline-flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            Diaspora-friendly support
                         </span>
                     </div>
                 </div>

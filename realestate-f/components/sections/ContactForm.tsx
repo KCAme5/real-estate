@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { Mail, Phone, ShieldCheck, Timer } from 'lucide-react';
 
 const formSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -33,19 +34,11 @@ export default function ContactFormSection() {
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
         try {
-            // TODO: Replace with your a
             console.log('Form data:', data);
-            
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             setSubmitSuccess(true);
             reset();
-            
-            // Reset success message after 5 seconds
-            setTimeout(() => {
-                setSubmitSuccess(false);
-            }, 5000);
+            setTimeout(() => setSubmitSuccess(false), 5000);
         } catch (error) {
             console.error('Error submitting form:', error);
         } finally {
@@ -54,233 +47,223 @@ export default function ContactFormSection() {
     };
 
     return (
-        <section className="py-20 bg-background">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {/* Left Column - Contact Form */}
-                    <div className="lg:pr-12">
-                        <div className="mb-8">
-                            <h2 className="text-3xl font-bold text-foreground mb-4">Send us a Message</h2>
-                            <p className="text-muted-foreground">
-                                Fill out the form below and our team will get back to you within 24 hours.
+        <section className="relative bg-slate-950 py-16 sm:py-20">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(16,185,129,0.10),transparent_40%),radial-gradient(circle_at_80%_10%,rgba(56,189,248,0.08),transparent_40%)]" />
+
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+                    <div className="lg:col-span-7">
+                        <div className="mb-6 sm:mb-8">
+                            <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase">
+                                Contact Form
+                            </div>
+                            <h2 className="mt-4 text-3xl sm:text-4xl font-black text-white tracking-tight">
+                                Send us a message
+                            </h2>
+                            <p className="mt-3 text-slate-300 leading-relaxed">
+                                Tell us what you need — buying, selling, valuations, or viewings. We’ll respond within 24 hours on business days.
                             </p>
                         </div>
 
                         {submitSuccess && (
-                            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-800">
+                            <div className="mb-6 p-4 bg-emerald-500/10 text-emerald-200 rounded-2xl border border-emerald-500/20">
                                 <div className="flex items-center gap-3">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span>Message sent successfully! We'll get back to you soon.</span>
+                                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                                        <ShieldCheck className="text-emerald-200" size={18} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-white">Message received</p>
+                                        <p className="text-sm text-slate-300">We’ll get back to you shortly.</p>
+                                    </div>
                                 </div>
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Name */}
+                        <div className="bg-slate-900/55 backdrop-blur rounded-3xl border border-slate-800 shadow-2xl shadow-black/20 p-6 sm:p-8">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                            Full Name *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('name')}
+                                            className={`w-full px-4 py-3.5 rounded-2xl bg-slate-950/60 text-white placeholder:text-slate-500 border focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all ${errors.name ? 'border-red-500/60' : 'border-slate-800'}`}
+                                            placeholder="John Doe"
+                                            autoComplete="name"
+                                        />
+                                        {errors.name && <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                            Email Address *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            {...register('email')}
+                                            className={`w-full px-4 py-3.5 rounded-2xl bg-slate-950/60 text-white placeholder:text-slate-500 border focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all ${errors.email ? 'border-red-500/60' : 'border-slate-800'}`}
+                                            placeholder="john@example.com"
+                                            autoComplete="email"
+                                        />
+                                        {errors.email && <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                            Phone Number *
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            {...register('phone')}
+                                            className={`w-full px-4 py-3.5 rounded-2xl bg-slate-950/60 text-white placeholder:text-slate-500 border focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all ${errors.phone ? 'border-red-500/60' : 'border-slate-800'}`}
+                                            placeholder="+254 7XX XXX XXX"
+                                            autoComplete="tel"
+                                        />
+                                        {errors.phone && <p className="mt-1 text-sm text-red-400">{errors.phone.message}</p>}
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                            Subject *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            {...register('subject')}
+                                            className={`w-full px-4 py-3.5 rounded-2xl bg-slate-950/60 text-white placeholder:text-slate-500 border focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all ${errors.subject ? 'border-red-500/60' : 'border-slate-800'}`}
+                                            placeholder="How can we help?"
+                                        />
+                                        {errors.subject && <p className="mt-1 text-sm text-red-400">{errors.subject.message}</p>}
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Full Name *
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                        Property Interest (Optional)
                                     </label>
                                     <input
                                         type="text"
-                                        {...register('name')}
-                                        className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.name ? 'border-red-500' : 'border-input'}`}
-                                        placeholder="John Doe"
+                                        {...register('propertyInterest')}
+                                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-950/60 text-white placeholder:text-slate-500 border border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all"
+                                        placeholder="Reference, location, or property type"
                                     />
-                                    {errors.name && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-                                    )}
                                 </div>
 
-                                {/* Email */}
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Email Address *
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                                        Message *
                                     </label>
-                                    <input
-                                        type="email"
-                                        {...register('email')}
-                                        className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.email ? 'border-red-500' : 'border-input'}`}
-                                        placeholder="john@example.com"
+                                    <textarea
+                                        {...register('message')}
+                                        className={`w-full px-4 py-3.5 rounded-2xl bg-slate-950/60 text-white placeholder:text-slate-500 border focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all ${errors.message ? 'border-red-500/60' : 'border-slate-800'}`}
+                                        placeholder="Tell us more about your requirements..."
+                                        rows={5}
                                     />
-                                    {errors.email && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Phone */}
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Phone Number *
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        {...register('phone')}
-                                        className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.phone ? 'border-red-500' : 'border-input'}`}
-                                        placeholder="+254 712 345 678"
-                                    />
-                                    {errors.phone && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
-                                    )}
+                                    {errors.message && <p className="mt-1 text-sm text-red-400">{errors.message.message}</p>}
                                 </div>
 
-                                {/* Subject */}
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Subject *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        {...register('subject')}
-                                        className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.subject ? 'border-red-500' : 'border-input'}`}
-                                        placeholder="How can we help you?"
-                                    />
-                                    {errors.subject && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.subject.message}</p>
-                                    )}
+                                <div className="pt-2">
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full bg-white text-slate-950 py-4 px-6 rounded-2xl font-black text-base sm:text-lg transition-all duration-300 shadow-xl shadow-black/20 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]"
+                                    >
+                                        {isSubmitting ? (
+                                            <span className="flex items-center justify-center gap-3">
+                                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                                </svg>
+                                                Sending…
+                                            </span>
+                                        ) : (
+                                            'Send Message'
+                                        )}
+                                    </button>
+                                    <p className="mt-3 text-xs sm:text-sm text-slate-400 text-center">
+                                        By submitting, you agree to our Privacy Policy and Terms of Service.
+                                    </p>
                                 </div>
-                            </div>
-
-                            {/* Property Interest */}
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                    Property Interest (Optional)
-                                </label>
-                                <select
-                                    {...register('propertyInterest')}
-                                    className="w-full px-4 py-3 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                                >
-                                    <option value="">Select interest type</option>
-                                    <option value="buy">Buying a Property</option>
-                                    <option value="sell">Selling a Property</option>
-                                    <option value="rent">Renting a Property</option>
-                                    <option value="invest">Investment Opportunity</option>
-                                    <option value="manage">Property Management</option>
-                                    <option value="other">Other Inquiry</option>
-                                </select>
-                            </div>
-
-                            {/* Message */}
-                            <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                    Message *
-                                </label>
-                                <textarea
-                                    {...register('message')}
-                                    rows={6}
-                                    className={`w-full px-4 py-3 border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${errors.message ? 'border-red-500' : 'border-input'}`}
-                                    placeholder="Tell us more about your requirements..."
-                                />
-                                {errors.message && (
-                                    <p className="mt-1 text-sm text-red-500">{errors.message.message}</p>
-                                )}
-                            </div>
-
-                            {/* Submit Button */}
-                            <div>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isSubmitting ? (
-                                        <span className="flex items-center justify-center gap-3">
-                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                                            </svg>
-                                            Sending Message...
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center justify-center gap-3">
-                                            Send Message
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                            </svg>
-                                        </span>
-                                    )}
-                                </button>
-                                <p className="mt-3 text-sm text-muted-foreground text-center">
-                                    By submitting this form, you agree to our Privacy Policy and Terms of Service.
-                                </p>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
 
-                    {/* Right Column - Information */}
-                    <div className="lg:pl-12 lg:border-l border-border">
-                        <div className="mb-10">
-                            <h3 className="text-2xl font-bold text-foreground mb-6">Why Contact Us?</h3>
-                            <div className="space-y-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="shrink-0 w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-foreground mb-1">Expert Advice</h4>
-                                        <p className="text-muted-foreground">Get personalized advice from our experienced real estate professionals.</p>
-                                    </div>
+                    <div className="lg:col-span-5">
+                        <div className="lg:sticky lg:top-28 space-y-6">
+                            <div className="bg-slate-900/35 border border-slate-800 rounded-3xl p-6 sm:p-8">
+                                <h3 className="text-xl sm:text-2xl font-black text-white mb-6">Quick contacts</h3>
+                                <div className="space-y-3">
+                                    <a
+                                        href="tel:+254712345678"
+                                        className="flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-950/40 p-4 hover:bg-slate-950/60 transition-colors"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center text-emerald-200">
+                                                <Phone size={18} />
+                                            </span>
+                                            <div>
+                                                <p className="font-bold text-white">Call</p>
+                                                <p className="text-sm text-slate-300">+254 712 345 678</p>
+                                            </div>
+                                        </div>
+                                        <ArrowMark />
+                                    </a>
+
+                                    <a
+                                        href="mailto:info@kenyaprime.co.ke"
+                                        className="flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-950/40 p-4 hover:bg-slate-950/60 transition-colors"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center text-emerald-200">
+                                                <Mail size={18} />
+                                            </span>
+                                            <div>
+                                                <p className="font-bold text-white">Email</p>
+                                                <p className="text-sm text-slate-300">info@kenyaprime.co.ke</p>
+                                            </div>
+                                        </div>
+                                        <ArrowMark />
+                                    </a>
                                 </div>
 
-                                <div className="flex items-start gap-4">
-                                    <div className="shrink-0 w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
+                                        <div className="flex items-center gap-2 text-emerald-200">
+                                            <Timer size={16} />
+                                            <p className="text-xs font-black uppercase tracking-widest">Response</p>
+                                        </div>
+                                        <p className="mt-2 text-sm text-slate-300">Within 24 hours (business days)</p>
                                     </div>
-                                    <div>
-                                        <h4 className="font-semibold text-foreground mb-1">Quick Response</h4>
-                                        <p className="text-muted-foreground">We guarantee a response within 24 hours during business days.</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-4">
-                                    <div className="shrink-0 w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-foreground mb-1">Trusted Service</h4>
-                                        <p className="text-muted-foreground">We've helped hundreds of clients achieve their real estate goals.</p>
+                                    <div className="rounded-2xl border border-slate-800 bg-slate-950/40 p-4">
+                                        <div className="flex items-center gap-2 text-emerald-200">
+                                            <ShieldCheck size={16} />
+                                            <p className="text-xs font-black uppercase tracking-widest">Professional</p>
+                                        </div>
+                                        <p className="mt-2 text-sm text-slate-300">Trusted guidance and transparency</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Emergency Contact */}
-                        <div className="bg-linear-to-br from-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-6">
-                            <div className="flex items-start gap-4 mb-4">
-                                <div className="shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-lg text-foreground mb-1">Emergency Contact</h4>
-                                    <p className="text-muted-foreground mb-3">Need immediate assistance?</p>
-                                    <div className="flex items-center gap-3">
-                                        <a 
-                                            href="tel:+254712345678" 
-                                            className="text-primary font-semibold hover:text-primary/80 transition-colors"
+                            <div className="bg-gradient-to-br from-emerald-500/10 to-slate-900/40 border border-emerald-500/20 rounded-3xl p-6 sm:p-8">
+                                <div className="flex items-start gap-4">
+                                    <div className="shrink-0 w-12 h-12 bg-white text-slate-950 rounded-2xl flex items-center justify-center shadow-lg shadow-black/20">
+                                        <Phone size={20} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-black text-lg text-white mb-1">Urgent help?</h4>
+                                        <p className="text-slate-300">Call our priority line for time-sensitive requests.</p>
+                                        <a
+                                            href="tel:+254712345678"
+                                            className="mt-3 inline-flex items-center gap-2 font-black text-white hover:text-emerald-200 transition-colors"
                                         >
                                             +254 712 345 678
+                                            <ArrowMark small />
                                         </a>
-                                        <span className="text-muted-foreground">|</span>
-                                        <span className="text-sm text-muted-foreground">24/7 Available</span>
+                                        <p className="mt-2 text-sm text-slate-300">24/7 Available</p>
                                     </div>
                                 </div>
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                                For urgent matters outside business hours, call our emergency line.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -288,3 +271,17 @@ export default function ContactFormSection() {
         </section>
     );
 }
+
+function ArrowMark({ small }: { small?: boolean }) {
+    return (
+        <svg
+            className={small ? 'w-4 h-4 opacity-80' : 'w-5 h-5 opacity-80'}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+        >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+        </svg>
+    );
+}
+

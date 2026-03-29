@@ -62,14 +62,17 @@ export default function ContactInfo() {
     ];
 
     return (
-        <section className="py-20 bg-muted/30">
+        <section className="py-16 sm:py-20 bg-slate-950">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                        Get in Touch
+                <div className="text-center mb-12 sm:mb-16">
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase mb-4">
+                        Reach Us
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+                        Multiple ways to contact us
                     </h2>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Multiple ways to reach us. Choose what works best for you.
+                    <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">
+                        Visit our office, send an email, or call — we’ll guide you through every step.
                     </p>
                 </div>
 
@@ -77,17 +80,17 @@ export default function ContactInfo() {
                     {contactDetails.map((contact, index) => (
                         <div
                             key={index}
-                            className="bg-card border border-border rounded-2xl p-8 text-center hover:shadow-xl transition-all duration-300 hover:border-primary/30 group"
+                            className="bg-slate-900/45 border border-slate-800 rounded-3xl p-8 text-center hover:border-emerald-500/30 hover:bg-slate-900/60 transition-all duration-300 group shadow-xl shadow-black/10"
                         >
-                            <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-200 border border-emerald-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-500/15 transition-colors">
                                 {contact.icon}
                             </div>
-                            <h3 className="text-2xl font-bold text-foreground mb-4">
+                            <h3 className="text-xl font-black text-white mb-4">
                                 {contact.title}
                             </h3>
                             <div className="space-y-2 mb-6">
                                 {contact.details.map((detail, idx) => (
-                                    <p key={idx} className="text-muted-foreground">
+                                    <p key={idx} className="text-slate-300">
                                         {detail}
                                     </p>
                                 ))}
@@ -96,7 +99,7 @@ export default function ContactInfo() {
                                 href={contact.action.link}
                                 target={contact.action.link.startsWith('http') ? '_blank' : '_self'}
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors"
+                                className="inline-flex items-center gap-2 text-emerald-200 hover:text-emerald-100 font-bold transition-colors"
                             >
                                 {contact.action.text}
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,14 +111,15 @@ export default function ContactInfo() {
                 </div>
 
                 {/* Map Section */}
-                <div className="rounded-2xl overflow-hidden shadow-xl border border-border">
-                    <div className="bg-card p-6 border-b border-border">
-                        <h3 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                            <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="rounded-3xl overflow-hidden shadow-2xl shadow-black/20 border border-slate-800 bg-slate-900/45">
+                    <div className="p-6 border-b border-slate-800">
+                        <h3 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
+                            <svg className="w-6 h-6 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                             </svg>
                             Our Location
                         </h3>
+                        <p className="mt-2 text-sm text-slate-300">ABC Place, Westlands — Nairobi, Kenya</p>
                     </div>
                     <div className="h-[400px]">
                         <iframe

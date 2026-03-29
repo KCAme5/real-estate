@@ -45,18 +45,17 @@ export default function ContactFAQ() {
     };
 
     return (
-        <section className="py-20 bg-background">
+        <section className="py-16 sm:py-20 bg-slate-950">
             <div className="container mx-auto px-4">
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-4">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        Frequently Asked Questions
+                <div className="text-center mb-12 sm:mb-16">
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase mb-4">
+                        FAQ
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                        Common Questions
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+                        Common questions
                     </h2>
-                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Find quick answers to our most frequently asked questions.
+                    <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">
+                        Quick answers about viewings, timelines, diaspora support, and payments.
                     </p>
                 </div>
 
@@ -65,17 +64,17 @@ export default function ContactFAQ() {
                         {faqItems.map((item, index) => (
                             <div
                                 key={index}
-                                className="border border-border rounded-xl overflow-hidden"
+                                className="border border-slate-800 rounded-2xl overflow-hidden bg-slate-900/35"
                             >
                                 <button
                                     onClick={() => toggleFAQ(index)}
-                                    className="w-full px-6 py-4 text-left flex items-center justify-between bg-card hover:bg-card/80 transition-colors"
+                                    className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-slate-900/55 transition-colors"
                                 >
-                                    <span className="text-lg font-semibold text-foreground">
+                                    <span className="text-base sm:text-lg font-bold text-white pr-6">
                                         {item.question}
                                     </span>
                                     <svg
-                                        className={`w-5 h-5 text-muted-foreground transition-transform ${openIndex === index ? 'rotate-180' : ''}`}
+                                        className={`w-5 h-5 text-slate-300 transition-transform shrink-0 ${openIndex === index ? 'rotate-180' : ''}`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -84,9 +83,9 @@ export default function ContactFAQ() {
                                     </svg>
                                 </button>
                                 <div
-                                    className={`px-6 overflow-hidden transition-all duration-300 ${openIndex === index ? 'py-4 border-t border-border' : 'max-h-0 py-0'}`}
+                                    className={`px-6 overflow-hidden transition-all duration-300 ${openIndex === index ? 'py-4 border-t border-slate-800' : 'max-h-0 py-0'}`}
                                 >
-                                    <p className="text-muted-foreground leading-relaxed">
+                                    <p className="text-slate-300 leading-relaxed">
                                         {item.answer}
                                     </p>
                                 </div>
@@ -96,16 +95,16 @@ export default function ContactFAQ() {
 
                     {/* Still Have Questions? */}
                     <div className="mt-12 text-center">
-                        <div className="bg-linear-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-8">
-                            <h3 className="text-2xl font-bold text-foreground mb-4">
+                        <div className="bg-gradient-to-r from-emerald-500/10 via-slate-900/30 to-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8">
+                            <h3 className="text-2xl font-black text-white mb-4">
                                 Still have questions?
                             </h3>
-                            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                            <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
                                 Can't find the answer you're looking for? Our team is here to help.
                             </p>
                             <a
                                 href="tel:+254712345678"
-                                className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl"
+                                className="inline-flex items-center gap-3 bg-white hover:bg-slate-100 text-slate-950 px-8 py-4 rounded-2xl font-black text-base sm:text-lg transition-all duration-300 shadow-xl shadow-black/20"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
