@@ -10,6 +10,7 @@ from rest_framework_simplejwt.token_blacklist.models import (
 )
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.permissions import IsAuthenticated
+from django.http import FileResponse, Http404
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.core.cache import cache
@@ -92,7 +93,7 @@ def register_user(request):
         return Response(
             {
                 "success": True,
-                "user": UserSerializer(user).data,
+                "user": UserSerializer(user, context={"request": request}).data,
                 "message": "Registration successful! Welcome to KenyaPrime.",
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
@@ -180,12 +181,36 @@ def login_user(request):
     return Response(
         {
             "success": True,
-            "user": UserSerializer(user).data,
+            "user": UserSerializer(user, context={"request": request}).data,
             "message": "Login successful!",
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
     )
+
+
+@api_view(["GET"])
+@permission_classes([permissions.AllowAny])
+def user_profile_picture(request, user_id: int):
+    """
+    Public endpoint to serve user profile pictures.
+
+    Why: production deployments often don't serve `/media/` directly (and local disks may be ephemeral).
+    This route serves the stored file via Django so the frontend can reliably render avatars.
+    """
+    User = get_user_model()
+    user = User.objects.filter(id=user_id).only("id", "profile_picture").first()
+    if not user or not user.profile_picture:
+        raise Http404("Profile picture not found")
+
+    try:
+        file_handle = user.profile_picture.open("rb")
+    except Exception:
+        raise Http404("Profile picture not available")
+
+    response = FileResponse(file_handle, content_type="image/*")
+    response["Cache-Control"] = "public, max-age=86400"
+    return response
 
 
 # ─── Refresh token ────────────────────────────────────────────────────────────

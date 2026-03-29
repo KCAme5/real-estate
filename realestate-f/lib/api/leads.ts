@@ -277,6 +277,18 @@ export const leadsAPI = {
             agent: agentId,
         }),
 
+    getOrCreateConversationByAgent: (
+        agentId: number,
+        propertyId?: number,
+        propertyTitle?: string,
+        propertyLocation?: string
+    ) =>
+        apiClient.post<Conversation>(`/leads/conversations/agent/${agentId}/`, {
+            property: propertyId,
+            property_title: propertyTitle,
+            property_location: propertyLocation,
+        }),
+
     deleteConversation: (id: number | string) =>
         apiClient.delete(`/leads/conversations/${id}/delete/`),
 

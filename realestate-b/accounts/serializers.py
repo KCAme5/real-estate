@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+from django.urls import reverse
 from .models import CustomUser, UserProfile, UserPreferences
 
 
@@ -12,6 +13,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
+    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomUser
@@ -29,6 +31,17 @@ class UserSerializer(serializers.ModelSerializer):
             "profile",
         )
         read_only_fields = ("id", "date_joined", "is_verified")
+
+    def get_profile_picture(self, obj):
+        if not getattr(obj, "profile_picture", None):
+            return None
+
+        request = self.context.get("request")
+        if not request:
+            return None
+
+        url = reverse("user-profile-picture", kwargs={"user_id": obj.id})
+        return request.build_absolute_uri(url)
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

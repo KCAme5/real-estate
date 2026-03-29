@@ -37,24 +37,29 @@ urlpatterns = [
         "conversations/", views.ConversationListView.as_view(), name="conversation-list"
     ),
     path(
+        "conversations/agent/<int:agent_id>/",
+        views.ConversationByAgentView.as_view(),
+        name="conversation-by-agent"
+    ),
+    path(
         "conversations/<int:pk>/",
         views.ConversationDetailView.as_view(),
-        name="conversation-detail",
+        name="conversation-detail"
     ),
     path(
         "conversations/<int:pk>/delete/",
         views.ConversationDeleteView.as_view(),
-        name="conversation-delete",
+        name="conversation-delete"
     ),
     path(
         "conversations/<int:pk>/messages/",
         views.MessageListView.as_view(),
-        name="message-list",
+        name="message-list"
     ),
     path(
         "conversations/<int:conversation_id>/messages/<int:pk>/delete/",
         views.MessageDeleteView.as_view(),
-        name="message-delete",
+        name="message-delete"
     ),
     # ── Messages ──────────────────────────────────────────────────────────────
     path("messages/create/", views.MessageCreateView.as_view(), name="message-create"),

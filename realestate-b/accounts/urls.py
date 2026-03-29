@@ -8,6 +8,11 @@ urlpatterns = [
     path("login/", views.login_user, name="login"),
     path("profile/", views.UserProfileView.as_view(), name="profile"),
     path("user/", views.UserDetailView.as_view(), name="user-detail"),
+    path(
+        "users/<int:user_id>/profile-picture/",
+        views.user_profile_picture,
+        name="user-profile-picture",
+    ),
     path("dashboard-stats/", views.dashboard_stats, name="dashboard-stats"),
     path("change-password/", views.change_password, name="change-password"),
     path("password-reset/", views.password_reset_request, name="password-reset"),

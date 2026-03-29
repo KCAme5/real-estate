@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from .models import AgentProfile, AgentReview
 
 User = get_user_model()
@@ -15,7 +16,7 @@ class AgentProfileSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source="user.get_full_name", read_only=True)
     user_email = serializers.CharField(source="user.email", read_only=True)
     user_phone = serializers.CharField(source="user.phone_number", read_only=True)
-    user_avatar = serializers.ImageField(source="user.profile_picture", read_only=True)
+    user_avatar = serializers.SerializerMethodField()
     reviews = AgentReviewSerializer(many=True, read_only=True)
     user_date_joined = serializers.DateTimeField(
         source="user.date_joined", read_only=True
@@ -61,12 +62,19 @@ class AgentProfileSerializer(serializers.ModelSerializer):
         properties = obj.user.properties.filter(is_active=True)
         return PropertyListSerializer(properties, many=True).data
 
+    def get_user_avatar(self, obj):
+        request = self.context.get("request")
+        if not request or not getattr(obj.user, "profile_picture", None):
+            return None
+        url = reverse("user-profile-picture", kwargs={"user_id": obj.user_id})
+        return request.build_absolute_uri(url)
+
 
 class AgentListSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source="user.get_full_name", read_only=True)
     user_email = serializers.CharField(source="user.email", read_only=True)
     user_phone = serializers.CharField(source="user.phone_number", read_only=True)
-    user_avatar = serializers.ImageField(source="user.profile_picture", read_only=True)
+    user_avatar = serializers.SerializerMethodField()
     active_properties = serializers.SerializerMethodField()
 
     class Meta:
@@ -91,6 +99,13 @@ class AgentListSerializer(serializers.ModelSerializer):
     def get_active_properties(self, obj):
         return obj.user.properties.filter(status="available").count()
 
+    def get_user_avatar(self, obj):
+        request = self.context.get("request")
+        if not request or not getattr(obj.user, "profile_picture", None):
+            return None
+        url = reverse("user-profile-picture", kwargs={"user_id": obj.user_id})
+        return request.build_absolute_uri(url)
+
 
 class AgentCompactSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
@@ -114,9 +129,11 @@ class AgentCompactSerializer(serializers.ModelSerializer):
         return obj.get_full_name() or obj.username
 
     def get_user_avatar(self, obj):
-        if hasattr(obj, "profile_picture") and obj.profile_picture:
-            return obj.profile_picture.url
-        return None
+        request = self.context.get("request")
+        if not request or not getattr(obj, "profile_picture", None):
+            return None
+        url = reverse("user-profile-picture", kwargs={"user_id": obj.id})
+        return request.build_absolute_uri(url)
 
     def get_user_phone(self, obj):
         if hasattr(obj, "phone_number") and obj.phone_number:
