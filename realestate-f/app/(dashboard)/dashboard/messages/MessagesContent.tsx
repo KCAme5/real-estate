@@ -71,7 +71,7 @@ export default function MessagesContent() {
     useEffect(() => {
         if (!mounted) return;
         if (typeof window === 'undefined') return;
-        console.log('MessagesContent mounted on client');
+
     }, [mounted]);
 
     const scrollToBottom = () => {

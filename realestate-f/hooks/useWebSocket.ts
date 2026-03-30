@@ -73,7 +73,7 @@ export const useWebSocket = () => {
       wsRef.current = new WebSocket(wsUrl);
 
       wsRef.current.onopen = () => {
-        console.log('WebSocket connected');
+
         reconnectAttemptsRef.current = 0;
         hasEverConnectedRef.current = true;
         setConnectionState('open');

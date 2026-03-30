@@ -11,7 +11,7 @@ export default function NewPropertyPage() {
     const { user } = useAuth();
 
     const handlePropertyCreated = (property: any) => {
-        console.log('Property created:', property);
+
         router.push('/dashboard/agent/properties');
     };
 

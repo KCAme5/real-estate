@@ -69,13 +69,7 @@ export default function DashboardLayout({
         const isManagementRoute = pathname.startsWith('/dashboard/management');
         
         // Check if user has access to the route
-        if (isAgentRoute && user.user_type !== 'agent') {
-            console.log('🔴 Access denied: User is not an agent');
-            router.push('/login');
-        } else if (isManagementRoute && user.user_type !== 'management') {
-            console.log('🔴 Access denied: User is not management');
-            router.push('/login');
-        }
+
     }, [user, loading, pathname, router]);
 
     const mobileQuickLinks = [

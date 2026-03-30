@@ -34,13 +34,12 @@ export default function ContactFormSection() {
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
         try {
-            console.log('Form data:', data);
             await new Promise((resolve) => setTimeout(resolve, 1000));
             setSubmitSuccess(true);
             reset();
             setTimeout(() => setSubmitSuccess(false), 5000);
         } catch (error) {
-            console.error('Error submitting form:', error);
+            // Silent error handling
         } finally {
             setIsSubmitting(false);
         }

@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     const handleAutoLogout = useCallback(() => {
-        console.log('🔴 Auto-logout triggered due to authentication failure');
+
         handleLogoutCleanUp();
         router.push('/login');
     }, [router]);
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Handle redirection after user is set
     useEffect(() => {
         if (shouldRedirect && user) {
-            console.log('🟢 Redirecting user based on type:', user.user_type);
+    
             const timer = setTimeout(() => {
                 if (user.user_type === 'agent') {
                     router.push('/dashboard/agent');
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Register the logout handler
         apiClient.setLogoutHandler(() => {
-            console.log('Session expired, logging out...');
+
             handleLogoutCleanUp();
         });
 
@@ -106,14 +106,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (token) {
                 try {
-                    console.log('🔵 Found existing token, attempting to restore session...');
+
                     apiClient.setAccessToken(token);
                     // Fetch user profile to validate token and get user details
                     const response = await apiClient.get('/auth/user/');
                     setUser(normalizeUser(response));
-                    console.log('🟢 Session restored:', response);
+
                 } catch (error) {
-                    console.error('🔴 Failed to restore session:', error);
                     handleLogoutCleanUp();
                 }
             }
@@ -143,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const response = await apiClient.get('/auth/user/');
             setUser(normalizeUser(response));
         } catch (error) {
-            console.error('Failed to refresh user:', error);
+            // Silent refresh failure
         }
     }, []);
 
@@ -180,7 +179,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
             return response;
         } catch (error: any) {
-            console.error('Registration error:', error);
             let errorMessage = 'Registration failed.';
             if (error.response?.data?.message) errorMessage = error.response.data.message;
             else if (error.message) errorMessage = error.message;
@@ -191,13 +189,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const login = async (email: string, password: string) => {
-        console.log('🟢 AuthContext login called', { email });
+
         setLoading(true);
         try {
             const loginData = { username: email, password: password };
-            console.log('🟢 Sending POST to /auth/login/ with:', { username: email });
+    
             const response = await apiClient.post('/auth/login/', loginData);
-            console.log('🟢 Login API response:', response);
+    
 
             if (response.success && response.user) {
                 // Store tokens in localStorage and cookie
@@ -212,7 +210,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
 
                 setUser(normalizeUser(response.user));
-                console.log('🟢 User set:', response.user);
+
 
                 // Trigger redirection via useEffect
                 setShouldRedirect(true);
@@ -221,7 +219,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
             return response;
         } catch (error: any) {
-            console.error('🔴 AuthContext login error:', error);
             let errorMessage = 'Login failed.';
             if (error.response?.data?.detail) errorMessage = error.response.data.detail;
             else if (error.message) errorMessage = error.message;

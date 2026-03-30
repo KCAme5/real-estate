@@ -140,7 +140,7 @@ export default function RegistrationPage() {
                 submitData.password2 = submitData.password;
             }
 
-            console.log('Submitting registration data:', submitData);
+
 
             await register(submitData);
 
