@@ -759,7 +759,7 @@ export default function RegistrationPage() {
                         <div className="mt-6 text-center">
                             <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                                 <ShieldCheck className="w-3 h-3" />
-                                <span>Your data is protected with 256-bit SSL encryption</span>
+                                <span>Your data is protected by strict encryption</span>
                             </div>
                         </div>
                     </div>
