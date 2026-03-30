@@ -191,7 +191,7 @@ export default function HeroSection() {
                     </div>
                 </div>
 
-                {/* Stats */}
+                {/* Stats 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                     {[
                         { number: '500+', label: 'Properties Listed' },
@@ -203,7 +203,7 @@ export default function HeroSection() {
                             <div className="text-gray-400 text-sm uppercase tracking-wider">{stat.label}</div>
                         </div>
                     ))}
-                </div>
+                </div>*/}
             </div>
 
             {/* Carousel Controls */}
