@@ -59,7 +59,7 @@ export default function AgentSidebar() {
                     </div>
                     {!isCollapsed && (
                         <div>
-                            <div className="text-lg font-bold text-foreground">KenyaPrime</div>
+                            <div className="text-lg font-bold text-foreground">Tugai Realtors</div>
                             <div className="text-xs text-muted-foreground -mt-1">Agent Portal</div>
                         </div>
                     )}

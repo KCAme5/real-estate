@@ -11,7 +11,7 @@ export default function Testimonials() {
       name: 'Michael Otieno',
       role: 'Diaspora Client, USA',
       image: '/api/placeholder/80/80',
-      content: 'As a Kenyan living in the US, I was hesitant about buying property back home. KenyaPrime made the process seamless with their virtual tours and excellent legal support. I now own a beautiful apartment in Nairobi!',
+      content: 'As a Kenyan living in the US, I was hesitant about buying property back home. Tugai Realtors made the process seamless with their virtual tours and excellent legal support. I now own a beautiful apartment in Nairobi!',
       rating: 5
     },
     {
@@ -19,7 +19,7 @@ export default function Testimonials() {
       name: 'Sarah Johnson',
       role: 'Investor, UK',
       image: '/api/placeholder/80/80',
-      content: 'The team at KenyaPrime understood exactly what I was looking for. They found me a perfect investment property in Mombasa that has already appreciated significantly. Highly recommend their services!',
+      content: 'The team at Tugai Realtors understood exactly what I was looking for. They found me a perfect investment property in Mombasa that has already appreciated significantly. Highly recommend their services!',
       rating: 5
     },
     {
@@ -27,7 +27,7 @@ export default function Testimonials() {
       name: 'David & Grace Mwangi',
       role: 'Local Clients, Nairobi',
       image: '/api/placeholder/80/80',
-      content: 'From the initial consultation to the final handover, KenyaPrime provided exceptional service. Their attention to detail and market knowledge helped us secure our dream family home in Karen.',
+      content: 'From the initial consultation to the final handover, Tugai Realtors provided exceptional service. Their attention to detail and market knowledge helped us secure our dream family home in Karen.',
       rating: 5
     }
   ];
@@ -60,7 +60,7 @@ export default function Testimonials() {
             What Our Clients Say
           </h2>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Hear from our satisfied clients who have found their dream properties through KenyaPrime.
+            Hear from our satisfied clients who have found their dream properties through Tugai Realtors.
           </p>
         </div>
 

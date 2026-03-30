@@ -31,7 +31,7 @@ export default function DashboardHeader() {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-black text-white tracking-tighter leading-none group-hover:text-blue-400 transition-colors">
-                                KenyaPrime
+                                Tugai Realtors
                             </span>
                             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
                                 Real Estate Hub

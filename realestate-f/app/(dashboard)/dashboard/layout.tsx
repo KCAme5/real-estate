@@ -150,7 +150,7 @@ export default function DashboardLayout({
                                     <DashboardSidebarClient />
                                 </div>
                                 <div className="p-8 pt-4">
-                                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">KenyaPrime Properties v2.0</p>
+                                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest text-center">Tugai Realtors v2.0</p>
                                 </div>
                             </div>
                         </div>

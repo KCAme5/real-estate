@@ -113,9 +113,9 @@ export default function ManagementSettingsPage() {
 
     // Audit log
     const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([
-        { id: 1, action: 'User Updated', user: 'admin@kenyaprime.co.ke', timestamp: '2024-03-29 10:30 AM', details: 'Updated agent commission rates' },
-        { id: 2, action: 'Team Member Added', user: 'admin@kenyaprime.co.ke', timestamp: '2024-03-28 02:15 PM', details: 'Added Jane Smith as Manager' },
-        { id: 3, action: 'Settings Changed', user: 'admin@kenyaprime.co.ke', timestamp: '2024-03-27 09:00 AM', details: 'Modified notification preferences' },
+        { id: 1, action: 'User Updated', user: 'admin@tugairealtors.co.ke', timestamp: '2024-03-29 10:30 AM', details: 'Updated agent commission rates' },
+        { id: 2, action: 'Team Member Added', user: 'admin@tugairealtors.co.ke', timestamp: '2024-03-28 02:15 PM', details: 'Added Jane Smith as Manager' },
+        { id: 3, action: 'Settings Changed', user: 'admin@tugairealtors.co.ke', timestamp: '2024-03-27 09:00 AM', details: 'Modified notification preferences' },
     ]);
 
     // Initialize form with user data
@@ -123,7 +123,7 @@ export default function ManagementSettingsPage() {
         if (user) {
             setOrgForm(prev => ({
                 ...prev,
-                company_name: user.first_name ? `${user.first_name}'s Organization` : 'KenyaPrime Management',
+                company_name: user.first_name ? `${user.first_name}'s Organization` : 'Tugai Realtors Management',
                 email: user.email || '',
                 phone: user.phone_number || '',
             }));

@@ -1,7 +1,7 @@
 // app/(dashboard)/layout.tsx
 
 export const metadata = {
-    title: 'Dashboard - KenyaPrime Properties',
+    title: 'Dashboard - Tugai Realtors',
     description: 'Your personal dashboard',
 };
 

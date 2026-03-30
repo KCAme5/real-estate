@@ -53,7 +53,7 @@ const WhatsAppSidebar: React.FC<WhatsAppSidebarProps> = ({
                             <UserIcon size={16} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-white font-semibold text-sm sm:text-base">Kenyaprime</h1>
+                            <h1 className="text-white font-semibold text-sm sm:text-base">Tugai Realtors</h1>
                             <p className="text-xs text-gray-400">Online</p>
                         </div>
                     </div>

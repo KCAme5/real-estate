@@ -71,7 +71,7 @@ export default function WhyChooseUs() {
                         Why Choose Us
                     </div>
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                        The KenyaPrime Advantage
+                        The Tugai Realtors Advantage
                     </h2>
                     <p className="text-xl text-slate-400 max-w-2xl mx-auto">
                         Experience the difference with our comprehensive real estate solutions and exceptional service.

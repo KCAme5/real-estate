@@ -145,7 +145,7 @@ export default function RegistrationPage() {
             await register(submitData);
 
             // Show success message
-            setSuccessMessage('Registration successful! Welcome to KenyaPrime Properties. Redirecting you to dashboard...');
+            setSuccessMessage('Registration successful! Welcome to Tugai Realtors. Redirecting you to dashboard...');
             // Redirection is handled by AuthContext.register()
         } catch (err: any) {
             console.error('Registration error details:', err);
@@ -241,7 +241,7 @@ export default function RegistrationPage() {
 
                 <div className="text-center mb-12 text-white">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                        Join KenyaPrime Properties
+                        Join Tugai Realtors
                     </h1>
                     <p className="text-xl text-slate-200 max-w-2xl mx-auto">
                         Start your real estate journey with Kenya&apos;s premier property platform

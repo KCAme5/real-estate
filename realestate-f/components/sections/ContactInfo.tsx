@@ -9,7 +9,7 @@ export default function ContactInfo() {
             ),
             title: 'Visit Our Office',
             details: [
-                'KenyaPrime Properties',
+                'Tugai Realtors',
                 'ABC Place, 1st Floor',
                 'Waiyaki Way, Westlands',
                 'Nairobi, Kenya'
@@ -28,15 +28,15 @@ export default function ContactInfo() {
             title: 'Email Us',
             details: [
                 'General Inquiries:',
-                'info@kenyaprime.co.ke',
+                'info@tugairealtors.co.ke',
                 'Sales Team:',
-                'sales@kenyaprime.co.ke',
+                'sales@tugairealtors.co.ke',
                 'Support:',
-                'support@kenyaprime.co.ke'
+                'support@tugairealtors.co.ke'
             ],
             action: {
                 text: 'Send Email',
-                link: 'mailto:info@kenyaprime.co.ke'
+                link: 'mailto:info@tugairealtors.co.ke'
             }
         },
         {
@@ -128,7 +128,7 @@ export default function ContactInfo() {
                             height="100%"
                             style={{ border: 0 }}
                             loading="lazy"
-                            title="KenyaPrime Properties Location"
+                            title="Tugai Realtors Location"
                         />
                     </div>
                 </div>

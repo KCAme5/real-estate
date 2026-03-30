@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
                                 1. Introduction
                             </h2>
                             <p>
-                                KenyaPrime Realtors Limited ("we," "our," or "us") respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website kenyaprimerealtors.co.ke (the "Website"), create an account, submit inquiries, make payments, or otherwise interact with our services.
+                                Tugai Realtors Limited ("we," "our," or "us") respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website tugairealtors.co.ke (the "Website"), create an account, submit inquiries, make payments, or otherwise interact with our services.
                             </p>
                             <p className="mt-4">
                                 This Policy complies with the Kenya Data Protection Act, 2019 (KDPA), the General Data Protection Regulation (GDPR) where applicable, the California Consumer Privacy Act (CCPA/CPRA) as amended, and other applicable privacy laws.
@@ -28,9 +28,9 @@ export default function PrivacyPolicy() {
                                 2. Data Controller
                             </h2>
                             <p>
-                                KenyaPrime Realtors Limited<br />
+                                Tugai Realtors Limited<br />
                                 Registered in the Republic of Kenya<br />
-                                Email: privacy@kenyaprimerealtors.co.ke<br />
+                                Email: privacy@tugairealtors.co.ke<br />
                                 Phone: [+254 your number – add later]
                             </p>
                         </section>
@@ -153,7 +153,7 @@ export default function PrivacyPolicy() {
                                 <li>Non-discrimination for exercising rights</li>
                             </ul>
                             <p className="mt-4">
-                                Submit requests to: privacy@kenyaprimerealtors.co.ke<br />
+                                Submit requests to: privacy@tugairealtors.co.ke<br />
                                 We respond within 30 days (or 1 month under GDPR).
                             </p>
                         </section>
@@ -190,9 +190,9 @@ export default function PrivacyPolicy() {
                                 14. Contact Us
                             </h2>
                             <p>
-                                KenyaPrime Realtors Limited<br />
-                                Email: privacy@kenyaprimerealtors.co.ke<br />
-                                Data Protection Officer: dpo@kenyaprimerealtors.co.ke
+                                Tugai Realtors Limited<br />
+                                Email: privacy@tugairealtors.co.ke<br />
+                                Data Protection Officer: dpo@tugairealtors.co.ke
                             </p>
                         </section>
                     </div>

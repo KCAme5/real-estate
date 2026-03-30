@@ -211,7 +211,7 @@ export default function ContactFormSection() {
                                     </a>
 
                                     <a
-                                        href="mailto:info@kenyaprime.co.ke"
+                                        href="mailto:info@tugairealtors.co.ke"
                                         className="flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-950/40 p-4 hover:bg-slate-950/60 transition-colors"
                                     >
                                         <div className="flex items-center gap-3">
@@ -220,7 +220,7 @@ export default function ContactFormSection() {
                                             </span>
                                             <div>
                                                 <p className="font-bold text-white">Email</p>
-                                                <p className="text-sm text-slate-300">info@kenyaprime.co.ke</p>
+                                                <p className="text-sm text-slate-300">info@tugairealtors.co.ke</p>
                                             </div>
                                         </div>
                                         <ArrowMark />
@@ -284,4 +284,3 @@ function ArrowMark({ small }: { small?: boolean }) {
         </svg>
     );
 }
-

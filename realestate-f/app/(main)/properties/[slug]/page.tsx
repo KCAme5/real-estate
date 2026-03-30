@@ -583,14 +583,14 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
                                         </div>
                                     </div>
                                     <div className="min-w-0">
-                                        <h4 className="text-xl font-black text-white truncate">{agent?.user_name || 'KenyaPrime Agent'}</h4>
+                                        <h4 className="text-xl font-black text-white truncate">{agent?.user_name || 'Tugai Realtors Agent'}</h4>
                                         <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                                             <Star size={10} fill="currentColor" />
                                             Top Rated Professional
                                         </div>
                                         <p className="text-slate-500 text-xs flex items-center gap-1">
                                             <Shield size={12} />
-                                            Verified by KenyaPrime
+                                            Verified by Tugai Realtors
                                         </p>
                                     </div>
                                 </div>

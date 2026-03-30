@@ -14,7 +14,7 @@ export default function TermsOfService() {
                         <section>
                             <h2 className="text-2xl md:text-3xl font-semibold text-gold mb-6">1. Acceptance of Terms</h2>
                             <p>
-                                By accessing or using kenyaprimerealtors.co.ke (the "Website") and any services provided by KenyaPrime Realtors Limited ("we," "us," "our"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Website.
+                                By accessing or using tugairealtors.co.ke (the "Website") and any services provided by Tugai Realtors Limited ("we," "us," "our"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree, do not use the Website.
                             </p>
                         </section>
 
@@ -65,14 +65,14 @@ export default function TermsOfService() {
                         <section>
                             <h2 className="text-2xl md:text-3xl font-semibold text-gold mb-6">7. Intellectual Property</h2>
                             <p>
-                                All content, trademarks, logos, photos, virtual tours, and designs are owned by KenyaPrime Realtors or licensed to us. You may not use them without written permission.
+                                All content, trademarks, logos, photos, virtual tours, and designs are owned by Tugai Realtors or licensed to us. You may not use them without written permission.
                             </p>
                         </section>
 
                         <section>
                             <h2 className="text-2xl md:text-3xl font-semibold text-gold mb-6">8. Limitation of Liability</h2>
                             <p>
-                                TO THE MAXIMUM EXTENT PERMITTED BY LAW, KENYAPRIME REALTORS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES.
+                                TO THE MAXIMUM EXTENT PERMITTED BY LAW, TUGAI REALTORS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES.
                             </p>
                         </section>
 
@@ -107,8 +107,8 @@ export default function TermsOfService() {
                         <section>
                             <h2 className="text-2xl md:text-3xl font-semibold text-gold mb-6">13. Contact Information</h2>
                             <p>
-                                KenyaPrime Realtors Limited<br />
-                                Email: legal@kenyaprimerealtors.co.ke<br />
+                                Tugai Realtors Limited<br />
+                                Email: legal@tugairealtors.co.ke<br />
                                 Phone: [+254 your number]
                             </p>
                         </section>

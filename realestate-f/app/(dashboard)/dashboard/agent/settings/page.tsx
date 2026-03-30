@@ -179,7 +179,13 @@ export default function AgentSettingsPage() {
             reader.readAsDataURL(file);
 
             const updated = await userAccountAPI.uploadProfilePicture(file);
-            updateUser({ profile_picture: updated.profile_picture || undefined });
+            // Normalize the profile picture URL before updating
+            const normalizedPic = updated.profile_picture
+                ? (updated.profile_picture.startsWith('http') || updated.profile_picture.startsWith('data:')
+                    ? updated.profile_picture
+                    : `${(process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api').replace(/\/api\/?$/, '')}${updated.profile_picture.startsWith('/') ? '' : '/'}${updated.profile_picture}`)
+                : undefined;
+            updateUser({ profile_picture: normalizedPic });
             showSuccess('Image uploaded successfully');
         } catch (error: any) {
             console.error('Avatar upload failed:', error);

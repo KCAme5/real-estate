@@ -371,7 +371,7 @@ const WhatsAppChatArea: React.FC<WhatsAppChatAreaProps> = ({
                         <div className="w-32 h-32 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                             <MessageSquare className="text-white" size={64} />
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-2">Kenyaprime Messages</h2>
+                        <h2 className="text-3xl font-bold text-white mb-2">Tugai Realtors Messages</h2>
                         <p className="text-gray-400 mb-6">Send and receive messages without keeping your phone online.</p>
                         <p className="text-gray-500 text-sm">Connect with agents and manage your property inquiries.</p>
                     </div>

@@ -27,7 +27,7 @@ export default function ContactHero() {
                     </div>
 
                     <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
-                        Contact <span className="text-emerald-300">KenyaPrime</span>
+                        Contact <span className="text-emerald-300">Tugai Realtors</span>
                     </h1>
 
                     <p className="mt-6 text-base sm:text-lg md:text-xl text-slate-200/90 leading-relaxed">
@@ -43,7 +43,7 @@ export default function ContactHero() {
                             Call Us
                         </a>
                         <a
-                            href="mailto:info@kenyaprime.co.ke"
+                            href="mailto:info@tugairealtors.co.ke"
                             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500/15 text-emerald-200 border border-emerald-500/25 px-6 py-4 font-bold hover:bg-emerald-500/20 transition-colors"
                         >
                             <Mail size={18} />
@@ -97,7 +97,7 @@ export default function ContactHero() {
                                     <Mail size={16} />
                                     <p className="text-[10px] font-black uppercase tracking-widest">Support</p>
                                 </div>
-                                <p className="mt-2 text-sm font-bold text-white">info@kenyaprime.co.ke</p>
+                                <p className="mt-2 text-sm font-bold text-white">info@tugairealtors.co.ke</p>
                                 <p className="mt-1 text-xs text-slate-300">Sales • support • viewings</p>
                             </div>
                         </div>

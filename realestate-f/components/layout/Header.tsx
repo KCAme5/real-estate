@@ -134,7 +134,7 @@ export default function Header() {
                                 Tugai Realtors
                             </div>
                             <div className="text-sm text-primary font-medium tracking-wide">
-                                Listings
+                                Properties
                             </div>
                         </div>
                     </Link>

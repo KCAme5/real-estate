@@ -80,7 +80,7 @@ export default function AboutPage() {
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 rounded-full mb-6">
                             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                             <span className="text-sm font-medium text-emerald-100">
-                                About KenyaPrime Properties
+                                About Tugai Realtors
                             </span>
                         </div>
                         <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
@@ -219,7 +219,7 @@ export default function AboutPage() {
                                                 Our Story
                                             </h3>
                                             <p className="text-lg text-muted-foreground mb-6">
-                                                Founded in 2010, KenyaPrime Properties began as a small office with a big dream:
+                                                Founded in 2010, Tugai Realtors began as a small office with a big dream:
                                                 to make real estate accessible, transparent, and rewarding for everyone.
                                             </p>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

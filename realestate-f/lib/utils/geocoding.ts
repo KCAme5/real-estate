@@ -27,7 +27,7 @@ export async function geocodeAddress(address: string): Promise<GeocodeResult | n
             `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&limit=1`,
             {
                 headers: {
-                    'User-Agent': 'KenyaPrimeRealEstate/1.0',
+                    'User-Agent': 'TugaiRealtorsRealEstate/1.0',
                 },
             }
         );
@@ -65,7 +65,7 @@ export async function reverseGeocode(latitude: number, longitude: number): Promi
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
             {
                 headers: {
-                    'User-Agent': 'KenyaPrimeRealEstate/1.0',
+                    'User-Agent': 'TugaiRealtorsRealEstate/1.0',
                 },
             }
         );

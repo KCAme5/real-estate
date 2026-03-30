@@ -29,7 +29,7 @@ const SERVICES = [
     {
         icon: FileCheck,
         title: 'Legal & title verification',
-        description: 'Every property on KenyaPrime is verified through the official Ardhisasa government portal. Our partner advocates conduct full title searches, confirm there are no encumbrances, and handle the entire conveyancing process — including e-signatures and online stamp duty via iTax.',
+        description: 'Every property on Tugai Realtors is verified through the official Ardhisasa government portal. Our partner advocates conduct full title searches, confirm there are no encumbrances, and handle the entire conveyancing process — including e-signatures and online stamp duty via iTax.',
         features: ['Ardhisasa title search', 'Power of Attorney drafting', 'e-Conveyancing 2025', 'Stamp duty via iTax'],
         accent: '#10B981',
     },
@@ -67,7 +67,7 @@ const PROCESS_STEPS = [
     {
         number: '01',
         title: 'Book a free consultation',
-        description: 'Schedule a video call with a KenyaPrime diaspora specialist. We\'ll discuss your goals, budget, preferred locations, and timeline — no obligation.',
+        description: 'Schedule a video call with a Tugai Realtors diaspora specialist. We\'ll discuss your goals, budget, preferred locations, and timeline — no obligation.',
     },
     {
         number: '02',
@@ -107,7 +107,7 @@ const FAQS = [
     },
     {
         q: 'How do I verify a property is legitimate from abroad?',
-        a: 'All KenyaPrime listings are verified through the official Ardhisasa government portal before going live. We provide the title search results to you directly. We also only work with EARB-registered agents.',
+        a: 'All Tugai Realtors listings are verified through the official Ardhisasa government portal before going live. We provide the title search results to you directly. We also only work with EARB-registered agents.',
     },
     {
         q: 'What payment methods do you accept from abroad?',
@@ -119,7 +119,7 @@ const FAQS = [
     },
     {
         q: 'What are the taxes and fees involved?',
-        a: 'Stamp duty is 2% for land and 4% for buildings, paid via iTax. Legal fees typically range from Ksh 50,000 to Ksh 200,000 depending on property value. There are no upfront agent fees on KenyaPrime.',
+        a: 'Stamp duty is 2% for land and 4% for buildings, paid via iTax. Legal fees typically range from Ksh 50,000 to Ksh 200,000 depending on property value. There are no upfront agent fees on Tugai Realtors.',
     },
 ];
 
@@ -195,7 +195,7 @@ export default function DiasporaServicesPage() {
                         </h1>
 
                         <p className="text-lg text-slate-300 leading-relaxed max-w-xl">
-                            KenyaPrime connects the Kenyan diaspora with verified properties, trusted legal support, and end-to-end remote buying — from first viewing to title transfer, without setting foot in Kenya.
+                            Tugai Realtors connects the Kenyan diaspora with verified properties, trusted legal support, and end-to-end remote buying — from first viewing to title transfer, without setting foot in Kenya.
                         </p>
 
                         {/* CTAs */}
@@ -369,7 +369,7 @@ export default function DiasporaServicesPage() {
                         <div className="space-y-2 flex-1">
                             <h3 className="text-xl font-black text-white">Protecting diaspora buyers from land fraud</h3>
                             <p className="text-slate-400 text-sm leading-relaxed max-w-2xl">
-                                Land scams cost Kenyan diaspora buyers hundreds of millions annually. Every property listed on KenyaPrime is verified through the official <span className="text-white font-semibold">Ardhisasa government portal</span> before it goes live. We only work with agents registered with the <span className="text-white font-semibold">Estate Agents Registration Board (EARB)</span>. Payments are held in a licensed advocate's escrow account and only released upon verified title transfer. No upfront agent fees, ever.
+                                Land scams cost Kenyan diaspora buyers hundreds of millions annually. Every property listed on Tugai Realtors is verified through the official <span className="text-white font-semibold">Ardhisasa government portal</span> before it goes live. We only work with agents registered with the <span className="text-white font-semibold">Estate Agents Registration Board (EARB)</span>. Payments are held in a licensed advocate's escrow account and only released upon verified title transfer. No upfront agent fees, ever.
                             </p>
                         </div>
                         <Link
@@ -423,7 +423,7 @@ export default function DiasporaServicesPage() {
                         </h2>
 
                         <p className="text-slate-400 leading-relaxed">
-                            Book a free 30-minute video call with a KenyaPrime diaspora specialist. We'll understand your goals and send you a personalised property shortlist within 48 hours — no obligation, no pressure.
+                            Book a free 30-minute video call with a Tugai Realtors diaspora specialist. We'll understand your goals and send you a personalised property shortlist within 48 hours — no obligation, no pressure.
                         </p>
 
                         <div className="flex flex-wrap items-center justify-center gap-4">
@@ -451,7 +451,7 @@ export default function DiasporaServicesPage() {
                         <div className="flex flex-wrap items-center justify-center gap-8 pt-4">
                             {[
                                 { icon: Phone, label: '+254 700 000 000' },
-                                { icon: Mail, label: 'diaspora@kenyaprime.com' },
+                                { icon: Mail, label: 'diaspora@tugairealtors.com' },
                                 { icon: MessageCircle, label: 'WhatsApp us' },
                             ].map((c, i) => (
                                 <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
