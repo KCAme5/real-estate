@@ -12,7 +12,7 @@ import {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const STATS = [
-    { value: '$5.04B', label: 'Diaspora remittances to Kenya in 2025' },
+    //{ value: '$5.04B', label: 'Diaspora remittances to Kenya in 2025' },
     { value: '4%', label: 'Of Kenya\'s GDP from diaspora inflows' },
     { value: '50%+', label: 'Of remittances from the United States' },
     { value: '12–21', label: 'Working days to transfer title remotely' },
