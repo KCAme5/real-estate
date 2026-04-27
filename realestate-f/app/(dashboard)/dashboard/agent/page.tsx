@@ -80,11 +80,11 @@ export default function AgentDashboard() {
           bookingsAPI.getAll(),
         ]);
 
-        setStats(statsData);
-        setProperties(propsData.results || propsData || []);
-        setLeads(leadsData.results || leadsData || []);
-        setConversations(convsData.results || convsData || []);
-        setBookings(bookingsData.results || bookingsData || []);
+    setStats(statsData);
+    setProperties(Array.isArray(propsData) ? propsData : []);
+    setLeads(Array.isArray(leadsData) ? leadsData : []);
+    setConversations(Array.isArray(convsData) ? convsData : []);
+    setBookings(Array.isArray(bookingsData) ? bookingsData : []);
       } catch (error) {
         console.error('Failed to fetch agent dashboard data:', error);
       } finally {

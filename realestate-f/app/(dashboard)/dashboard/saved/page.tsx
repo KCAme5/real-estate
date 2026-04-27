@@ -18,7 +18,7 @@ export default function SavedPropertiesPage() {
         const fetchSaved = async () => {
             try {
                 const data = await propertyAPI.getSavedProperties();
-                const properties = data.results?.map((item: any) => item.property || item) || data.map((item: any) => item.property || item) || [];
+                const properties = Array.isArray(data) ? data.map((item: any) => item.property || item) : [];
                 setSavedProperties(properties);
             } catch (error) {
                 console.error('Failed to fetch saved properties:', error);

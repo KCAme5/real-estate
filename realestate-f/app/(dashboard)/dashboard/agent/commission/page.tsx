@@ -46,7 +46,7 @@ export default function CommissionPage() {
                 if (!response.ok) throw new Error('Failed to fetch properties');
 
                 const data = await response.json();
-                const soldProperties = Array.isArray(data) ? data : data.results || [];
+                const soldProperties = Array.isArray(data) ? data : [];
 
                 // Calculate commissions from sold properties
                 const txns: CommissionTransaction[] = soldProperties.map((prop: any, idx: number) => {

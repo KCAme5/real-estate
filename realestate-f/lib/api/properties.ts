@@ -1,5 +1,5 @@
 // lib/api/properties.ts
-import { apiClient } from './client';
+import { apiClient, normalizeResponse } from './client';
 
 export interface PropertyData {
     title: string;
@@ -116,40 +116,47 @@ export const propertyAPI = {
         return apiClient.get(`/properties/${identifier}/`);
     },
 
-    // Get all properties with optional filters
-    getAll: async (params?: any) => {
-        return apiClient.get('/properties/', { params });
-    },
+  // Get all properties with optional filters
+  getAll: async (params?: any) => {
+    const response = await apiClient.get('/properties/', { params });
+    return normalizeResponse(response);
+  },
 
-    // Get only properties managed by the current agent
-    getAgentProperties: async () => {
-        return apiClient.get('/properties/my-properties/');
-    },
+  // Get only properties managed by the current agent
+  getAgentProperties: async () => {
+    const response = await apiClient.get('/properties/my-properties/');
+    return normalizeResponse(response);
+  },
 
-    // Get featured properties
-    getFeaturedProperties: async () => {
-        return apiClient.get('/properties/featured/');
-    },
+  // Get featured properties
+  getFeaturedProperties: async () => {
+    const response = await apiClient.get('/properties/featured/');
+    return normalizeResponse(response);
+  },
 
-    // Get personalized recommendations
-    getRecommended: async () => {
-        return apiClient.get('/properties/recommendations/');
-    },
+  // Get personalized recommendations
+  getRecommended: async () => {
+    const response = await apiClient.get('/properties/recommendations/');
+    return normalizeResponse(response);
+  },
 
-    // Search properties
-    searchProperties: async (query: string) => {
-        return apiClient.get('/properties/search/', { params: { search: query } });
-    },
+  // Search properties
+  searchProperties: async (query: string) => {
+    const response = await apiClient.get('/properties/search/', { params: { search: query } });
+    return normalizeResponse(response);
+  },
 
-    // Get property recommendations
-    getRecommendations: async () => {
-        return apiClient.get('/properties/recommendations/');
-    },
+  // Get property recommendations
+  getRecommendations: async () => {
+    const response = await apiClient.get('/properties/recommendations/');
+    return normalizeResponse(response);
+  },
 
-    // Management
-    getManagementProperties: async (params?: any) => {
-        return apiClient.get('/properties/management-properties/', { params });
-    },
+  // Management
+  getManagementProperties: async (params?: any) => {
+    const response = await apiClient.get('/properties/management-properties/', { params });
+    return normalizeResponse(response);
+  },
 
     updateManagementProperty: async (propertyId: number, propertyData: PropertyData | FormData) => {
         return apiClient.patch(`/properties/management-properties/${propertyId}/`, propertyData);

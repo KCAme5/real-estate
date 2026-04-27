@@ -130,8 +130,8 @@ export default function AgentsPage() {
             let fetchedAgents: Agent[] = [];
             if (Array.isArray(data)) {
                 fetchedAgents = data;
-            } else if (data && Array.isArray((data as { results?: Agent[] }).results)) {
-                fetchedAgents = (data as { results: Agent[] }).results;
+  } else if (data && Array.isArray(data)) {
+    fetchedAgents = data;
             }
             
             setAgents(fetchedAgents);

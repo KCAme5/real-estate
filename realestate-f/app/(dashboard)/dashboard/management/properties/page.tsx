@@ -44,14 +44,12 @@ export default function ManagementPropertiesPage() {
         try {
             setLoading(true);
             const response = await propertyAPI.getManagementProperties();
-            // Handle pagination (DRF returns { results: [], count: ... })
-            if (response && response.results) {
-                setProperties(response.results);
-            } else if (Array.isArray(response)) {
-                setProperties(response);
-            } else {
-                setProperties([]);
-            }
+    // Response is already normalized by normalizeResponse()
+    if (Array.isArray(response)) {
+      setProperties(response);
+    } else {
+      setProperties([]);
+    }
         } catch (error) {
             console.error('Failed to fetch properties:', error);
         } finally {

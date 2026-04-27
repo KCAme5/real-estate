@@ -1,8 +1,28 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
 
 interface ApiError {
-    message: string;
-    status: number;
+  message: string;
+  status: number;
+}
+
+/**
+ * Helper function to normalize API responses that may come as either:
+ * - An array directly
+ * - An object with a 'results' property
+ * - An object with a 'data' property
+ */
+export function normalizeResponse<T = any>(response: any): T[] {
+  if (Array.isArray(response)) {
+    return response as T[];
+  }
+  if (response?.results && Array.isArray(response.results)) {
+    return response.results as T[];
+  }
+  if (response?.data && Array.isArray(response.data)) {
+    return response.data as T[];
+  }
+  // If it's a single object, wrap it in an array
+  return response ? [response as T] : [];
 }
 
 class ApiClient {
@@ -144,40 +164,42 @@ class ApiClient {
                 }
             }
 
-            if (!response.ok) {
-                let errorMessage = `API Error: ${response.status} ${response.statusText}`;
-                let fieldErrors: Record<string, any> = {};
-                try {
-                    const errorData = await response.json();
+if (!response.ok) {
+  let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+  let fieldErrors: Record<string, any> = {};
+  try {
+    const errorData = await response.json();
 
-                    // Handle DRF validation errors (field errors dict)
-                    if (typeof errorData === 'object' && !Array.isArray(errorData)) {
-                        if (errorData.detail) {
-                            errorMessage = errorData.detail;
-                        } else if (errorData.message) {
-                            errorMessage = errorData.message;
-                        } else {
-                            // Collect field errors
-                            for (const [field, errors] of Object.entries(errorData)) {
-                                if (Array.isArray(errors)) {
-                                    fieldErrors[field] = errors.join(', ');
-                                } else if (typeof errors === 'string') {
-                                    fieldErrors[field] = errors;
-                                }
-                            }
-                            if (Object.keys(fieldErrors).length > 0) {
-                                errorMessage = Object.entries(fieldErrors)
-                                    .map(([field, error]) => `${field}: ${error}`)
-                                    .join('\n');
-                            }
-                        }
-                    }
-                } catch {
-                    // non-JSON error body — use default message
-                }
-                const error: ApiError = { message: errorMessage, status: response.status };
-                throw error;
-            }
+    // Handle DRF validation errors (field errors dict)
+    if (typeof errorData === 'object' && !Array.isArray(errorData)) {
+      if (errorData.detail) {
+        errorMessage = errorData.detail;
+      } else if (errorData.message) {
+        errorMessage = errorData.message;
+      } else if (errorData.error) {
+        errorMessage = typeof errorData.error === 'string' ? errorData.error : JSON.stringify(errorData.error);
+      } else {
+        // Collect field errors
+        for (const [field, errors] of Object.entries(errorData)) {
+          if (Array.isArray(errors)) {
+            fieldErrors[field] = errors.join(', ');
+          } else if (typeof errors === 'string') {
+            fieldErrors[field] = errors;
+          }
+        }
+        if (Object.keys(fieldErrors).length > 0) {
+          errorMessage = Object.entries(fieldErrors)
+            .map(([field, error]) => `${field}: ${error}`)
+            .join('\n');
+        }
+      }
+    }
+  } catch {
+    // non-JSON error body — use default message
+  }
+  const error: ApiError = { message: errorMessage, status: response.status };
+  throw error;
+}
 
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {

@@ -199,7 +199,7 @@ export default function NewLeadPage() {
     useEffect(() => {
         // Load properties for the property selector
         propertyAPI.getAll({ limit: 100 })
-            .then((res: any) => setProperties(res.results ?? res ?? []))
+            .then((res: any) => setProperties(Array.isArray(res) ? res : []))
             .catch(() => { });
     }, []);
 

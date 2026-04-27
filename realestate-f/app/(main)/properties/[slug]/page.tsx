@@ -86,7 +86,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
     // Fallback: also check saved properties query for backward compatibility
     useEffect(() => {
         if (property && property.is_saved === undefined && savedProperties) {
-            const list = Array.isArray(savedProperties) ? savedProperties : (savedProperties.results || []);
+            const list = Array.isArray(savedProperties) ? savedProperties : [];
             setIsSaved(list.some((p: any) => p.property === property.id || p.property?.id === property.id));
         }
     }, [savedProperties, property]);
@@ -108,7 +108,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
         queryKey: ["similar-properties", property?.property_type, property?.location?.id],
         queryFn: async () => {
             const res = await propertyAPI.getAll();
-            const all = res.results || res || [];
+            const all = Array.isArray(res) ? res : [];
             return all.filter((p: any) =>
                 p.id !== property?.id &&
                 (p.property_type === property?.property_type || p.location?.id === property?.location?.id)
@@ -161,7 +161,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ slug:
         try {
             setIsSaving(true);
             if (isSaved) {
-                const list = Array.isArray(savedProperties) ? savedProperties : (savedProperties?.results || []);
+                const list = Array.isArray(savedProperties) ? savedProperties : [];
                 const savedItem = list.find((p: any) => p.property === property.id || p.property?.id === property.id);
                 if (savedItem) {
                     await propertyAPI.removeSavedProperty(savedItem.id);

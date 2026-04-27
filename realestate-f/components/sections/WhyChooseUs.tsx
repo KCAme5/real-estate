@@ -110,7 +110,7 @@ export default function WhyChooseUs() {
                 <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                     {[
                         { number: '500+', label: 'Happy Clients' },
-                        { number: 'KSH 15B+', label: 'Property Value' },
+                        //{ number: 'KSH 15B+', label: 'Property Value' },
                         { number: '98%', label: 'Success Rate' },
                         { number: '24/7', label: 'Support' }
                     ].map((stat, index) => (

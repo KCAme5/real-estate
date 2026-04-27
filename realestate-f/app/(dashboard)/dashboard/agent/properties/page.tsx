@@ -51,7 +51,7 @@ export default function AgentProperties() {
             try {
                 setLoading(true);
                 const data = await apiClient.get('/properties/my-properties/');
-                setProperties(data.results || data);
+                setProperties(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error('Error fetching properties:', error);
             } finally {

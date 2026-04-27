@@ -289,7 +289,7 @@ export default function MessagesContent() {
         try {
             if (showLoading && conversations.length === 0) setLoading(true);
             const res = await leadsAPI.getConversations();
-            const data: Conversation[] = Array.isArray(res) ? res : (res.results || []);
+            const data: Conversation[] = Array.isArray(res) ? res : [];
             setConversations(data);
         } catch (error) {
             console.error('Failed to fetch conversations:', error);
@@ -301,7 +301,7 @@ export default function MessagesContent() {
     const fetchMessages = async (conversationId: number, showLoading = true) => {
         try {
             const res = await leadsAPI.getMessages(conversationId);
-            const data: Message[] = Array.isArray(res) ? res : (res.results || []);
+            const data: Message[] = Array.isArray(res) ? res : [];
             setMessages(data);
             setVisibleMessageCount((prev) => {
                 const base = 50;

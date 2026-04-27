@@ -43,9 +43,9 @@ export default function ClientDashboard() {
                     notificationsAPI.getAll()
                 ]);
 
-                setProperties(propsData.results || propsData || []);
-                setBookings(bookingsData.results || bookingsData || []);
-                setNotifications(notifsData.results || notifsData || []);
+    setProperties(propsData);
+    setBookings(bookingsData);
+    setNotifications(notifsData);
             } catch (error) {
                 console.error('Failed to fetch dashboard data:', error);
             } finally {

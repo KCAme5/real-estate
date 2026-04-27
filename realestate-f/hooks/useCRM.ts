@@ -32,7 +32,7 @@ export function useCRM() {
             }
 
             const res = await leadsAPI.getAll(); // This is not ideal
-            const leads = Array.isArray(res) ? res : (res.results || []);
+            const leads = Array.isArray(res) ? res : [];
             const lead = leads.find((l: any) => l.user === user.id);
 
             if (lead) {

@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient, normalizeResponse } from './client';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -191,12 +191,15 @@ export const leadsAPI = {
 
     // ── Leads ────────────────────────────────────────────────────────────────
 
-    getAll: (params?: {
-        status?: Lead['status'];
-        priority?: Lead['priority'];
-        source?: Lead['source'];
-        search?: string;
-    }) => apiClient.get<{ results: Lead[] } | Lead[]>('/leads/', { params }),
+getAll: async (params?: {
+  status?: Lead['status'];
+  priority?: Lead['priority'];
+  source?: Lead['source'];
+  search?: string;
+}) => {
+  const response = await apiClient.get('/leads/', { params });
+  return normalizeResponse<Lead>(response);
+},
 
     getLead: (id: number) =>
         apiClient.get<Lead>(`/leads/${id}/`),
@@ -211,8 +214,10 @@ export const leadsAPI = {
     updateStatus: (id: number, data: UpdateLeadStatusData) =>
         apiClient.patch<Lead>(`/leads/${id}/status/`, data),
 
-    getAgentLeads: () =>
-        apiClient.get<{ results: Lead[] } | Lead[]>('/leads/my-leads/'),
+getAgentLeads: async () => {
+  const response = await apiClient.get('/leads/my-leads/');
+  return normalizeResponse<Lead>(response);
+},
 
     getCRMStats: () =>
         apiClient.get<CRMStats>('/leads/stats/'),
@@ -246,8 +251,10 @@ export const leadsAPI = {
 
     // ── Tasks ─────────────────────────────────────────────────────────────────
 
-    getTasks: (params?: { pending?: boolean }) =>
-        apiClient.get<{ results: Task[] } | Task[]>('/leads/tasks/', { params }),
+getTasks: async (params?: { pending?: boolean }) => {
+  const response = await apiClient.get('/leads/tasks/', { params });
+  return normalizeResponse<Task>(response);
+},
 
     createTask: (data: CreateTaskData) =>
         apiClient.post<Task>('/leads/tasks/', data),
@@ -260,8 +267,10 @@ export const leadsAPI = {
 
     // ── Conversations ─────────────────────────────────────────────────────────
 
-    getConversations: () =>
-        apiClient.get<{ results: Conversation[] } | Conversation[]>('/leads/conversations/'),
+getConversations: async () => {
+  const response = await apiClient.get('/leads/conversations/');
+  return normalizeResponse<Conversation>(response);
+},
 
     getConversation: (id: number | string) =>
         apiClient.get<Conversation>(`/leads/conversations/${id}/`),
@@ -295,8 +304,10 @@ export const leadsAPI = {
 
     // ── Messages ──────────────────────────────────────────────────────────────
 
-    getMessages: (conversationId: number | string) =>
-        apiClient.get<{ results: Message[] } | Message[]>(`/leads/conversations/${conversationId}/messages/`),
+getMessages: async (conversationId: number | string) => {
+  const response = await apiClient.get(`/leads/conversations/${conversationId}/messages/`);
+  return normalizeResponse<Message>(response);
+},
 
     sendMessage: (conversationId: number | string, content: string) =>
         apiClient.post<Message>(`/leads/conversations/${conversationId}/messages/`, { content }),

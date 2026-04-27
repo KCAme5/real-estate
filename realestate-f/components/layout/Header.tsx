@@ -117,27 +117,27 @@ export default function Header() {
         >
             <div className="container mx-auto px-4 sm:px-6">
                 <div className="flex items-center justify-between h-20 lg:h-24">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative w-24 h-24 lg:w-20 lg:h-20 transition-transform duration-300 group-hover:scale-105">
-                            <Image
-                                src="/tugairealtors.png"
-                                alt="Tugai Realtors Logo"
-                                fill
-                                className="object-contain"
-                                priority
-                                sizes="(max-width: 768px) 64px, 80px"
-                            />
-                        </div>
-                        <div className="hidden sm:block">
-                            <div className="text-xl lg:text-2xl font-bold text-foreground transition-colors group-hover:text-primary leading-none">
-                                Tugai Realtors
-                            </div>
-                            <div className="text-sm text-primary font-medium tracking-wide">
-                                Properties
-                            </div>
-                        </div>
-                    </Link>
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 group" aria-label="Tugai Realtors Home">
+          <div className="relative w-24 h-24 lg:w-20 lg:h-20 transition-transform duration-300 group-hover:scale-105">
+            <Image
+              src="/tugairealtors.png"
+              alt="Tugai Realtors Logo"
+              fill
+              className="object-contain"
+              priority
+              sizes="(max-width: 768px) 64px, 80px"
+            />
+          </div>
+          <div className="hidden sm:block">
+            <div className="text-xl lg:text-2xl font-bold text-foreground transition-colors group-hover:text-primary leading-none">
+              Tugai Realtors
+            </div>
+            <div className="text-sm text-primary font-medium tracking-wide">
+              Properties
+            </div>
+          </div>
+        </Link>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-1">
@@ -325,33 +325,39 @@ export default function Header() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="flex lg:hidden items-center gap-3">
-                        <button
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className={`p-2 rounded-lg transition-all duration-200 ${mobileMenuOpen
-                                ? "bg-emerald-900/20 text-emerald-400"
-                                : "hover:bg-emerald-900/10 text-slate-400"
-                                }`}
-                            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                        >
-                            {mobileMenuOpen ? (
-                                <X className="w-5 h-5" />
-                            ) : (
-                                <Menu className="w-5 h-5" />
-                            )}
-                        </button>
-                    </div>
+        {/* Mobile Menu Button */}
+        <div className="flex lg:hidden items-center gap-3">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className={`p-2 rounded-lg transition-all duration-200 ${mobileMenuOpen
+              ? "bg-emerald-900/20 text-emerald-400"
+              : "hover:bg-emerald-900/10 text-slate-400"
+            }`}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+        </div>
                 </div>
 
-                {/* Mobile Menu */}
-                <div
-                    className={`lg:hidden fixed inset-x-0 top-16 bg-slate-900 border-t border-slate-800 shadow-2xl transition-all duration-300 ease-in-out ${mobileMenuOpen
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 -translate-y-4 pointer-events-none"
-                        }`}
-                >
-                    <div className="container mx-auto px-4 py-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+        {/* Mobile Menu */}
+        <div
+          id="mobile-menu"
+          className={`lg:hidden fixed inset-x-0 top-16 bg-slate-900 border-t border-slate-800 shadow-2xl transition-all duration-300 ease-in-out ${mobileMenuOpen
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-4 pointer-events-none"
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile navigation menu"
+        >
+          <div className="container mx-auto px-4 py-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
                         <nav className="flex flex-col gap-1">
                             {navLinks.map((link) => {
                                 if (link.name === "Listings") {

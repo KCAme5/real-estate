@@ -195,7 +195,7 @@ export default function RegistrationPage() {
     ];
 
     const agentBenefits = [
-        { icon: <BriefcaseBusiness className="w-4 h-4" />, text: 'List unlimited properties' },
+        { icon: <BriefcaseBusiness className="w-4 h-4" />, text: 'List properties' },
         { icon: <Users className="w-4 h-4" />, text: 'Access qualified leads and buyers' },
         { icon: <Award className="w-4 h-4" />, text: 'Professional dashboard and tools' },
         { icon: <Building2 className="w-4 h-4" />, text: 'Market analytics and insights' },

@@ -128,9 +128,9 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         }
     };
 
-    return (
-        <div
-            className={`
+  return (
+    <div
+      className={`
         flex items-start gap-3 p-4 rounded-lg border shadow-lg
         backdrop-blur-sm bg-background/95 border-border
         min-w-[300px] max-w-md
@@ -138,20 +138,21 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         animate-in slide-in-from-right-full
         ${getStyles()}
       `}
-        >
-            {getIcon()}
-            <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-slate-900">{toast.title}</h4>
-                {toast.message && (
-                    <p className="text-sm text-slate-700 mt-1">{toast.message}</p>
-                )}
-            </div>
-            <button
-                onClick={() => onRemove(toast.id)}
-                className="flex-shrink-0 p-1 rounded-md hover:bg-background/80 transition-colors"
-            >
-                <X className="w-4 h-4 text-muted-foreground" />
-            </button>
-        </div>
-    );
+    >
+      {getIcon()}
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-semibold text-foreground">{toast.title}</h4>
+        {toast.message && (
+          <p className="text-sm text-muted-foreground mt-1">{toast.message}</p>
+        )}
+      </div>
+      <button
+        onClick={() => onRemove(toast.id)}
+        className="flex-shrink-0 p-1 rounded-md hover:bg-background/80 transition-colors"
+        aria-label="Dismiss notification"
+      >
+        <X className="w-4 h-4 text-muted-foreground" />
+      </button>
+    </div>
+  );
 }

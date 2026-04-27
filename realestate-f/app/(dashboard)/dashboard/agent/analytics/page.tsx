@@ -80,7 +80,7 @@ export default function AnalyticsDashboard() {
 
                 if (propsRes.ok) {
                     const propsData = await propsRes.json();
-                    const props = Array.isArray(propsData) ? propsData : propsData.results || [];
+                    const props = Array.isArray(propsData) ? propsData : [];
 
                     // Fetch view data for each property and calculate conversion rates
                     const enrichedProps = await Promise.all(props.slice(0, 3).map(async (prop: any) => {

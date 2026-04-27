@@ -72,7 +72,7 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
         try {
             const data = await bookingsAPI.getAll();
-            const bookingsArray = data.results || data || [];
+            const bookingsArray = Array.isArray(data) ? data : [];
             setBookings(bookingsArray);
         } catch (error) {
             console.error('Failed to fetch bookings:', error);

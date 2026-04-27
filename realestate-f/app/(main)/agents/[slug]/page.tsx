@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { agentsAPI } from '@/lib/api/agents';
 import { useAuth } from '@/contexts/AuthContext';
 import { Agent } from '@/types/agent';
@@ -222,34 +223,36 @@ export default function AgentDetailPage() {
                                 </span>
                             </div>
 
-                            {agent.properties && agent.properties.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {agent.properties.map((prop) => (
-                                        <Link
-                                            key={prop.id}
-                                            href={`/properties/${prop.slug}`}
-                                            className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all group"
-                                        >
-                                            <div className="relative h-48 overflow-hidden">
-                                                <img
-                                                    src={prop.main_image_url || '/placeholder-property.jpg'}
-                                                    alt={prop.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                />
-                                                <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/90 px-3 py-1 rounded-full text-xs font-bold text-blue-600 dark:text-blue-400">
-                                                    {prop.property_type?.toUpperCase()}
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 mb-1">{prop.title}</h3>
-                                                <p className="text-blue-600 dark:text-blue-400 font-black text-xl mb-3">{prop.price_display}</p>
-                                                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                                                    <span className="flex items-center gap-1"><MapPin size={14} />{prop.location?.name}</span>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
+  {agent.properties && agent.properties.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {agent.properties.map((prop: any) => (
+        <Link
+          key={prop.id}
+          href={`/properties/${prop.slug}`}
+          className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all group"
+        >
+          <div className="relative h-48 overflow-hidden">
+            <Image
+              src={prop.main_image_url || '/placeholder-property.jpg'}
+              alt={prop.title}
+              width={400}
+              height={300}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+            <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/90 px-3 py-1 rounded-full text-xs font-bold text-blue-600 dark:text-blue-400">
+              {prop.property_type?.toUpperCase()}
+            </div>
+          </div>
+          <div className="p-4">
+            <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 mb-1">{prop.title}</h3>
+            <p className="text-blue-600 dark:text-blue-400 font-black text-xl mb-3">{prop.price_display}</p>
+            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1"><MapPin size={14} />{prop.location?.name}</span>
+            </div>
+          </div>
+        </Link>
+      ))}
+    </div>
                             ) : (
                                 <div className="bg-gray-100 dark:bg-gray-800 rounded-3xl p-12 text-center text-gray-500">
                                     <Building2 className="mx-auto mb-4 opacity-20" size={48} />

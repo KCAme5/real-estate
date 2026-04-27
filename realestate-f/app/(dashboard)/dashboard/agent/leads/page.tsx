@@ -423,9 +423,9 @@ export default function CRMPage() {
                 leadsAPI.getCRMStats(),
                 leadsAPI.getTasks(),
             ]);
-            setLeads(Array.isArray(leadsRes) ? leadsRes : leadsRes.results ?? []);
-            setStats(statsRes);
-            setTasks(Array.isArray(tasksRes) ? tasksRes : tasksRes.results ?? []);
+    setLeads(Array.isArray(leadsRes) ? leadsRes : []);
+    setStats(statsRes);
+    setTasks(Array.isArray(tasksRes) ? tasksRes : []);
         } catch {
             showError('Failed to load', 'Could not fetch CRM data');
         } finally {

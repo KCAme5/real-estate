@@ -78,13 +78,13 @@ function PropertiesContent() {
             const queryParams = new URLSearchParams(cleanFilters as Record<string, string>).toString();
             const data = await apiClient.get(`/properties/?${queryParams}`);
 
-            if (data.results) {
-                setProperties(data.results);
-                setTotalCount(data.count || data.results.length);
-            } else {
-                setProperties(data);
-                setTotalCount(Array.isArray(data) ? data.length : 0);
-            }
+    if (Array.isArray(data)) {
+      setProperties(data);
+      setTotalCount(data.length);
+    } else {
+      setProperties([]);
+      setTotalCount(0);
+    }
             setCurrentPage(page);
         } catch (error) {
             console.error('Error fetching properties:', error);

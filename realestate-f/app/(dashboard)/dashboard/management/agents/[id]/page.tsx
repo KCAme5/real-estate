@@ -37,11 +37,11 @@ export default function AgentDetailsPage() {
             const response = await agentsAPI.getManagementAgentById(id);
             setAgent(response);
 
-            // Fetch properties for this agent from management list
-            const propsData = await propertyAPI.getManagementProperties();
-            // Backend maps 'agent' object which includes id.
-            const agentProps = propsData.data.filter((p: any) => p.agent?.id === parseInt(id));
-            setProperties(agentProps);
+    // Fetch properties for this agent from management list
+    const propsData = await propertyAPI.getManagementProperties();
+    // Filter properties by agent id
+    const agentProps = propsData.filter((p: any) => p.agent?.id === parseInt(id));
+    setProperties(agentProps);
 
         } catch (error) {
             console.error('Failed to fetch agent details:', error);

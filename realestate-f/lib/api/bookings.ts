@@ -1,5 +1,5 @@
 // lib/api/bookings.ts
-import { apiClient } from './client';
+import { apiClient, normalizeResponse } from './client';
 
 export interface Booking {
     id: number;
@@ -35,10 +35,11 @@ export interface BookingUpdatePayload {
 }
 
 export const bookingsAPI = {
-    // Get user bookings
-    getAll: async () => {
-        return apiClient.get('/bookings/');
-    },
+  // Get user bookings
+  getAll: async () => {
+    const response = await apiClient.get('/bookings/');
+    return normalizeResponse(response);
+  },
 
     // Get booking by ID
     getById: async (id: number) => {

@@ -34,13 +34,11 @@ export default function ManagementAgentsPage() {
             setLoading(true);
             const response = await agentsAPI.getManagementAgents();
 
-            if (response && response.results) {
-                setAgents(response.results);
-            } else if (Array.isArray(response)) {
-                setAgents(response);
-            } else {
-                setAgents([]);
-            }
+    if (response && Array.isArray(response)) {
+      setAgents(response);
+    } else {
+      setAgents([]);
+    }
         } catch (error) {
             console.error('Failed to fetch agents:', error);
         } finally {

@@ -34,7 +34,7 @@ export default function BookingsPage() {
                 setLoading(true);
                 setError(null);
                 const data = await bookingsAPI.getAll();
-                const bookingsArray = data.results || data || [];
+                const bookingsArray = Array.isArray(data) ? data : [];
                 setBookings(bookingsArray);
             } catch (err) {
                 console.error('Failed to fetch bookings:', err);

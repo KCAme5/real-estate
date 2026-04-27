@@ -3,6 +3,7 @@
 import { Property } from '@/types/property';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, MapPin, Bed, Bath, Maximize, Star } from 'lucide-react';
 import { propertyAPI } from '@/lib/api/properties';
 import { useAuth } from '@/hooks/useAuth';
@@ -76,17 +77,19 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                 <Link href={`/properties/${property.slug}`} className="absolute inset-0 z-10" />
 
                 {/* Left Side - Image */}
-                <div className="relative w-full md:w-2/5 h-40 md:h-full overflow-hidden">
-                    {!imageLoaded && !imageError && (
-                        <div className="absolute inset-0 bg-slate-800 animate-pulse" />
-                    )}
-                    <img
-                        src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
-                        alt={property.title}
-                        onLoad={() => setImageLoaded(true)}
-                        onError={() => setImageError(true)}
-                        className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    />
+          <div className="relative w-full md:w-2/5 h-40 md:h-full overflow-hidden">
+            {!imageLoaded && !imageError && (
+              <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+            )}
+            <Image
+              src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
+              alt={property.title}
+              width={400}
+              height={300}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
+              className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            />
                     <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
                         {property.is_featured && (
                             <span className="bg-emerald-600 text-white text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1">
@@ -166,18 +169,20 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
 
             <Link href={`/properties/${property.slug}`} className="absolute inset-0 z-10" />
 
-            {/* Main Image - Now covers the whole card */}
-            <div className="absolute inset-0">
-                {!imageLoaded && !imageError && (
-                    <div className="absolute inset-0 bg-slate-800 animate-pulse" />
-                )}
-                <img
-                    src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
-                    alt={property.title}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageError(true)}
-                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                />
+        {/* Main Image - Now covers the whole card */}
+        <div className="absolute inset-0">
+          {!imageLoaded && !imageError && (
+            <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+          )}
+          <Image
+            src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
+            alt={property.title}
+            width={600}
+            height={400}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
+            className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          />
 
                 {/* Gradient Overlay for better text readability on hover */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
