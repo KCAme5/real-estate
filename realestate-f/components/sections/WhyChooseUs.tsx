@@ -60,65 +60,63 @@ export default function WhyChooseUs() {
     ];
 
     return (
-        <section className="py-24 bg-slate-950 relative overflow-hidden">
-            <div className="absolute bottom-0 right-0 translate-y-1/2 translate-x-1/2 w-96 h-96 bg-emerald-900/10 rounded-full blur-3xl"></div>
+        <section className="py-16 sm:py-20 bg-background relative overflow-hidden">
+            {/* Subtle Background Decoration */}
+            <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
 
             <div className="container mx-auto px-4 relative z-10">
-                {/* Section Header */}
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 bg-emerald-900/30 text-emerald-400 px-4 py-2 rounded-full text-sm font-medium mb-4 border border-emerald-500/20">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                {/* Section Header - Clean & Professional */}
+                <div className="text-center mb-12">
+                    <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-medium mb-4 border border-emerald-500/20">
+                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
                         Why Choose Us
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 tracking-tight">
                         The Tugai Realtors Advantage
                     </h2>
-                    <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+                    <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                         Experience the difference with our comprehensive real estate solutions and exceptional service.
                     </p>
                 </div>
 
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Features Grid - Proper Spacing */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {features.map((feature, index) => (
                         <div
                             key={index}
-                            className="group text-center p-8 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:-translate-y-2 relative overflow-hidden"
+                            className="group text-center p-6 rounded-xl bg-card border border-border hover:border-emerald-500/30 transition-all duration-300 shadow-sm hover:shadow-md"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
-                            {/* Icon */}
-                            <div className="w-24 h-24 bg-slate-800 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md border border-slate-700 group-hover:scale-110 transition-transform duration-300 relative z-10">
+                            {/* Icon - Professional Size */}
+                            <div className="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center mx-auto mb-5 group-hover:scale-105 transition-transform duration-300">
                                 {feature.icon}
                             </div>
 
                             {/* Content */}
-                            <h3 className="text-xl font-bold text-white mb-4 relative z-10">
+                            <h3 className="text-lg font-semibold text-foreground mb-3">
                                 {feature.title}
                             </h3>
-                            <p className="text-slate-400 leading-relaxed relative z-10">
+                            <p className="text-muted-foreground text-sm leading-relaxed">
                                 {feature.description}
                             </p>
 
                             {/* Hover Indicator */}
-                            <div className="mt-6 w-16 h-1 bg-emerald-500 rounded-full mx-auto scale-x-50 group-hover:scale-x-100 transition-transform duration-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                            <div className="mt-5 w-12 h-0.5 bg-emerald-500/50 rounded-full mx-auto scale-x-50 group-hover:scale-x-100 transition-transform duration-300"></div>
                         </div>
                     ))}
                 </div>
 
-                {/* Stats */}
-                <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                {/* Stats - Cleaner Layout */}
+                <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                     {[
                         { number: '500+', label: 'Happy Clients' },
-                        //{ number: 'KSH 15B+', label: 'Property Value' },
                         { number: '98%', label: 'Success Rate' },
                         { number: '24/7', label: 'Support' }
                     ].map((stat, index) => (
                         <div key={index} className="text-center">
-                            <div className="text-3xl md:text-4xl font-bold text-emerald-400 mb-2">
+                            <div className="text-2xl sm:text-3xl font-bold text-emerald-400 mb-1">
                                 {stat.number}
                             </div>
-                            <div className="text-slate-400 font-medium">{stat.label}</div>
+                            <div className="text-muted-foreground text-xs sm:text-sm font-medium">{stat.label}</div>
                         </div>
                     ))}
                 </div>

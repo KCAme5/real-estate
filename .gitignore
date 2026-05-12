@@ -1,32 +1,124 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environments
-.venv/
-venv/
-env/
-
-# Django / Python tooling
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-
-# Node
+```
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
 build/
 .next/
+out/
 
-# Environment files
+# Environment variables
 .env
+.env.local
 .env.*
 
-# OS / IDE
-.DS_Store
-Thumbs.db
+# IDE specific
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.gitattributes
+
+# Temporary files
+*.tmp
+*.temp
+*~
+.DS_Store
+Thumbs.db
+
+# Compiled files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Compression
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+
+# Testing
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Package managers
+.npm/
+.yarn/
+bower_components/
+
+# Java
+target/
+.gradle/
+*.class
+*.jar
+*.war
+
+# Go
+*.exe
+*.dll
+*.so
+*.dylib
+
+# C#
+bin/
+obj/
+*.sln
+*.csproj.user
+
+# Ruby
+*.gem
+*.rbc
+.bundle/
+vendor/bundle/
+.ruby-version
+.rbenv-vars
+.travis.yml
+```

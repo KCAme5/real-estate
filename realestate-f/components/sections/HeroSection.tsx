@@ -77,7 +77,7 @@ export default function HeroSection() {
     };
 
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
             {/* Background Carousel */}
             <div className="absolute inset-0">
                 {heroImages.map((image, index) => (
@@ -87,12 +87,12 @@ export default function HeroSection() {
                             }`}
                     >
                         {imageError === index ? (
-                            <div className="w-full h-full bg-muted flex items-center justify-center">
-                                <div className="text-center text-foreground">
-                                    <svg className="w-16 h-16 mx-auto mb-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+                                <div className="text-center text-slate-400">
+                                    <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <p className="text-lg">Image not available</p>
+                                    <p className="text-sm">Image not available</p>
                                 </div>
                             </div>
                         ) : (
@@ -104,54 +104,49 @@ export default function HeroSection() {
                             />
                         )}
                         {/* Dark overlay for better text readability */}
-                        <div className="absolute inset-0 bg-black/50"></div>
+                        <div className="absolute inset-0 bg-black/60"></div>
                     </div>
                 ))}
             </div>
 
-            <div className="relative z-10 text-center text-white px-4 max-w-6xl mx-auto">
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 bg-emerald-950/30 backdrop-blur-sm border border-emerald-500/20 rounded-full px-6 py-2 mb-8">
+            <div className="relative z-10 text-center text-white px-4 max-w-5xl mx-auto">
+                {/* Badge - Simplified */}
+                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2 mb-8">
                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-emerald-100">Trusted by Clients Worldwide</span>
+                    <span className="text-xs font-medium tracking-wide">Trusted by Clients Worldwide</span>
                 </div>
 
-                {/* Main Heading */}
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight">
+                {/* Main Heading - Better typography hierarchy */}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight tracking-tight">
                     Discover Your
-                    <span className="block text-emerald-400 font-bold">
-                        Dream Property
+                    <span className="block text-emerald-400 mt-1">
+                        Dream Property in Kenya
                     </span>
-                    in Kenya
                 </h1>
 
-                {/* Subtitle */}
-                <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+                {/* Subtitle - Cleaner */}
+                <p className="text-base sm:text-lg text-slate-300 mb-8 max-w-2xl mx-auto leading-relaxed">
                     Premium real estate solutions connecting Kenyans and the diaspora with
-                    exceptional properties and investment opportunities across the country.
-                </p>
-                <p className="text-lg md:text-xl text-slate-200 mb-12 font-medium tracking-wide">
-                    Buy • Sell • Rent • Commercial
+                    exceptional properties and investment opportunities.
                 </p>
 
-                {/* CTA Buttons */}
-                {/* Hero Search Section */}
-                <div className="bg-slate-950/80 backdrop-blur-md p-6 rounded-3xl shadow-2xl border border-emerald-900/30 max-w-4xl mx-auto transform hover:scale-[1.01] transition-all duration-300">
-                    <div className="flex flex-col md:flex-row gap-4">
+                {/* Hero Search Section - Professional & Clean */}
+                <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl shadow-2xl border border-white/20 max-w-3xl mx-auto">
+                    <div className="flex flex-col sm:flex-row gap-3">
                         {/* Simple Search - Location */}
                         <div className="flex-1 relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg className="w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-5 h-5 text-slate-400 group-focus-within:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
                             <input
                                 type="text"
-                                placeholder="Where do you want to live? (e.g. Nairobi)"
+                                placeholder="Search location (e.g., Nairobi, Mombasa)"
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border-2 border-slate-800 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-white placeholder:text-slate-500 font-medium"
+                                className="w-full pl-12 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none text-white placeholder:text-slate-400 text-sm font-medium"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSimpleSearch();
@@ -163,7 +158,7 @@ export default function HeroSection() {
                         {/* Search Button */}
                         <button
                             onClick={handleSimpleSearch}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center gap-2 min-w-40"
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3.5 rounded-xl font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center gap-2 whitespace-nowrap"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -172,16 +167,22 @@ export default function HeroSection() {
                         </button>
                     </div>
 
-                    {/* Advanced Search Link */}
-                    <div className="mt-4 flex items-center justify-between px-2">
-                        <div className="flex gap-4 text-sm text-foreground/80 font-medium overflow-x-auto no-scrollbar">
-                            <span className="whitespace-nowrap flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Buy</span>
-                            <span className="whitespace-nowrap flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Rent</span>
-                            <span className="whitespace-nowrap flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500"></span> Invest</span>
+                    {/* Advanced Search Link - Minimal */}
+                    <div className="mt-3 flex items-center justify-between px-1">
+                        <div className="flex gap-3 text-xs text-slate-300 font-medium overflow-x-auto no-scrollbar">
+                            <span className="whitespace-nowrap flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Buy
+                            </span>
+                            <span className="whitespace-nowrap flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Rent
+                            </span>
+                            <span className="whitespace-nowrap flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Invest
+                            </span>
                         </div>
                         <button
                             onClick={() => setShowSearch(true)}
-                            className="text-emerald-400 hover:text-emerald-300 text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all whitespace-nowrap"
+                            className="text-emerald-400 hover:text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap"
                         >
                             Advanced Filters
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,28 +191,14 @@ export default function HeroSection() {
                         </button>
                     </div>
                 </div>
-
-                {/* Stats 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-                    {[
-                        { number: '500+', label: 'Properties Listed' },
-                        { number: 'KSH 15B+', label: 'Property Value' },
-                        { number: '98%', label: 'Client Satisfaction' }
-                    ].map((stat, index) => (
-                        <div key={index} className="text-center">
-                            <div className="text-3xl md:text-4xl font-bold text-emerald-400 mb-2">{stat.number}</div>
-                            <div className="text-gray-400 text-sm uppercase tracking-wider">{stat.label}</div>
-                        </div>
-                    ))}
-                </div>*/}
             </div>
 
-            {/* Carousel Controls */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
+            {/* Carousel Controls - Minimal */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-3">
                 {/* Previous Button */}
                 <button
                     onClick={prevSlide}
-                    className="p-2 rounded-full hover:bg-white/20 transition-colors text-white"
+                    className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -224,9 +211,9 @@ export default function HeroSection() {
                         <button
                             key={index}
                             onClick={() => goToSlide(index)}
-                            className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                                ? 'bg-white w-8'
-                                : 'bg-white/30 hover:bg-white/50'
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide
+                                ? 'bg-white w-6'
+                                : 'bg-white/40 hover:bg-white/60'
                                 }`}
                         />
                     ))}
@@ -235,7 +222,7 @@ export default function HeroSection() {
                 {/* Next Button */}
                 <button
                     onClick={nextSlide}
-                    className="p-2 rounded-full hover:bg-white/20 transition-colors text-white"
+                    className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

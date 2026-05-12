@@ -22,7 +22,7 @@
   --color-card-foreground: hsl(var(--card-foreground));
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
-
+  
   --radius-lg: 0.5rem;
   --radius-md: calc(var(--radius-lg) - 2px);
   --radius-sm: calc(var(--radius-lg) - 4px);
@@ -31,25 +31,41 @@
 /* Apply base styles */
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* Light Cream & Navy Theme - Professional Real Estate Standard */
+    /* Background: Warm Cream (#FDFBF7) - conveys warmth and trust */
+    --background: 45 33% 97%;
+    --foreground: 222 47% 11%;      /* Deep Navy Text (#1e293b) */
+    
+    /* Cards: Pure White for clean property presentations */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    /* Primary: Deep Navy Blue (#1e293b) - Trust, professionalism, stability */
+    --primary: 222 47% 11%;
+    --primary-foreground: 45 33% 97%;
+    
+    /* Secondary: Muted Sage Green - Growth, harmony, subtle accent */
+    --secondary: 158 25% 35%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Muted: Soft gray for supporting text */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    /* Accent: Slightly darker cream for hover states */
+    --accent: 45 33% 90%;
+    --accent-foreground: 222 47% 11%;
+    
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+
+    /* Border: Soft warm gray for subtle separation */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222 47% 11%;
   }
 
   * {
@@ -59,26 +75,41 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-primary);
+  }
+  
+  p {
+    color: var(--color-muted-foreground);
+    line-height: 1.7;
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Light theme optimized */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-muted);
+  background: hsl(var(--primary) / 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted-foreground);
+  background: hsl(var(--primary) / 0.5);
 }
 
 /* Line clamp utility */
@@ -101,69 +132,28 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
-  font-size: 14px;
+  font-size: 16px;
 }
 
-/* Custom animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Professional card hover effects - Subtle and elegant */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
 }
 
-/* Image loading animation */
-.image-loading {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
+/* Button transitions */
+.btn-transition {
+  transition: all 0.2s ease;
 }
 
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-
-  100% {
-    background-position: -200% 0;
-  }
+.btn-transition:hover {
+  transform: translateY(-1px);
 }
 
-
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-  /* Chrome, Safari, Opera */
-}
-
-/* Dark mode support for select dropdowns */
-.dark select {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  border-color: hsl(var(--border));
-}
-
-.dark select option {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
-
-.dark select:focus {
-  border-color: hsl(var(--ring));
-  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+.btn-transition:active {
+  transform: translateY(0);
 }
