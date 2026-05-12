@@ -3,27 +3,19 @@ import Link from 'next/link';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
-
+    
     const footerLinks = {
         company: [
             { name: 'About Us', href: '/about' },
-            // { name: 'Our Team', href: '/team' }, // Page not yet created
-            // { name: 'Careers', href: '/careers' }, // Page not yet created
-            // { name: 'Press', href: '/press' } // Page not yet created
         ],
         services: [
             { name: 'Buy Property', href: '/properties' },
             { name: 'Rent Property', href: '/properties?type=rent' },
             { name: 'Property Map', href: '/map' },
             { name: 'Tools', href: '/tools' },
-            // { name: 'Diaspora Services', href: '/diaspora' }, // Page not yet created
-            // { name: 'Property Management', href: '/management' } // Page not yet created
         ],
         support: [
-            // { name: 'Help Center', href: '/help' }, // Page not yet created
             { name: 'Contact Us', href: '/contact' },
-            // { name: 'Privacy Policy', href: '/privacy' }, // Page not yet created
-            // { name: 'Terms of Service', href: '/terms' } // Page not yet created
         ],
         locations: [
             { name: 'Nairobi', href: '/locations/nairobi' },
@@ -73,31 +65,31 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-base-300 text-base-content">
+        <footer className="bg-card border-t border-border">
             {/* Main Footer */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+            <div className="container mx-auto px-6 py-12 lg:py-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
                     {/* Brand Column */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="flex items-center gap-3 mb-6 group">
-                            <img src="/tugairealtors.png" alt="Tugai Realtors Logo" className="h-28 w-auto object-contain" />
+                            <img src="/tugairealtors.png" alt="Tugai Realtors Logo" className="h-16 w-auto object-contain" />
                             <div>
-                                <div className="text-2xl font-bold text-base-content">Tugai Realtors</div>
-                                <div className="text-secondary text-sm -mt-1">Properties</div>
+                                <div className="text-xl font-heading font-bold text-foreground">Tugai Realtors</div>
+                                <div className="text-muted-foreground text-sm -mt-0.5">Properties</div>
                             </div>
                         </Link>
 
-                        <p className="text-base-content/70 mb-6 max-w-md leading-relaxed">
+                        <p className="text-muted-foreground mb-6 max-w-md leading-relaxed text-sm lg:text-base">
                             Premium real estate solutions connecting Kenyans and the diaspora with exceptional properties and investment opportunities across the country.
                         </p>
 
                         {/* Social Links */}
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             {socialIcons.map((social) => (
                                 <a
                                     key={social.name}
                                     href={social.href}
-                                    className="w-10 h-10 bg-base-200 hover:bg-base-100 rounded-xl flex items-center justify-center transition-colors duration-300 hover:scale-110"
+                                    className="w-10 h-10 bg-secondary/50 hover:bg-primary rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-105 hover:text-primary-foreground text-muted-foreground hover:shadow-lg"
                                     aria-label={social.name}
                                 >
                                     {social.icon}
@@ -108,13 +100,13 @@ export default function Footer() {
 
                     {/* Links Columns */}
                     <div>
-                        <h3 className="font-semibold text-lg mb-4 text-base-content">Company</h3>
+                        <h3 className="font-heading font-semibold text-base mb-5 text-foreground">Company</h3>
                         <ul className="space-y-3">
                             {footerLinks.company.map((link) => (
                                 <li key={link.name}>
                                     <Link
                                         href={link.href}
-                                        className="text-base-content/70 hover:text-secondary transition-colors duration-300"
+                                        className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                                     >
                                         {link.name}
                                     </Link>
@@ -124,13 +116,13 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <h3 className="font-semibold text-lg mb-4 text-base-content">Services</h3>
+                        <h3 className="font-heading font-semibold text-base mb-5 text-foreground">Services</h3>
                         <ul className="space-y-3">
                             {footerLinks.services.map((link) => (
                                 <li key={link.name}>
                                     <Link
                                         href={link.href}
-                                        className="text-base-content/70 hover:text-secondary transition-colors duration-300"
+                                        className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                                     >
                                         {link.name}
                                     </Link>
@@ -140,13 +132,13 @@ export default function Footer() {
                     </div>
 
                     <div>
-                        <h3 className="font-semibold text-lg mb-4 text-base-content">Support</h3>
+                        <h3 className="font-heading font-semibold text-base mb-5 text-foreground">Support</h3>
                         <ul className="space-y-3">
                             {footerLinks.support.map((link) => (
                                 <li key={link.name}>
                                     <Link
                                         href={link.href}
-                                        className="text-base-content/70 hover:text-secondary transition-colors duration-300"
+                                        className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
                                     >
                                         {link.name}
                                     </Link>
@@ -158,16 +150,16 @@ export default function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-base-200">
-                <div className="container mx-auto px-4 py-6">
+            <div className="border-t border-border">
+                <div className="container mx-auto px-6 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="text-base-content/70 text-sm">
+                        <div className="text-muted-foreground text-xs lg:text-sm">
                             © {currentYear} Tugai Realtors Properties. All rights reserved.
                         </div>
 
-                        <div className="flex items-center gap-6 text-sm text-base-content/70">
+                        <div className="flex items-center gap-6 text-xs lg:text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                                 <span>Secure & Verified</span>
                             </div>
                             <div className="flex items-center gap-2">

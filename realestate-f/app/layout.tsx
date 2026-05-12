@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from 'next';
+import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from "@/components/theme-provider";
@@ -9,6 +10,18 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import Header from '@/components/layout/Header';
 import QueryProvider from '@/components/providers/QueryProvider';
 import Footer from '@/components/layout/Footer';
+
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({ 
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Tugai Realtors | Luxury Real Estate for Kenyans & Diaspora',
@@ -30,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
+      <body className={`antialiased font-sans`}>
         <ErrorBoundary>
           <ThemeProvider
             attribute="class"
