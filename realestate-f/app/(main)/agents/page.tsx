@@ -210,22 +210,22 @@ export default function AgentsPage() {
     };
 
     const getExperienceColor = (years?: number) => {
-        if (!years || years <= 2) return 'from-emerald-500 to-teal-500';
-        if (years <= 5) return 'from-teal-500 to-cyan-500';
+        if (!years || years <= 2) return 'from-primary to-secondary';
+        if (years <= 5) return 'from-secondary to-primary';
         if (years <= 10) return 'from-cyan-500 to-emerald-400';
-        return 'from-emerald-600 to-teal-600';
+        return 'from-primary to-secondary';
     };
 
     if (error) {
         return (
             <div className="min-h-screen pt-24 pb-16 flex items-center justify-center bg-background relative overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl" />
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-destructive/5 rounded-full blur-3xl" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-destructive/5 rounded-full blur-3xl" />
                 </div>
                 <div className="max-w-md mx-4 text-center relative z-10">
-                    <div className="w-20 h-20 bg-gradient-to-br from-red-500/20 to-red-500/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-red-500/20">
-                        <ShieldCheck className="w-10 h-10 text-red-500" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-destructive/20">
+                        <ShieldCheck className="w-10 h-10 text-destructive" />
                     </div>
                     <h2 className="text-3xl font-black text-foreground mb-3">
                         Connection Lost
@@ -235,7 +235,7 @@ export default function AgentsPage() {
                     </p>
                     <button
                         onClick={fetchAgents}
-                        className="px-8 py-4 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-red-500/20 hover:shadow-red-500/40 flex items-center gap-2 mx-auto"
+                        className="px-8 py-4 bg-gradient-to-r from-destructive to-primary hover:from-destructive hover:to-primary text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-destructive/20 hover:shadow-destructive/40 flex items-center gap-2 mx-auto"
                     >
                         <RefreshCw className="w-5 h-5" />
                         Try Again
@@ -249,7 +249,7 @@ export default function AgentsPage() {
         <main className="min-h-screen bg-background relative overflow-hidden">
             {/* Animated Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent rounded-full blur-3xl animate-pulse" />
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse" />
                 <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-tr from-teal-500/10 via-cyan-500/5 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-cyan-500/5 to-emerald-500/5 rounded-full blur-3xl" />
             </div>
@@ -269,9 +269,9 @@ export default function AgentsPage() {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center max-w-5xl mx-auto">
                         {/* Badge */}
-                        <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 rounded-full border border-white/10 mb-8 backdrop-blur-sm">
+                        <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 rounded-full border border-border mb-8 backdrop-blur-sm">
                             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                            <span className="text-sm font-semibold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                            <span className="text-sm font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                                 {usingCache ? 'Loaded from cache' : 'Trusted by 500+ Clients'}
                             </span>
                         </div>
@@ -282,7 +282,7 @@ export default function AgentsPage() {
                                 Meet Our
                             </span>
                             <br />
-                            <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
                                 Elite Agents
                             </span>
                         </h1>
@@ -297,8 +297,8 @@ export default function AgentsPage() {
                         {/* Stats Row */}
                         <div className="flex flex-wrap items-center justify-center gap-6 lg:gap-12">
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-emerald-500/20">
-                                    <Users className="w-6 h-6 text-emerald-400" />
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
+                                    <Users className="w-6 h-6 text-primary" />
                                 </div>
                                 <div className="text-left">
                                     <p className="text-2xl font-black text-foreground">{agents.length}+</p>
@@ -306,8 +306,8 @@ export default function AgentsPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500/20 to-teal-500/5 flex items-center justify-center border border-teal-500/20">
-                                    <CheckCircle className="w-6 h-6 text-teal-400" />
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-secondary/10 to-secondary/5 flex items-center justify-center border border-secondary/20">
+                                    <CheckCircle className="w-6 h-6 text-secondary" />
                                 </div>
                                 <div className="text-left">
                                     <p className="text-2xl font-black text-foreground">{agents.filter((a: Agent) => a.is_verified).length}</p>
@@ -315,8 +315,8 @@ export default function AgentsPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 flex items-center justify-center border border-cyan-500/20">
-                                    <Star className="w-6 h-6 text-cyan-400" />
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center border border-primary/20">
+                                    <Star className="w-6 h-6 text-primary" />
                                 </div>
                                 <div className="text-left">
                                     <p className="text-2xl font-black text-foreground">4.9</p>
@@ -331,7 +331,7 @@ export default function AgentsPage() {
             {/* Search & Filters Section */}
             <section className="relative z-10 -mt-4 px-4 sm:px-6 lg:px-8">
                 <div className="container mx-auto max-w-7xl">
-                    <div className="bg-gradient-to-br from-slate-900/95 to-slate-900/80 backdrop-blur-2xl rounded-3xl p-6 lg:p-8 border border-white/10 shadow-2xl shadow-black/20">
+                    <div className="bg-gradient-to-br from-card to-card backdrop-blur-2xl rounded-3xl p-6 lg:p-8 border border-border shadow-2xl shadow-sm">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                             {/* Search */}
                             <div className="lg:col-span-5 relative">
@@ -382,7 +382,7 @@ export default function AgentsPage() {
                                         {searchTerm && (
                                             <button
                                                 onClick={() => setSearchTerm('')}
-                                                className="px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-sm font-medium hover:bg-emerald-500/20 transition-colors border border-emerald-500/20"
+                                                className="px-4 py-2 bg-primary/10 text-primary rounded-xl text-sm font-medium hover:bg-primary/20 transition-colors border border-primary/20"
                                             >
                                                 "{searchTerm}" ×
                                             </button>
@@ -390,7 +390,7 @@ export default function AgentsPage() {
                                         {selectedSpecialty !== 'all' && (
                                             <button
                                                 onClick={() => setSelectedSpecialty('all')}
-                                                className="px-4 py-2 bg-teal-500/10 text-teal-400 rounded-xl text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/20"
+                                                className="px-4 py-2 bg-teal-500/10 text-secondary rounded-xl text-sm font-medium hover:bg-secondary/10 transition-colors border border-secondary/20"
                                             >
                                                 {selectedSpecialty} ×
                                             </button>
@@ -398,7 +398,7 @@ export default function AgentsPage() {
                                         {selectedExperience !== 'all' && (
                                             <button
                                                 onClick={() => setSelectedExperience('all')}
-                                                className="px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-xl text-sm font-medium hover:bg-cyan-500/20 transition-colors border border-cyan-500/20"
+                                                className="px-4 py-2 bg-cyan-500/10 text-primary rounded-xl text-sm font-medium hover:bg-cyan-500/20 transition-colors border border-primary/20"
                                             >
                                                 {experienceLevels.find(l => l.value === selectedExperience)?.label} ×
                                             </button>
@@ -429,7 +429,7 @@ export default function AgentsPage() {
                                 <div className="flex items-center gap-1 p-1.5 bg-slate-800/50 rounded-xl border border-slate-700/50">
                                     <button
                                         onClick={() => setViewMode('grid')}
-                                        className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-slate-400 hover:text-white'}`}
                                     >
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -437,7 +437,7 @@ export default function AgentsPage() {
                                     </button>
                                     <button
                                         onClick={() => setViewMode('list')}
-                                        className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-emerald-500 text-white' : 'text-slate-400 hover:text-white'}`}
+                                        className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-primary text-white' : 'text-slate-400 hover:text-white'}`}
                                     >
                                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -481,8 +481,8 @@ export default function AgentsPage() {
                             ))}
                         </div>
                     ) : filteredAgents.length === 0 ? (
-                        <div className="bg-gradient-to-br from-slate-900/80 to-slate-900/50 backdrop-blur-xl rounded-3xl p-16 text-center border border-white/10">
-                            <div className="w-24 h-24 bg-gradient-to-br from-slate-800 to-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                        <div className="bg-gradient-to-br from-card to-card backdrop-blur-xl rounded-3xl p-16 text-center border border-border">
+                            <div className="w-24 h-24 bg-gradient-to-br from-muted to-accent rounded-3xl flex items-center justify-center mx-auto mb-6">
                                 <UserCheck className="w-12 h-12 text-slate-500" />
                             </div>
                             <h3 className="text-2xl font-bold text-foreground mb-3">
@@ -496,7 +496,7 @@ export default function AgentsPage() {
                             {agents.length > 0 && (
                                 <button
                                     onClick={() => { setSearchTerm(''); setSelectedSpecialty('all'); setSelectedExperience('all'); }}
-                                    className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-2xl transition-all"
+                                    className="px-6 py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary hover:to-secondary text-white font-bold rounded-2xl transition-all"
                                 >
                                     Clear All Filters
                                 </button>
@@ -515,9 +515,9 @@ export default function AgentsPage() {
                                             onMouseEnter={() => setHoveredAgent(agent.id)}
                                             onMouseLeave={() => setHoveredAgent(null)}
                                         >
-                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-3xl overflow-hidden border border-white/5 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-emerald-500/30 shadow-2xl shadow-emerald-500/10 -translate-y-2' : ''}`}>
+                                            <div className={`relative bg-gradient-to-br from-card to-card backdrop-blur-xl rounded-3xl overflow-hidden border border-border transition-all duration-500 ${hoveredAgent === agent.id ? 'border-primary/30 shadow-2xl shadow-primary/10 -translate-y-2' : ''}`}>
                                                 {/* Decorative Gradient */}
-                                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 rounded-full blur-2xl" />
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-secondary/5 rounded-full blur-2xl" />
                                                 
                                                 <div className="p-6">
                                                     {/* Header */}
@@ -525,7 +525,7 @@ export default function AgentsPage() {
                                                         {/* Avatar */}
                                                         <div className="relative shrink-0">
                                                             <div className={`w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br ${getExperienceColor(agent.years_of_experience)} p-0.5 transition-transform duration-500 ${hoveredAgent === agent.id ? 'scale-105' : ''}`}>
-                                                                <div className="w-full h-full rounded-xl overflow-hidden bg-slate-900">
+                                                                <div className="w-full h-full rounded-xl overflow-hidden bg-muted">
                                                                     {agent.user_avatar ? (
                                                                         <Image
                                                                             src={agent.user_avatar}
@@ -534,7 +534,7 @@ export default function AgentsPage() {
                                                                             className="object-cover"
                                                                         />
                                                                     ) : (
-                                                                        <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                                                                        <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                                                                             <span className="text-2xl font-black text-white">
                                                                                 {agent.user_name?.[0]?.toUpperCase() || 'A'}
                                                                             </span>
@@ -543,7 +543,7 @@ export default function AgentsPage() {
                                                                 </div>
                                                             </div>
                                                             {agent.is_verified && (
-                                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center border-2 border-slate-900">
+                                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-lg flex items-center justify-center border-2 border-border">
                                                                     <CheckCircle className="w-4 h-4 text-white" />
                                                                 </div>
                                                             )}
@@ -551,7 +551,7 @@ export default function AgentsPage() {
 
                                                         {/* Info */}
                                                         <div className="flex-1 min-w-0">
-                                                            <h3 className={`text-lg font-bold text-white truncate transition-colors ${hoveredAgent === agent.id ? 'text-emerald-400' : ''}`}>
+                                                            <h3 className={`text-lg font-bold text-white truncate transition-colors ${hoveredAgent === agent.id ? 'text-primary' : ''}`}>
                                                                 {agent.user_name}
                                                             </h3>
                                                             <div className="flex items-center gap-2 mt-1">
@@ -612,11 +612,11 @@ export default function AgentsPage() {
 
                                                     {/* CTA */}
                                                     <div className={`flex items-center justify-between pt-4 border-t border-slate-800/50 transition-all duration-500 ${hoveredAgent === agent.id ? 'border-slate-700/50' : ''}`}>
-                                                        <span className="text-sm font-semibold text-slate-400 group-hover:text-emerald-400 transition-colors">
+                                                        <span className="text-sm font-semibold text-slate-400 group-hover:text-primary transition-colors">
                                                             View Profile
                                                         </span>
-                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-emerald-500 scale-110' : ''}`}>
-                                                            <ChevronRight className={`w-5 h-5 text-emerald-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1' : ''}`} />
+                                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-primary scale-110' : ''}`}>
+                                                            <ChevronRight className={`w-5 h-5 text-primary transition-transform ${hoveredAgent === agent.id ? 'translate-x-1' : ''}`} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -637,12 +637,12 @@ export default function AgentsPage() {
                                             onMouseEnter={() => setHoveredAgent(agent.id)}
                                             onMouseLeave={() => setHoveredAgent(null)}
                                         >
-                                            <div className={`relative bg-gradient-to-br from-slate-900/90 to-slate-900/60 backdrop-blur-xl rounded-2xl p-6 border transition-all duration-500 ${hoveredAgent === agent.id ? 'border-emerald-500/30 shadow-xl shadow-emerald-500/5 -translate-y-1' : 'border-white/5'}`}>
+                                            <div className={`relative bg-gradient-to-br from-card to-card backdrop-blur-xl rounded-2xl p-6 border transition-all duration-500 ${hoveredAgent === agent.id ? 'border-primary/30 shadow-xl shadow-primary/5 -translate-y-1' : 'border-border'}`}>
                                                 <div className="flex flex-col lg:flex-row lg:items-center gap-6">
                                                     {/* Avatar */}
                                                     <div className="shrink-0">
                                                         <div className={`w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br ${getExperienceColor(agent.years_of_experience)} p-0.5 transition-transform duration-500 ${hoveredAgent === agent.id ? 'scale-105' : ''}`}>
-                                                            <div className="w-full h-full rounded-xl overflow-hidden bg-slate-900">
+                                                            <div className="w-full h-full rounded-xl overflow-hidden bg-muted">
                                                                 {agent.user_avatar ? (
                                                                     <Image
                                                                         src={agent.user_avatar}
@@ -651,7 +651,7 @@ export default function AgentsPage() {
                                                                         className="object-cover"
                                                                     />
                                                                 ) : (
-                                                                    <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                                                                    <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                                                                         <span className="text-3xl font-black text-white">
                                                                             {agent.user_name?.[0]?.toUpperCase() || 'A'}
                                                                         </span>
@@ -664,11 +664,11 @@ export default function AgentsPage() {
                                                     {/* Info */}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                            <h3 className={`text-xl font-bold text-white transition-colors ${hoveredAgent === agent.id ? 'text-emerald-400' : ''}`}>
+                                                            <h3 className={`text-xl font-bold text-white transition-colors ${hoveredAgent === agent.id ? 'text-primary' : ''}`}>
                                                                 {agent.user_name}
                                                             </h3>
                                                             {agent.is_verified && (
-                                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/20">
+                                                                <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full border border-primary/20">
                                                                     <CheckCircle className="w-3 h-3" />
                                                                     Verified
                                                                 </span>
@@ -709,8 +709,8 @@ export default function AgentsPage() {
                                                                 </div>
                                                             )}
                                                         </div>
-                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-emerald-500' : ''}`}>
-                                                            <ChevronRight className={`w-5 h-5 text-emerald-400 transition-transform ${hoveredAgent === agent.id ? 'translate-x-1 text-white' : ''}`} />
+                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center transition-all duration-500 ${hoveredAgent === agent.id ? 'bg-primary' : ''}`}>
+                                                            <ChevronRight className={`w-5 h-5 text-primary transition-transform ${hoveredAgent === agent.id ? 'translate-x-1 text-white' : ''}`} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -727,12 +727,12 @@ export default function AgentsPage() {
             {/* Bottom CTA */}
             <section className="relative z-10 px-4 sm:px-6 lg:px-8 pb-16">
                 <div className="container mx-auto max-w-5xl">
-                    <div className="relative bg-gradient-to-br from-emerald-600/20 via-teal-600/20 to-cyan-600/20 rounded-3xl p-8 lg:p-12 border border-white/10 overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-transparent" />
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
+                    <div className="relative bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 rounded-3xl p-8 lg:p-12 border border-border overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
                         
                         <div className="relative text-center max-w-2xl mx-auto">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-6">
                                 <Award className="w-8 h-8 text-white" />
                             </div>
                             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
@@ -743,7 +743,7 @@ export default function AgentsPage() {
                             </p>
                             <Link
                                 href="/register?type=agent"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary hover:to-secondary text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-primary/20 hover:shadow-primary/40"
                             >
                                 <Sparkles className="w-5 h-5" />
                                 Apply Now

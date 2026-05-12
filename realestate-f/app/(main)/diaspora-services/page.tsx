@@ -115,7 +115,7 @@ export default function DiasporaServicesPage() {
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-24">
@@ -165,7 +165,7 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* Stats Bar */}
-            <section className="border-y border-border bg-accent/30">
+            <section className="border-y border-border bg-accent/50">
                 <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 grid grid-cols-2 md:grid-cols-3 gap-8">
                     {STATS.map((s, i) => (
                         <div key={i} className="text-center space-y-2">
@@ -206,7 +206,7 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* Services Section */}
-            <section className="border-t border-border bg-accent/30">
+            <section className="border-t border-border bg-accent/50">
                 <div className="max-w-7xl mx-auto px-6 md:px-12 py-20 space-y-16">
                     <div className="max-w-2xl space-y-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-primary">Our services</p>
@@ -230,7 +230,7 @@ export default function DiasporaServicesPage() {
                                 <ul className="space-y-2">
                                     {svc.features.map((feature, idx) => (
                                         <li key={idx} className="flex items-center gap-2 text-xs text-muted-foreground">
-                                            <Check size={12} className="text-primary flex-shrink-0" />
+                                            <Check size={12} className="text-secondary flex-shrink-0" />
                                             {feature}
                                         </li>
                                     ))}
@@ -258,7 +258,7 @@ export default function DiasporaServicesPage() {
                         { num: '06', title: 'Title transfer', desc: 'Title registered in your name within 12–21 days' },
                     ].map((step, i) => (
                         <div key={i} className="relative p-6 rounded-xl border border-border bg-card space-y-4">
-                            <span className="text-4xl font-bold text-primary/20">{step.num}</span>
+                            <span className="text-4xl font-bold text-primary/10">{step.num}</span>
                             <h3 className="text-lg font-bold">{step.title}</h3>
                             <p className="text-sm text-muted-foreground">{step.desc}</p>
                         </div>
@@ -267,7 +267,7 @@ export default function DiasporaServicesPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="border-t border-border bg-accent/30">
+            <section className="border-t border-border bg-accent/50">
                 <div className="max-w-3xl mx-auto px-6 md:px-12 py-20 space-y-12">
                     <div className="space-y-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-primary">FAQ</p>
