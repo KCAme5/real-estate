@@ -88,14 +88,14 @@ export default function FeaturedProjectBanner() {
       />
       
       {/* Banner */}
-      <div className="relative w-full max-w-4xl mx-auto overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900 rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-4xl mx-auto overflow-hidden bg-gradient-to-br from-background via-card to-emerald-50 rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300 border border-border">
         {/* Close Button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
           aria-label="Dismiss"
         >
-          <X className="w-5 h-5 text-white" />
+          <X className="w-5 h-5 text-foreground" />
         </button>
 
         <div className="flex flex-col md:flex-row">
@@ -110,29 +110,29 @@ export default function FeaturedProjectBanner() {
                 priority
               />
             ) : (
-              <div className="w-full h-full bg-emerald-800 flex items-center justify-center">
-                <Building2 className="w-24 h-24 text-emerald-600/50" />
+              <div className="w-full h-full bg-emerald-100 flex items-center justify-center">
+                <Building2 className="w-24 h-24 text-emerald-300/50" />
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-slate-900/80 md:bg-gradient-to-t md:from-slate-900/80 md:to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/80 md:bg-gradient-to-t md:from-background/80 md:to-transparent" />
           </div>
 
           {/* Content Section */}
           <div className="flex-1 p-6 md:p-8 flex flex-col justify-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-sm font-medium w-fit mb-4">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium w-fit mb-4">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Featured Development
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               {project.title}
             </h2>
 
-            <p className="text-slate-300 mb-4 line-clamp-2">
+            <p className="text-muted-foreground mb-4 line-clamp-2">
               {project.description}
             </p>
 
-            <div className="flex items-center gap-4 text-sm text-slate-400 mb-6">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
               {project.location && (
                 <span>{project.location.name}, {project.location.county}</span>
               )}
@@ -146,15 +146,15 @@ export default function FeaturedProjectBanner() {
 
             <div className="flex items-center justify-between mt-auto">
               <div>
-                <p className="text-slate-400 text-sm">Starting from</p>
-                <p className="text-2xl font-bold text-emerald-400">
+                <p className="text-muted-foreground text-sm">Starting from</p>
+                <p className="text-2xl font-bold text-emerald-600">
                   {project.price_display || `${project.currency} ${parseInt(project.price).toLocaleString()}`}
                 </p>
               </div>
 
               <Link
                 href={`/properties/${project.slug}`}
-                className="flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg transition-colors"
+                className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors"
               >
                 Learn More
                 <ArrowRight className="w-4 h-4" />

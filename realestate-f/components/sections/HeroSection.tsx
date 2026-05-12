@@ -109,34 +109,34 @@ export default function HeroSection() {
                 ))}
             </div>
 
-            <div className="relative z-10 text-center text-white px-4 max-w-6xl mx-auto">
+            <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2 bg-emerald-950/30 backdrop-blur-sm border border-emerald-500/20 rounded-full px-6 py-2 mb-8">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-emerald-100">Trusted by Clients Worldwide</span>
+                <div className="inline-flex items-center gap-2 bg-primary/10 backdrop-blur-sm border border-primary/20 rounded-full px-6 py-2 mb-8">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-primary">Trusted by Clients Worldwide</span>
                 </div>
 
                 {/* Main Heading */}
-                <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold mb-6 leading-tight text-foreground">
                     Discover Your
-                    <span className="block text-emerald-400 font-bold">
+                    <span className="block text-primary font-bold">
                         Dream Property
                     </span>
                     in Kenya
                 </h1>
 
                 {/* Subtitle */}
-                <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
                     Premium real estate solutions connecting Kenyans and the diaspora with
                     exceptional properties and investment opportunities across the country.
                 </p>
-                <p className="text-lg md:text-xl text-slate-200 mb-12 font-medium tracking-wide">
+                <p className="text-lg md:text-xl text-foreground mb-12 font-medium tracking-wide">
                     Buy • Sell • Rent • Commercial
                 </p>
 
                 {/* CTA Buttons */}
                 {/* Hero Search Section */}
-                <div className="bg-slate-950/80 backdrop-blur-md p-6 rounded-3xl shadow-2xl border border-emerald-900/30 max-w-4xl mx-auto transform hover:scale-[1.01] transition-all duration-300">
+                <div className="bg-background/80 backdrop-blur-md p-6 rounded-3xl shadow-2xl border border-border max-w-4xl mx-auto transform hover:scale-[1.01] transition-all duration-300">
                     <div className="flex flex-col md:flex-row gap-4">
                         {/* Simple Search - Location */}
                         <div className="flex-1 relative group">
@@ -151,7 +151,7 @@ export default function HeroSection() {
                                 placeholder="Where do you want to live? (e.g. Nairobi)"
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
-                                className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border-2 border-slate-800 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all outline-none text-white placeholder:text-slate-500 font-medium"
+                                className="w-full pl-12 pr-4 py-4 bg-card border-2 border-border rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-foreground placeholder:text-muted-foreground font-medium"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSimpleSearch();
@@ -163,7 +163,7 @@ export default function HeroSection() {
                         {/* Search Button */}
                         <button
                             onClick={handleSimpleSearch}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center gap-2 min-w-40"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-primary/25 flex items-center justify-center gap-2 min-w-40"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -174,14 +174,14 @@ export default function HeroSection() {
 
                     {/* Advanced Search Link */}
                     <div className="mt-4 flex items-center justify-between px-2">
-                        <div className="flex gap-4 text-sm text-foreground/80 font-medium overflow-x-auto no-scrollbar">
+                        <div className="flex gap-4 text-sm text-muted-foreground font-medium overflow-x-auto no-scrollbar">
                             <span className="whitespace-nowrap flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Buy</span>
                             <span className="whitespace-nowrap flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Rent</span>
                             <span className="whitespace-nowrap flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500"></span> Invest</span>
                         </div>
                         <button
                             onClick={() => setShowSearch(true)}
-                            className="text-emerald-400 hover:text-emerald-300 text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all whitespace-nowrap"
+                            className="text-primary hover:text-primary/80 text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all whitespace-nowrap"
                         >
                             Advanced Filters
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

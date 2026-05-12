@@ -70,7 +70,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
 
     if (viewMode === 'list') {
         return (
-            <div className="group relative bg-slate-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col md:flex-row h-full md:h-64 lg:h-72">
+            <div className="group relative bg-card rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 flex flex-col md:flex-row h-full md:h-64 lg:h-72 border border-border">
                 {/* Animated Green Frame */}
                 <div className="absolute inset-0 border-2 border-emerald-500/0 group-hover:border-emerald-500/50 rounded-3xl transition-colors duration-500 pointer-events-none z-20"></div>
 
@@ -79,7 +79,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                 {/* Left Side - Image */}
           <div className="relative w-full md:w-2/5 h-40 md:h-full overflow-hidden">
             {!imageLoaded && !imageError && (
-              <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+              <div className="absolute inset-0 bg-muted animate-pulse" />
             )}
             <Image
               src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
@@ -97,60 +97,60 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                                 Featured
                             </span>
                         )}
-                        <span className="bg-slate-950/60 backdrop-blur-md text-emerald-100 text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg border border-emerald-500/20">
+                        <span className="bg-background/60 backdrop-blur-md text-emerald-700 text-[10px] font-semibold px-2 py-1 rounded-full uppercase tracking-wider shadow-lg border border-emerald-500/20">
                             {property.property_type || 'For Sale'}
                         </span>
                     </div>
                 </div>
 
                 {/* Right Side - Content */}
-                <div className="relative p-4 md:p-6 flex flex-col justify-between w-full md:w-3/5 bg-slate-900">
+                <div className="relative p-4 md:p-6 flex flex-col justify-between w-full md:w-3/5 bg-card">
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className={`absolute top-6 right-6 z-30 p-2 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition-colors ${isSaved ? 'text-emerald-500' : ''}`}
+                        className={`absolute top-6 right-6 z-30 p-2 rounded-xl bg-muted/50 hover:bg-muted text-muted-foreground hover:text-emerald-600 transition-colors ${isSaved ? 'text-emerald-600' : ''}`}
                     >
                         <Heart size={18} fill={isSaved ? 'currentColor' : 'none'} className={saving ? 'animate-pulse' : ''} />
                     </button>
 
                     <div className="space-y-4 pr-10">
                         <div>
-                            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors line-clamp-1">
+                            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2 group-hover:text-emerald-600 transition-colors line-clamp-1">
                                 {property.title}
                             </h3>
-                            <div className="flex items-center gap-2 text-slate-400 text-sm">
-                                <MapPin size={14} className="text-emerald-500" />
+                            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                <MapPin size={14} className="text-emerald-600" />
                                 <span className="truncate">{property.location?.name || 'Location N/A'}</span>
                             </div>
                         </div>
 
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-2xl font-bold text-foreground">
                             {formatPrice(property.price)}
                         </div>
 
-                        <p className="text-slate-400 text-sm line-clamp-2 md:line-clamp-3 leading-relaxed">
+                        <p className="text-muted-foreground text-sm line-clamp-2 md:line-clamp-3 leading-relaxed">
                             {property.description || 'Experience luxury living in this stunning property. Featuring modern amenities, spacious interiors, and a prime location.'}
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-6 mt-4 pt-4 border-t border-slate-800">
+                    <div className="flex items-center gap-6 mt-4 pt-4 border-t border-border">
                         <div className="flex items-center gap-2">
-                            <Bed size={18} className="text-emerald-500" />
-                            <span className="text-sm font-semibold text-slate-300">{property.bedrooms} <span className="text-slate-500 font-normal ml-1">Beds</span></span>
+                            <Bed size={18} className="text-emerald-600" />
+                            <span className="text-sm font-semibold text-foreground">{property.bedrooms} <span className="text-muted-foreground font-normal ml-1">Beds</span></span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Bath size={18} className="text-emerald-500" />
-                            <span className="text-sm font-semibold text-slate-300">{property.bathrooms} <span className="text-slate-500 font-normal ml-1">Baths</span></span>
+                            <Bath size={18} className="text-emerald-600" />
+                            <span className="text-sm font-semibold text-foreground">{property.bathrooms} <span className="text-muted-foreground font-normal ml-1">Baths</span></span>
                         </div>
                         {property.square_feet && (
                             <div className="flex items-center gap-2">
-                                <Maximize size={18} className="text-emerald-500" />
-                                <span className="text-sm font-semibold text-slate-300">{property.square_feet} <span className="text-slate-500 font-normal ml-1">sqft</span></span>
+                                <Maximize size={18} className="text-emerald-600" />
+                                <span className="text-sm font-semibold text-foreground">{property.square_feet} <span className="text-muted-foreground font-normal ml-1">sqft</span></span>
                             </div>
                         )}
 
                         <div className="ml-auto">
-                            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest hover:underline cursor-pointer">
+                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest hover:underline cursor-pointer">
                                 View Details
                             </span>
                         </div>
@@ -162,7 +162,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
 
     // Default Grid View (Unchanged logic, just wrapped/ensured it's returned if not list)
     return (
-        <div className="group relative bg-slate-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 aspect-3/4 sm:aspect-2/3 hover:-translate-y-2">
+        <div className="group relative bg-card rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 aspect-3/4 sm:aspect-2/3 hover:-translate-y-2 border border-border">
             {/* Animated Green Frame */}
             <div className="absolute inset-0 border-2 border-emerald-500/0 group-hover:border-emerald-500/50 rounded-3xl transition-colors duration-500 pointer-events-none z-20"></div>
             <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-20"></div>
@@ -172,7 +172,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
         {/* Main Image - Now covers the whole card */}
         <div className="absolute inset-0">
           {!imageLoaded && !imageError && (
-            <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+            <div className="absolute inset-0 bg-muted animate-pulse" />
           )}
           <Image
             src={property.main_image || property.main_image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&h=300'}
@@ -185,7 +185,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
           />
 
                 {/* Gradient Overlay for better text readability on hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/50 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
             </div>
 
             {/* Status Badges - Top Left (Keep these minimal) */}
@@ -196,7 +196,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                         Featured
                     </span>
                 )}
-                <span className="bg-slate-950/60 backdrop-blur-md text-emerald-100 text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg border border-emerald-500/20">
+                <span className="bg-background/60 backdrop-blur-md text-emerald-700 text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg border border-emerald-500/20">
                     {property.property_type || 'For Sale'}
                 </span>
             </div>
@@ -207,7 +207,7 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
                 disabled={saving}
                 className={`absolute top-4 right-4 z-30 p-2.5 rounded-xl backdrop-blur-md transition-all duration-300 shadow-lg ${isSaved
                     ? 'bg-emerald-600 text-white'
-                    : 'bg-slate-950/40 text-white/80 hover:text-white hover:bg-slate-950/60 hover:text-emerald-400'
+                    : 'bg-background/40 text-foreground/80 hover:text-foreground hover:bg-background/60 hover:text-emerald-600'
                     }`}
             >
                 <Heart size={18} fill={isSaved ? 'currentColor' : 'none'} className={saving ? 'animate-pulse' : ''} />
@@ -216,35 +216,35 @@ export default function PropertyCard({ property, initialSaved = false, viewMode 
             {/* Hover Content Section - Appears from bottom */}
             <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 flex flex-col space-y-3 sm:space-y-4 translate-y-2 transition-all duration-300">
                 <div className="space-y-1">
-                    <h3 className="text-xl font-semibold text-white leading-tight group-hover:text-emerald-400 transition-colors">
+                    <h3 className="text-xl font-semibold text-foreground leading-tight group-hover:text-emerald-600 transition-colors">
                         {property.title}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-slate-300">
-                        <MapPin size={14} className="text-emerald-500" />
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <MapPin size={14} className="text-emerald-600" />
                         <span className="text-sm truncate">
                             {property.location?.name || 'Location N/A'}
                         </span>
                     </div>
                 </div>
 
-                <div className="text-2xl font-bold text-white group-hover:scale-105 transition-transform duration-300 origin-left">
+                <div className="text-2xl font-bold text-foreground group-hover:scale-105 transition-transform duration-300 origin-left">
                     {formatPrice(property.price)}
                 </div>
 
                 {/* Property Features */}
                 <div className="flex items-center gap-4 pt-4 border-t border-emerald-500/20 opacity-80 group-hover:opacity-100 transition-opacity delay-75">
                     <div className="flex items-center gap-2">
-                        <Bed size={16} className="text-emerald-400" />
-                        <span className="text-sm font-semibold text-slate-200">{property.bedrooms}</span>
+                        <Bed size={16} className="text-emerald-600" />
+                        <span className="text-sm font-semibold text-foreground">{property.bedrooms}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Bath size={16} className="text-emerald-400" />
-                        <span className="text-sm font-semibold text-slate-200">{property.bathrooms}</span>
+                        <Bath size={16} className="text-emerald-600" />
+                        <span className="text-sm font-semibold text-foreground">{property.bathrooms}</span>
                     </div>
                     {property.square_feet && (
                         <div className="flex items-center gap-2">
-                            <Maximize size={16} className="text-emerald-400" />
-                            <span className="text-sm font-semibold text-slate-200">{property.square_feet}</span>
+                            <Maximize size={16} className="text-emerald-600" />
+                            <span className="text-sm font-semibold text-foreground">{property.square_feet}</span>
                         </div>
                     )}
                 </div>
