@@ -89,18 +89,18 @@ const PopularAreas = () => {
     }, []);
 
     return (
-        <section className="py-24 bg-slate-950 relative">
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-emerald-900/10 rounded-full blur-3xl"></div>
+        <section className="py-24 bg-background relative">
+            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-white font-serif mb-2">Popular Areas</h2>
-                        <div className="h-1 w-20 bg-emerald-500 rounded-full"></div>
+                        <h2 className="text-3xl md:text-4xl font-bold text-foreground font-serif mb-2">Popular Areas</h2>
+                        <div className="h-1 w-20 bg-primary rounded-full"></div>
                     </div>
                     <Link
                         href="/properties"
-                        className="group flex items-center text-emerald-500 font-medium hover:text-emerald-400 transition-colors"
+                        className="group flex items-center text-primary font-medium hover:text-primary/80 transition-colors"
                     >
                         View All Locations
                         <ArrowRight className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
@@ -113,7 +113,7 @@ const PopularAreas = () => {
                         <Link
                             key={city.name}
                             href={`/properties?location=${city.name}`}
-                            className="group relative h-80 rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-slate-800"
+                            className="group relative h-80 rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-border"
                         >
                             {/* Background Image */}
                             <div
@@ -126,8 +126,8 @@ const PopularAreas = () => {
 
                             {/* Content */}
                             <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
-                                <h3 className="text-xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">{city.name}</h3>
-                                <p className="text-xs font-bold text-slate-300 tracking-wider uppercase mb-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                                <h3 className="text-xl font-bold text-white mb-1 group-hover:text-primary transition-colors">{city.name}</h3>
+                                <p className="text-xs font-bold text-gray-300 tracking-wider uppercase mb-2 opacity-80 group-hover:opacity-100 transition-opacity">
                                     {city.count === null || city.percent === null || city.total === null
                                         ? '...'
                                         : `${city.count} ${city.count === 1 ? 'Property' : 'Properties'} • ${city.percent}% of listings`}

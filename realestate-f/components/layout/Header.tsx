@@ -111,8 +111,8 @@ export default function Header() {
     return (
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-                ? "bg-slate-950/95 backdrop-blur-xl shadow-lg border-b border-emerald-900/20"
-                : "bg-gradient-to-b from-slate-950/80 to-transparent"
+                ? "bg-background/95 backdrop-blur-xl shadow-lg border-b border-border"
+                : "bg-gradient-to-b from-background/80 to-transparent"
                 }`}
         >
             <div className="container mx-auto px-4 sm:px-6">
@@ -156,7 +156,7 @@ export default function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 align="start"
-                                className="w-72 p-2 rounded-xl bg-slate-900 shadow-xl border border-slate-800"
+                                className="w-72 p-2 rounded-xl bg-card shadow-xl border border-border"
                             >
                                 {/* For Sale Section */}
                                 <div className="px-3 py-2">
@@ -281,7 +281,7 @@ export default function Header() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
-                                    className="w-56 p-2 rounded-xl bg-slate-900 shadow-xl border border-slate-800"
+                                    className="w-56 p-2 rounded-xl bg-card shadow-xl border border-border"
                                 >
                                     <DropdownMenuItem
                                         asChild
@@ -311,7 +311,7 @@ export default function Header() {
                             <>
                                 <Link
                                     href="/login"
-                                    className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors"
+                                    className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                                 >
                                     Login
                                 </Link>
@@ -330,8 +330,8 @@ export default function Header() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={`p-2 rounded-lg transition-all duration-200 ${mobileMenuOpen
-              ? "bg-emerald-900/20 text-emerald-400"
-              : "hover:bg-emerald-900/10 text-slate-400"
+              ? "bg-emerald-100 text-emerald-600"
+              : "hover:bg-muted text-muted-foreground"
             }`}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileMenuOpen}
@@ -349,7 +349,7 @@ export default function Header() {
         {/* Mobile Menu */}
         <div
           id="mobile-menu"
-          className={`lg:hidden fixed inset-x-0 top-16 bg-slate-900 border-t border-slate-800 shadow-2xl transition-all duration-300 ease-in-out ${mobileMenuOpen
+          className={`lg:hidden fixed inset-x-0 top-16 bg-card border-t border-border shadow-2xl transition-all duration-300 ease-in-out ${mobileMenuOpen
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-4 pointer-events-none"
           }`}
